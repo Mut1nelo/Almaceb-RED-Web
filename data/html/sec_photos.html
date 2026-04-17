@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="../css/general.css">
+    <link rel="stylesheet" href="../css/sec_photos.css">
+    <link rel="icon" type="image/x-icon" href="../../icon.ico">
+    <title>Apartado de Fotos</title>
+    <style>
+        .comment-form.hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-body" id="page-body">
+        <div class="post-card">
+            <div class="perfil" id="perfil">
+                <img 
+                src="../images/pfps/unk.jpg" 
+                alt="Foto de Perfil"
+                width="100"
+                >
+                <h1>Nombre de Usuario</h1>
+            </div>
+            <div class="foto">
+                <img 
+                src="../images/img-proto.png" 
+                alt="Foto de la Publicación"
+                width="200"
+                >
+                <p>Descripción de la Foto</p>
+            </div>
+            <div class="post-actions">
+                <button class="btn-action btn-like">
+                    <i class="bi bi-hand-thumbs-up"></i> 
+                </button> 
+                <span class="count-like">0</span>
+                <button class="btn-action btn-comment-toggle">
+                    <i class="bi bi-chat-dots"></i>
+                </button> 
+                <span class="count-comment">0</span>
+                <button class="btn-action btn-add-cart">Agregar al carrito</button>
+                <i class="bi bi-cart"></i>
+                <span class="count-cart">0</span>
+            </div>
+                <div class="comment-form hidden">
+            <input class="comment-input" type="text" placeholder="Escribe algo...">
+            <button class="btn-action btn-submit-comment">Añadir comentario</button>
+        </div>
+    </div>
+    <script src="../js/interactions.js"></script>
+</body>
+</html>
