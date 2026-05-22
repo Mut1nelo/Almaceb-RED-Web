@@ -1,3 +1,5 @@
+( Desactualizado )
+
 Este es un proyecto creado por alumnos que están aprendiendo HTML, CSS y JS. Esté proyecto tiene por objetivo crear una página web con una interfaz similar a Tiktok, pero que solo permita encontrar lugares para poder comprar con una tarjeta llamada JUNAEB, que es un apoyo economico para los estudiantes.
 
 Para esto los alumnos crearon una web que se divide en las siguientes secciones:

@@ -10,26 +10,18 @@ body {
     justify-content: center;
     position: relative;
 }
-#BG {
-    position: absolute;
-    height: 100%;
-    width: 100%;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: cover;
-    filter: blur(5px);
-    filter: brightness(5px);
-}
 #box {
     background-color: white;
     display: flex;
-    position: relative;
     flex-direction: column;
-    width: 800px;
-    height: auto;
-    border-color: rgb(100, 148, 237);
-    border-style: solid;
+    width: min(800px, 95%);
+    max-height: 90vh;
+    overflow-y: auto;
+    border: 2px solid #6494ed;
+    border-radius: 1em;
     box-shadow: 0 0 16px rgba(0,0,0,0.15);
+    margin-top: 20px;
+    padding: 10px;
 }
 #nav-bar {
     display: flex;
@@ -58,13 +50,14 @@ body {
 }
 #container {
     display: flex;
-    position: relative;
 }
 .content {
     display: flex;
-    width: 95%;
+    width: 100%;
     flex-direction: column;
     align-items: center;
+    padding: 10px;
+    box-sizing: border-box;
 }
 .content h1{
     text-align: center;
@@ -76,7 +69,7 @@ body {
     height: 60px;
     font-size: 120%;
     margin-bottom: 20px;
-    margin-left: 20px;
+    margin-left: 0;
     background-color: darkblue;
     color: rgb(100, 190, 250);
     border-color: rgb(100, 190, 250);
@@ -88,10 +81,36 @@ body {
     border-color: darkblue;
 }
 .buttons {
+    display: flex;
     flex-direction: column;
+    gap: 10px;
 }
 .content div {
     display: flex;
+}
+
+.buttons-content {
+    display: flex;
+    gap: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.buttons-content .buttons {
+    flex: 1 1 320px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 200px;
+}
+
+.buttons-content .buttons button {
+    width: 100%;
+    margin-left: 0;
+    box-sizing: border-box;
 }
 #other {
     flex-direction: column;
@@ -102,41 +121,37 @@ body {
     border-top: white;
     border-left: white;
     border-right: white;
-    margin-left: 10%;
-    margin-right: 10%;
     font-size: 110%;
 }
+
 #submit {
     background-color: rgb(228, 29, 29);
     color: #e69191;
     border-color: #e69191;
     border-radius: 10px;
-    margin: 50px;
+    margin: 20px auto;
+    padding: 10px;
     font-size: 150%;
     width: 150px;
-    margin-left: 25%;
-    margin-right: 25%;
 }
+
 #submit:hover {
     background-color: rgb(100, 190, 250);
     color: darkblue;
     border-color: darkblue;
 }
 
-
 .ultime{
     width: 100%;
-    height: 70px;
-}
-h3 {
- margin-left: 140px;
- margin-top: 10px;
- display: flex;
- justify-content: center;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 10px;
 }
 
 #barra_texto {
-margin-top: 40px;
+margin-top: 20px;
 width: 30vw;
 margin-right: 50px;
 }
@@ -145,8 +160,63 @@ margin-right: 50px;
 
      justify-content: center;
 }
+
 #report_message {
     color: red;
     text-align: center;
     display: none;
+    border: 1px solid #000000;
+    padding: 10px 7px;
+    box-sizing: border-box;
+    width: calc(100% - 14px);
+    max-width: 100%;
+    /* IA */
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    white-space: normal;
+    margin: 0 auto;
+}
+
+.report-motive {
+    flex-direction: column;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    #box {
+        width: min(800px, 100%);
+    }
+    .content {
+        padding: 0;
+    }
+}
+
+@media (max-width: 400px) {
+    .buttons-content {
+        flex-direction: column;
+        gap: 8px;
+        align-items: stretch;
+    }
+    .buttons-content .buttons {
+        flex: none;
+        flex-basis: auto;
+        width: 100%;
+        min-width: 0;
+        margin: 0;
+        gap: 8px;
+    }
+    .buttons-content .buttons button {
+        width: 100%;
+        margin: 0;
+    }
+    .content button {
+        width: 100%;
+        height: 40px;
+        font-size: 90%;
+        margin-bottom: 8px;
+    }
+    #barra_texto {
+        width: calc(100% - 40px);
+        margin: 10px 20px;
+    }
 }
