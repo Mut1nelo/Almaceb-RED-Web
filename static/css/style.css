@@ -1,13 +1,12 @@
-body {
-    background-image: url(../images/inicio-bg.jpg);
-    background-position: cover;
-    background-repeat: no-repeat;
-    background-size: cover;
-    font-family: 'Segoe UI', Arial, sans-serif;
+#menu {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
-h1{
-    color: white;
-}
-label{
-    color: white;
+#link-principal {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 100px;
 }
