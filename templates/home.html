@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/home.css">
-    <link rel="stylesheet" href="../css/general.css">
-    <link rel="stylesheet" href="../css/darkcss.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/general.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/darkcss.css') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
-    <link rel="icon" type="image/x-icon" href="../images/icons/icon.png">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/icons/icon.png') }}">
     <title>Casa - Almaceb RED</title>
     <style>
         #map {
@@ -32,14 +32,14 @@
                 <a href="javascript:history.back()">
                     <i class="bi bi-arrow-return-left"></i>
                 </a>
-                <a href="report.html">
+                <a href="/Denuncias">
                     <i class="bi-flag"></i>
                 </a>
             </nav>
             <section class="content">
                 <div id="perfil">
-                    <img src="../images/pfps/unk.jpg" alt="Avatar">
-                    <a href="config.html">
+                    <img src="{{ url_for('static', filename='images/pfps/unk.jpg') }}" alt="Avatar">
+                    <a href="/Configuración">
                         <i class="bi-pencil"></i>
                     </a>
                 </div>
@@ -50,16 +50,16 @@
                     <button class="comentar">Comentar</button>
                 </div>
                 <nav class="nav-buttons">
-                    <a href="promo.html">
+                    <a href="/Promociones">
                         <i class="bi-megaphone"></i>
                     </a>
-                    <a href="favorites.html">
+                    <a href="/Favoritos">
                         <i class="bi-heart"></i>
                     </a>
-                    <a href="gallery.html">
+                    <a href="/Galeria">
                         <i class="bi-box2-fill"></i>
                     </a>
-                    <a href="info.html">
+                    <a href="/Información">
                         <i class="bi-info-circle"></i>
                     </a>
                 </nav>

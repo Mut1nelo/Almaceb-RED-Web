@@ -6,11 +6,11 @@
     <title>Página en desarrollo - Almaceb RED</title>
 
     <!-- Icono -->
-    <link rel="shortcut icon" href="../../icon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='icon.ico') }}" type="image/x-icon">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="../css/general.css">
-    <link rel="stylesheet" href="../css/under-construction.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/general.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/under-construction.css') }}">
 
     <!-- Iconos -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
@@ -19,7 +19,7 @@
     <main class="construction-page">
         <section class="construction-card">
             <img 
-                src="../images/logo/Almaceb-HD-Logo.png" 
+                src="{{ url_for('static', filename='images/logo/Almaceb-HD-Logo.png') }}" 
                 alt="Almaceb RED Logo"
                 class="construction-logo"
             >
@@ -48,11 +48,11 @@
             </div>
 
             <div class="construction-actions">
-                <a href="../../index.html" class="btn-primary-ar">
+                <a href="{{ url_for('iniciar') }}" class="btn-primary-ar">
                     Volver al inicio
                 </a>
 
-                <a href="map.html" class="btn-secondary-ar">
+                <a href="{{ url_for('map') }}" class="btn-secondary-ar">
                     Explorar promociones
                 </a>
             </div>

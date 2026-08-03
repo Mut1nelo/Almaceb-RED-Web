@@ -24,14 +24,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Crear iconos personalizados para los marcadores
     const markerIcon = (imageUrl) => L.divIcon({
         className: 'custom-marker',
-        html: `<img src="${imageUrl}" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">`,
+        html: `<img src="${imageUrl}" style="width: 100%; height: 100%; object-fit: cover;">`,
         iconSize: [50, 50],
         iconAnchor: [25, 50],
         popupAnchor: [0, -45]
     });
 
     // 4. Datos dummy para los puntos de interés cerca de San Ramón
-    const iconImage = "../images/icons/coso_sin_fondo.png";
+    // Cambia esto a un punto de interés real luego de hacerlo funcional
+    const iconImage = "https://github.com/Mut1nelo/Almaceb-RED-Web/blob/Flask/static/images/icons/in-1.png?raw=true";
     const locations = [
   {
     coords: [-33.553033, -70.650312],

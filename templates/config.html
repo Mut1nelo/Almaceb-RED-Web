@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ajustes de la cuenta</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="../css/config.css">
-    <link rel="stylesheet" href="../css/general.css">
-    <link rel="stylesheet" href="../css/darkcss.css">
-    <link rel="icon" type="image/x-icon" href="../images/icons/icon.png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/config.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/general.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/darkcss.css') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='images/icons/icon.png') }}">
 </head>
 <body>
     <div class="container">
@@ -16,7 +16,7 @@
             <a href="javascript:history.back()">
                 <i class="bi bi-arrow-return-left"></i>
             </a>
-            <a href="report.html">
+            <a href="{{ url_for('denuncias') }}">
                 <i class="bi-flag"></i>
             </a>
         </nav>
@@ -24,7 +24,7 @@
             <h1>Ajustes de la cuenta</h1>
         </div>
         <div class="profile-section">
-            <img class="profile-img" src="../images/pfps/unk.jpg" alt="Foto de perfil">
+            <img class="profile-img" src="{{ url_for('static', filename='images/pfps/unk.jpg') }}" alt="Foto de perfil">
             <i class="bi-pencil"></i>
         </div>
         <div class="form-section">
@@ -69,7 +69,7 @@
                     </div>
                 </div>
                 <div class="gallery-section">
-                    <img src="../images/img-proto.png" alt="Negocio" class="gallery-img">
+                    <img src="{{ url_for('static', filename='images/img-proto.png') }}" alt="Negocio" class="gallery-img">
                     <i class="bi-pencil"></i>
                 </div>
             </div>
