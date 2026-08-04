@@ -43,11 +43,13 @@
                         <i class="bi-pencil"></i>
                     </a>
                 </div>
-                <h1>Panaderia La Juana</h1>
+                {% for usuario in usuarios %}
+                <h1>{{ usuario.nombre }}</h1>
                 <p>200 Seguidores</p>
                 <div class="div-buttons">
                     <button class="seguir">Seguir</button>
                     <button class="comentar">Comentar</button>
+                {% endfor %}
                 </div>
                 <nav class="nav-buttons">
                     <a href="/Promociones">

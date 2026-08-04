@@ -6,6 +6,9 @@ app = Flask(__name__)
 UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
+from usuario import Usuario
+
+
 app.secret_key = "o9OzdHo5STkPOZEXwPpp5xWyIPEpTWaltL8PLN5772V"
 
 # Enrutamiento de las páginas web
@@ -27,7 +30,10 @@ def under_construction():
 
 @app.route("/Mapa")
 def map():
-    return render_template("map.html")
+    usuarios = Usuario.get_all()
+    print(usuarios)
+
+    return render_template("map.html", usuarios=usuarios)
 
 @app.route("/Negocios")
 def negocios():
@@ -40,7 +46,10 @@ def cerrar_sesion():
 
 @app.route("/home")
 def home():
-    return render_template("home.html")
+    usuarios = Usuario.get_all()
+    print(usuarios)
+
+    return render_template("home.html", usuarios=usuarios)
 
 @app.route("/Promociones")
 def promociones():
@@ -56,7 +65,10 @@ def galeria():
 
 @app.route("/Información")
 def informacion():
-    return render_template("info.html")
+    usuarios = Usuario.get_all()
+    print(usuarios)
+
+    return render_template("info.html", usuarios = usuarios)
 
 @app.route("/Denuncias")
 def denuncias():
@@ -64,7 +76,7 @@ def denuncias():
 
 @app.route("/Configuración")
 def configuracion():
-    return render_template("config.html")
+    return render_template("under-construction.html")
 
 @app.route("/Perfil")
 def perfil():
