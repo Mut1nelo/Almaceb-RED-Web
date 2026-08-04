@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Información de Usuario</title>
-    <link rel="icon" href="{{ url_for('static', filename='images/icon.ico.jpg') }}">
+    <link rel="icon" href="{{ url_for('static', filename='imgs/icon.ico') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style2.css')}}">
 </head>
 <body>
@@ -12,8 +12,8 @@
     <hr>
     <h2>Nombre: {{ nombre }} </h2>
     <h2>Foto:</h2>
-    <img src="{{ url_for('static', filename='images/img-proto.png') }}"
-    alt="{{ url_for('static', filename='images/img-proto.png')}}"
+    <img src="{{ url_for('static', filename='imgs/images/img-proto.png') }}"
+    alt="{{ url_for('static', filename='imgs/images/img-proto.png')}}"
     width="200" height="200"
     >
     <h2>Email: {{ email }}</h2>
