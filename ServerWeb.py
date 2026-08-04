@@ -38,9 +38,9 @@ def cerrar_sesion():
     # session.clear()  # Limpiar la sesión
     return render_template("/troll.html")
 
-@app.route("/home")
-def home():
-    return render_template("home.html")
+@app.route("/Negocio")
+def negocio():
+    return render_template("business.html")
 
 @app.route("/Promociones")
 def promociones():

@@ -6,8 +6,7 @@
     <!-- Icono -->
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='imgs/icon.ico') }}">
     <!-- Links -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/general.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/map.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/darkcss.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
@@ -18,8 +17,8 @@
 <body>
     <div class="sidebar dark-mode" id="sidebarPanel">
         <img 
-        src="{{ url_for('static', filename='images/pfps/unk.jpg') }}"
-        alt="Avatar"
+        src="{{ url_for('static', filename='imgs/default.jpg') }}"
+        alt="{{ url_for('static', filename='imgs/default.jpg') }}"
         style="
         width:80px;
         height:80px;
@@ -40,7 +39,7 @@
                 <a href="/Configuración">Editar Perfil</a>
             </li>
             <li>
-                <a href="/home">Principal</a>
+                <a href="/Negocio">Principal</a>
             </li>
             <li>
                 <a href="/Negocios">Negocios Favoritos</a>
@@ -69,7 +68,7 @@
             <div id="map"></div>
         </main>
         <aside class="controls-panel">
-            <button onclick="window.location.href='/home';" class="icon-btn dark-mode">
+            <button onclick="window.location.href='/Negocio';" class="icon-btn dark-mode">
                 <i class="fa-solid fa-house"></i>
             </button>
             <button onclick="window.location.href='/Negocios';" class="icon-btn dark-mode">
