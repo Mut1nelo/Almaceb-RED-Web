@@ -32,7 +32,9 @@
         color:#333;
         margin-bottom:24px;"
         >
-            Invitado
+            {% for usuario in usuarios %}
+            {{ usuario.nombre }}
+            {% endfor %}
         </div>
         <ul>
             <li>

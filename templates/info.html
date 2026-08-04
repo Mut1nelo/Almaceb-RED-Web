@@ -10,22 +10,24 @@
 <body>
 
 <div id="info-container">
+
     <div class="h2-titles">
-        <h2>Información sobre la Vendedora</h2>
+        <h2>Información sobre Vendedor/a</h2>
     </div>
+    {% for usuario in usuarios %}
     <div class="box-info">
         <h3>Vendedor/a</h3>
         <div class="info">
             <img src="{{ url_for('static', filename='imgs/pfps/unk.jpg') }}" height="100px">
             <div class="vendedor-detalles">
-                <h3>Juana Rojas</h3>
-                <p>Panadera con 5 años de experiencia.</p>
+                <h3>{{ usuario.nombre }}</h3>
             </div>
         </div>
         <h3>Atiende</h3>
-        <p>Desde lunes a viernes hasta 13:00 pm y 20:00pm</p>
+        <p>Desde {{ usuario.horario_apertura }} hasta {{ usuario.horario_cierre }}</p>
         <h3>Descripción:</h3>
-        <p>¡Ven a disfrutar pan y pastelitos recién salidos del horno!</p>
+        <p>{{ usuario.descripcion }}</p> 
+    {% endfor %}      
     </div>
 </div>
 
