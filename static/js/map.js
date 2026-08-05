@@ -15,11 +15,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const map = L.map('map').setView([initLat, initLng], 17);
 
     // 2. Añadir una capa de tiles (mapa base) de OpenStreetMap
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         minZoom: 4.5,
-        attribution: '© OpenStreetMap'
+        attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
     }).addTo(map);
+
 
     // 3. Crear iconos personalizados para los marcadores
     const markerIcon = (imageUrl) => L.divIcon({

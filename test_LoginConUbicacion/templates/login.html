@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Icono idéntico a tu mapa -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='imgs/icon.ico') }}">
+    <!-- Tus hojas de estilo existentes -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/darkcss.css') }}">
+    <link rel="stylesheet" href="https://cloudflare.com">
+    <link rel="stylesheet" href="https://jsdelivr.net">
+    <title>Login - Almaceb RED</title>
+</head>
+<body class="dark-mode" style="display: flex; justify-content: center; align-items: center; min-height: 100vh; background-color: #121212; margin: 0; font-family: sans-serif;">
+
+    <div class="login-box dark-mode" style="background-color: #1e1e1e; padding: 40px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.5); width: 100%; max-width: 380px; text-align: center;">
+        
+        <!-- Icono decorativo de tu cabecera -->
+        <div style="font-size: 50px; color: #ff4a4a; margin-bottom: 10px;">
+            <i class="bi bi-person-circle"></i>
+        </div>
+        
+        <h2 style="color: #fff; margin-bottom: 30px; font-weight: 600;">Almaceb RED</h2>
+
+        <!-- Manejo seguro de mensajes Flash (Errores de credenciales) -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div style="background-color: rgba(255, 74, 74, 0.2); color: #ff4a4a; padding: 10px; border-radius: 6px; margin-bottom: 20px; font-size: 14px; border: 1px solid #ff4a4a;">
+                        <i class="fa-solid fa-triangle-exclamation"></i> {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <form action="/" method="POST" style="text-align: left;">
+            <div style="margin-bottom: 20px; position: relative;">
+                <label style="color: #bbb; font-size: 14px; display: block; margin-bottom: 8px;">Usuario</label>
+                <div style="position: relative;">
+                    <i class="fa-solid fa-user" style="position: absolute; left: 12px; top: 12px; color: #666;"></i>
+                    <input type="text" name="username" required placeholder="Ingresa tu usuario" 
+                           style="width: 100%; padding: 10px 10px 10px 38px; border-radius: 6px; border: 1px solid #333; background-color: #2a2a2a; color: #fff; box-sizing: border-box; outline: none;">
+                </div>
+            </div>
+
+            <div style="margin-bottom: 30px;">
+                <label style="color: #bbb; font-size: 14px; display: block; margin-bottom: 8px;">Contraseña</label>
+                <div style="position: relative;">
+                    <i class="fa-solid fa-lock" style="position: absolute; left: 12px; top: 12px; color: #666;"></i>
+                    <input type="password" name="password" required placeholder="Ingresa tu contraseña" 
+                           style="width: 100%; padding: 10px 10px 10px 38px; border-radius: 6px; border: 1px solid #333; background-color: #2a2a2a; color: #fff; box-sizing: border-box; outline: none;">
+                </div>
+            </div>
+
+            <button type="submit" class="icon-btn dark-mode" 
+                    style="width: 100%; padding: 12px; background-color: #ff4a4a; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: background 0.3s ease;">
+                Iniciar Sesión
+            </button>
+        </form>
+    </div>
+
+</body>
+</html>

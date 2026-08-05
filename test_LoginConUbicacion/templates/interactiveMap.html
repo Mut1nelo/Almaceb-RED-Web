@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Icono -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='imgs/icon.ico') }}">
+    <!-- Links -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/darkcss.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!-- Titulo -->
+    <title>Mapa - Almaceb RED</title>
+</head>
+<body>
+    <div class="sidebar dark-mode" id="sidebarPanel">
+        <img 
+        src="{{ url_for('static', filename='imgs/default.jpg') }}"
+        alt="{{ url_for('static', filename='imgs/default.jpg') }}"
+        style="
+        width:80px;
+        height:80px;
+        border-radius:50%;
+        margin-bottom:12px;
+        box-shadow:0 2px 8px rgba(0,0,0,0.10);"
+        >
+        <div 
+        style="font-size:20px;
+        font-weight:600;
+        color:#333;
+        margin-bottom:24px;"
+        >
+            {% for usuario in usuarios %}
+            {{ usuario.nombre }}
+            <span
+              data-id="{{ usuario.id }}" 
+              data-lat="{{ usuario.latitud if usuario.latitud else '' }}" 
+              data-lng="{{ usuario.longitud if usuario.longitud else '' }}"></span>
+            {% endfor %}
+        </div>
+        <ul>
+            <li>
+                <a href="/Configuración">DEBUG</a>
+            </li>
+            <li>
+                <a href="/Negocio">DEBUG</a>
+            </li>
+            <li>
+                <a href="/Negocios">DEBUG</a>
+            </li>
+            <li>
+                <a href="/Cerrar-sesión">Cerrar sesión</a>
+            </li>
+        </ul>
+        <img 
+            src="{{ url_for('static', filename='images/QR-Code-Almaceb.jpg') }}" 
+            alt="QR Code" 
+            class="qr-code"
+        >
+    </div>
+    <div class="container">
+        <header class="header dark-mode">
+            <div class="header-toggle">
+                <i class="bi bi-person-circle"></i>
+            </div>
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" placeholder="Buscar...">
+            </div>
+        </header>
+        <main class="map-view">
+            <div id="map"></div>
+        </main>
+        <aside class="controls-panel">
+            <button onclick="window.location.href='/Negocio';" class="icon-btn dark-mode">
+                <i class="fa-solid fa-house"></i>
+            </button>
+            <button onclick="window.location.href='/Negocios';" class="icon-btn dark-mode">
+                <i class="fa-solid fa-heart"></i>
+            </button>
+            <button onclick="window.location.href='#';" class="icon-btn share-btn dark-mode" id="share-btn">
+                <i class="fa-solid fa-paper-plane"></i>
+            </button>
+        </aside>
+    </div>
+    <!--Dark Mode Toggle-->
+<div id="dark-toggle" class="dark-mode">
+    <button>🔥</button>
+</div>
+    <script src="{{ url_for('static', filename='js/share.js') }}"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="{{ url_for('static', filename='js/mapa.js') }}"></script>
+</body>
+</html>

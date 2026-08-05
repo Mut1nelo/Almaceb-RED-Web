@@ -46,14 +46,17 @@ def cerrar_sesion():
 
 @app.route("/Negocio")
 def negocio():
-    return render_template("business.html")
-
-@app.route("/home")
-def home():
     usuarios = Usuario.get_all()
     print(usuarios)
 
-    return render_template("home.html", usuarios=usuarios)
+    return render_template("business.html", usuarios=usuarios)
+
+#@app.route("/home")
+#def home():
+#    usuarios = Usuario.get_all()
+#    print(usuarios)
+#
+#   return render_template("home.html", usuarios=usuarios)
 
 @app.route("/Promociones")
 def promociones():

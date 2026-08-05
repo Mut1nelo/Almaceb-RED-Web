@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Registro con Ubicación</title>
+    <!-- CSS de Leaflet para el mapa -->
+    <link rel="stylesheet" href="https://unpkg.com" />
+    <style>
+        #map { height: 300px; width: 100%; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h2>Formulario de Registro</h2>
+    <form action="/registro" method="POST">
+        <input type="text" name="username" placeholder="Usuario" required><br><br>
+        <input type="password" name="password" placeholder="Contraseña" required><br><br>
+        <!-- Campos ocultos para enviar las coordenadas a Flask -->
+        <input type="hidden" id="latitud" name="latitud">
+        <input type="hidden" id="longitud" name="longitud">
+
+        <button type="button" onclick="obtenerUbicacion()">Detectar mi ubicación</button>
+        <div id="map"></div><br>
+
+        <button type="submit">Registrarse</button>
+    </form>
+    <a href="/interactive-map">Ver Mapa Interactivo</a>
+
+    <!-- JS de Leaflet -->
+    <script src="https://unpkg.com"></script>
+    <script>
+        let map = L.map('map').setView([0, 0], 2); // Mapa inicial neutro
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+        let marker;
+
+        function obtenerUbicacion() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+
+                    // Guardar en los campos ocultos del formulario
+                    document.getElementById('latitud').value = lat;
+                    document.getElementById('longitud').value = lon;
+
+                    // Centrar mapa y colocar marcador
+                    map.setView([lat, lon], 15);
+                    if (marker) map.removeLayer(marker);
+                    marker = L.marker([lat, lon]).addTo(map).bindPopup("Tu ubicación detectada").openPopup();
+                }, function() {
+                    alert("Error: No se pudo acceder a tu ubicación. Asegúrate de dar permisos.");
+                });
+            } else {
+                alert("Tu navegador no soporta geolocalización.");
+            }
+        }
+    </script>
+</body>
+</html>
