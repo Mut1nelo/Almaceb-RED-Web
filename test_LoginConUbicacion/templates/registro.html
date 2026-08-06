@@ -2,57 +2,45 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Registro con Ubicación</title>
-    <!-- CSS de Leaflet para el mapa -->
-    <link rel="stylesheet" href="https://unpkg.com" />
+    <title>Registro de Usuario</title>
     <style>
-        #map { height: 300px; width: 100%; margin-top: 10px; }
+        .campo { margin-bottom: 15px; }
+        input { padding: 6px; width: 280px; }
+        button { padding: 8px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        /* Clases CSS explícitas para evitar poner condicionales inline de Jinja */
+        .msg-success { color: green; font-weight: bold; }
+        .msg-danger { color: red; font-weight: bold; }
+        .msg-warning { color: orange; font-weight: bold; }
     </style>
 </head>
 <body>
     <h2>Formulario de Registro</h2>
-    <form action="/registro" method="POST">
-        <input type="text" name="username" placeholder="Usuario" required><br><br>
-        <input type="password" name="password" placeholder="Contraseña" required><br><br>
-        <!-- Campos ocultos para enviar las coordenadas a Flask -->
-        <input type="hidden" id="latitud" name="latitud">
-        <input type="hidden" id="longitud" name="longitud">
+    
+    <!-- Bloque de alertas corregido -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <p class="msg-{{ category }}">{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
 
-        <button type="button" onclick="obtenerUbicacion()">Detectar mi ubicación</button>
-        <div id="map"></div><br>
+    <form action="/registro" method="POST">
+        <div class="campo">
+            <input type="text" name="username" placeholder="Usuario" required>
+        </div>
+        <div class="campo">
+            <input type="password" name="password" placeholder="Contraseña" required>
+        </div>
+        <div class="campo">
+            <label for="direccion">Dirección de residencia:</label><br>
+            <input type="text" id="direccion" name="direccion" placeholder="Ej: Anibal Zañartu 9771, San Ramon" required>
+        </div>
 
         <button type="submit">Registrarse</button>
     </form>
-    <a href="/interactive-map">Ver Mapa Interactivo</a>
-
-    <!-- JS de Leaflet -->
-    <script src="https://unpkg.com"></script>
-    <script>
-        let map = L.map('map').setView([0, 0], 2); // Mapa inicial neutro
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-        let marker;
-
-        function obtenerUbicacion() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(function(position) {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-
-                    // Guardar en los campos ocultos del formulario
-                    document.getElementById('latitud').value = lat;
-                    document.getElementById('longitud').value = lon;
-
-                    // Centrar mapa y colocar marcador
-                    map.setView([lat, lon], 15);
-                    if (marker) map.removeLayer(marker);
-                    marker = L.marker([lat, lon]).addTo(map).bindPopup("Tu ubicación detectada").openPopup();
-                }, function() {
-                    alert("Error: No se pudo acceder a tu ubicación. Asegúrate de dar permisos.");
-                });
-            } else {
-                alert("Tu navegador no soporta geolocalización.");
-            }
-        }
-    </script>
+    
+    <br>
+    <a href="/">Volver al Login</a>
 </body>
 </html>
