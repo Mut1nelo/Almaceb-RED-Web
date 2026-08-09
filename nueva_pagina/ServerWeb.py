@@ -2,11 +2,12 @@ import os
 from flask import Flask, render_template, request, redirect, session
 from werkzeug.utils import secure_filename
 
+from mysqlconnection import connectToMySQL
+from usuario import Usuario
+
 app = Flask(__name__)
 UPLOAD_FOLDER = 'static/uploads'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
-
-from usuario import Usuario
 
 
 app.secret_key = "o9OzdHo5STkPOZEXwPpp5xWyIPEpTWaltL8PLN5772V"
@@ -31,9 +32,19 @@ def under_construction():
 @app.route("/Mapa")
 def map():
     usuarios = Usuario.get_all()
-    print(usuarios)
-
     return render_template("map.html", usuarios=usuarios)
+
+@app.route('/search')
+def search():
+    query_text = request.args.get('q', '').strip()
+    usuarios = []
+    promociones = []
+
+    if query_text:
+        usuarios = Usuario.search(query_text)
+        promociones = search_promociones(query_text)
+
+    return render_template("map.html", usuarios=usuarios, promociones=promociones, search_query=query_text)
 
 @app.route("/Negocios")
 def negocios():
@@ -125,6 +136,21 @@ def procesar():
     
 
     return redirect("/mostrar_informacion")
+
+def search_promociones(query_text):
+    try:
+        query = """
+            SELECT * FROM promociones
+            WHERE titulo LIKE %(term)s
+               OR descripcion LIKE %(term)s
+               OR codigo LIKE %(term)s
+            ORDER BY created_at DESC
+            LIMIT 20;
+        """
+        return connectToMySQL('almacen_red').query_db(query, {'term': f'%{query_text}%'} )
+    except Exception as error:
+        print('Search promociones DB error:', error)
+        return []
 
 @app.route("/mostrar_informacion")
 def mostrar():

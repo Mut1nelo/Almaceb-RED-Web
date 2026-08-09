@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Compatibilidad -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Icono -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='imgs/icon.ico') }}">
+    <!-- Links -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- Por mientras ya que no puedo abrir un entorno virtual para visualizar la página correctamente -->
+    <link rel="stylesheet" href="../static/css/styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!-- Titulo -->
+    <title>Mapa | Almaceb RED</title>
+    <style>
+        /* Estilos específicos para map.html */
+        body {
+            overflow: hidden;
+        }
+        main {
+        width: 100%;
+        min-height: 100vh;
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+        overflow: hidden;
+        background-color: #fff;
+        display: flex;
+        flex-direction: column;
+        }
+        .map-label {
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebarPanel">
+        <img class="profile-sidebar"
+        src="{{ url_for('static', filename='imgs/default.jpg') }}"
+        alt="{{ url_for('static', filename='imgs/default.jpg') }}"
+        style="
+        width:80px;
+        height:80px;
+        border-radius:50%;
+        margin-bottom:12px;
+        box-shadow:0 2px 8px rgba(0,0,0,0.10);"
+        >
+        <div
+        style="font-size:20px;
+        font-weight:600;
+        color:#333;
+        margin-bottom:24px;"
+        >
+        </div>
+        <ul>
+            <li>
+                <a href="/Configuración">Editar Perfil</a>
+            </li>
+            <li>
+                <a href="/Negocio">Principal</a>
+            </li>
+            <li>
+                <a href="/Negocios">Negocios Favoritos</a>
+            </li>
+            <li>
+                <a href="/Cerrar-sesión">Cerrar sesión</a>
+            </li>
+        </ul>
+    </div>
+    <main>
+        <nav class="nav-container">
+            <img 
+            src="../static/imgs/logo/Almaceb-Logo-inicio.png" 
+            alt="Almaceb RED Logo" 
+            class="nav-logo"
+            >
+            <form class="search-box" action="{{ url_for('search') }}" method="get">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" name="q" placeholder="Buscar negocios, usuarios o promociones" value="{{ request.args.get('q', '') }}" autocomplete="off">
+                <button type="submit" class="search-button green-btn-bg">Buscar</button>
+                <i class="bi bi-filter filter-toggle"></i>
+            </form>
+            <div class="sidebar-toggle">
+                <img
+                src="../static/imgs/default.jpg"
+                alt="../static/imgs/default.jpg"
+                class="nav-profile">
+            </div>
+        </nav>
+        <!-- Por mientras ya que no puedo abrir un entorno virtual para visualizar la página correctamente
+        {% if search_query is defined and search_query %}
+        <section class="search-results">
+            <div class="results-header">
+                <h2>Resultados para «{{ search_query }}»</h2>
+            </div>
+            {% if usuarios %}
+            <div class="results-group">
+                <h3>Negocios / Usuarios</h3>
+                <ul>
+                    {% for usuario in usuarios %}
+                    <li>
+                        <strong>{{ usuario.nombre }}</strong>
+                        <p>{{ usuario.descripcion or 'Sin descripción disponible.' }}</p>
+                        <small>{{ usuario.direccion or 'Dirección no disponible.' }}</small>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% else %}
+            <p>No se encontraron negocios ni usuarios que coincidan con tu búsqueda.</p>
+            {% endif %}
+
+            {% if promociones is defined and promociones %}
+            <div class="results-group">
+                <h3>Promociones</h3>
+                <ul>
+                    {% for promo in promociones %}
+                    <li>
+                        <strong>{{ promo.titulo }}</strong>
+                        <p>{{ promo.descripcion or 'Sin descripción disponible.' }}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% elif promociones is defined %}
+            <p>No se encontraron promociones que coincidan con tu búsqueda.</p>
+            {% endif %}
+        </section>
+        {% endif %} -->
+        <section class="map-view">
+            <div id="map"></div>
+        </section>
+    </main>
+    <div id="bottomPanel" class="bottomPanel border-card">
+        <div id="panelHandle" class="panel-handle"></div>
+        <div class="bottomPanel-content">
+            <h2>Promociones cerca de ti</h2>
+            <p>Ofertas activas en tu zona</p>
+            <!-- Aquí irá tu contenido -->
+            <div class="bottomPanel-business">
+                <!-- Imagen de la promoción -->
+                <img
+                src="../static/imgs/img-proto.png"
+                alt="{{ url_for('static', filename='imgs/default.jpg') }}"
+                class="promo-img"
+                >
+                <!-- Logo del negocio -->
+                <img
+                src="../static/imgs/img-proto.png"
+                alt="{{ url_for('static', filename='imgs/default.jpg') }}"
+                class="business-logo"
+                >
+                <!-- Nombre del negocio / Nombre de la promoción / Descripción de la promoción -->
+                <div class="business-text">
+                    <p>Burguer House</p>
+                    <h3>Combo Clasico a precio especial</h3>
+                    <p>Hamburguesa + Papas + Bebidas</p>
+                </div>
+                <!-- Fecha de termino de la promoción -->
+                <label class="map-label red-label">Vence hoy</label>
+                <!-- Link para ir al negocio de la promoción -->
+                <a href="" class="red-btn">Ver negocio</a>
+            </div>
+            <div class="bottomPanel-business">
+                <!-- Imagen de la promoción -->
+                <img
+                src="../static/imgs/img-proto.png"
+                alt="{{ url_for('static', filename='imgs/default.jpg') }}"
+                class="promo-img"
+                >
+                <!-- Logo del negocio -->
+                <img
+                src="../static/imgs/img-proto.png"
+                alt="{{ url_for('static', filename='imgs/default.jpg') }}"
+                class="business-logo"
+                >
+                <!-- Nombre del negocio / Nombre de la promoción / Descripción de la promoción -->
+                <div class="business-text">
+                    <p>Café Aurora</p>
+                    <h3>20% de descuento en bebidas</h3>
+                    <p>Aplica en café, té y bebidas frías</p>
+                </div>
+                <!-- Fecha de termino de la promoción -->
+                <label class="map-label yellow-label">Hasta el viernes</label>
+                <!-- Link para ir al negocio de la promoción -->
+                <a href="" class="yellow-btn">Ver negocio</a>
+            </div>
+            <div class="bottomPanel-business">
+                <!-- Imagen de la promoción -->
+                <img
+                src="../static/imgs/img-proto.png"
+                alt="{{ url_for('static', filename='imgs/default.jpg') }}"
+                class="promo-img"
+                >
+                <!-- Logo del negocio -->
+                <img
+                src="../static/imgs/img-proto.png"
+                alt="{{ url_for('static', filename='imgs/default.jpg') }}"
+                class="business-logo"
+                >
+                <!-- Nombre del negocio / Nombre de la promoción / Descripción de la promoción -->
+                <div class="business-text">
+                    <p>Pizza Rápida</p>
+                    <h3>2x1 en Pizzas medianas</h3>
+                    <p>En todas las pizzas tradicionales</p>
+                </div>
+                <!-- Fecha de termino de la promoción -->
+                <label class="map-label green-label">Hasta mañana</label>
+                <!-- Link para ir al negocio de la promoción -->
+                <a href="" class="green-btn">Ver negocio</a>
+            </div>
+            <!-- Negocios con Jinja, por mientras que no puedo usar entornos virtuales
+            <div class="bottomPanel-business">
+                Imagen de la promoción
+                <img
+                src=""
+                alt="{{ url_for('static', filename='imgs/default.jpg') }}"
+                class="promo-img"
+                >
+                Logo del negocio
+                <img
+                src=""
+                alt="{{ url_for('static', filename='imgs/default.jpg') }}"
+                class="business-logo"
+                >
+                Nombre del negocio / Nombre de la promoción / Descripción de la promoción
+                <div class="business-text">
+                    <p></p>
+                    <h3></h3>
+                    <p></p>
+                </div>
+                Fecha de termino de la promoción
+                <label class="map-label"></label>
+                Link para ir al negocio de la promoción
+                <a href="">Ver negocio</a>
+            </div> -->
+            <a
+            href="{{ url_for('negocios') }}" 
+            class="green-link"
+            style="left:43%;"
+            >Ver negocios destacados</a>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+    <!-- Por mientras ya que no puedo abrir un entorno virtual para visualizar la página correctamente -->
+    <script src="../static/js/map.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+</body>
+</html>
