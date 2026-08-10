@@ -61,4 +61,15 @@ document.addEventListener('DOMContentLoaded', () => {
             closeSidebar();
         }
     });
+
+    // Actualiza el texto del botón personalizado con el nombre del archivo seleccionado
+    const fileInput = document.getElementById('archive-form');
+    const fileNameEl = document.getElementById('file-name');
+
+    if (fileInput && fileNameEl) {
+        fileInput.addEventListener('change', () => {
+            const files = fileInput.files;
+            fileNameEl.textContent = (files && files.length) ? files[0].name : 'Ningún archivo seleccionado';
+        });
+    }
 });

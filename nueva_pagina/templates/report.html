@@ -102,12 +102,97 @@
     </nav>
     <main class="bgGrey report-container">
         <section class="report-left border-card">
-
+            <div class="report-title">
+                <i class="bi bi-flag-fill"></i>
+                <span>
+                    <h1>Reportar problema</h1>
+                    <p>Cuéntanos qué ocurre para que podamos revisar y mejorar juntos nuestro barrio.</p>
+                </span>
+            </div>
+            <div class="divider"></div>
+            <form action="" class="report-form" method="POST">
+                <div class="report-form-group">
+                    <label for="report-type"><i class="bi bi-list-ul"></i> Tipo de reporte:</label>
+                    <select name="" id="">
+                        <option value="">Selecciona una opción</option>
+                        <option value="">Información incorrecta</option>
+                        <option value="">Contenido inapropiado</option>
+                        <option value="">Problema técnico </option>
+                        <option value="">Posible fraude o engaño</option>
+                        <option value="">Otro</option>
+                    </select>
+                </div>
+                <div class="report-form-group">
+                    <label for=""><i class="bi bi-geo-fill"></i> Elemento reportado:</label>
+                    <select name="" id="">
+                        <option value="">Selecciona una opción</option>
+                        <option value="">Negocio</option>
+                        <option value="">Promoción</option>
+                        <option value="">Usuario</option>
+                        <option value="">Ubicación / mapa</option>
+                        <option value="">Plataforma</option>
+                        <option value="">Otro</option>
+                    </select>
+                </div>
+                <div class="report-form-group">
+                    <label for=""><i class="bi bi-exclamation-triangle-fill"></i> Motivo:</label>
+                    <select name="" id="">
+                        <!-- Cambia dependiendo del elemento elegido -->
+                        <!-- Negocio: información incorrecta, negocio cerrado/no existe, categoría incorrecta, imágenes inapropiadas, negocio duplicado.
+                            Promoción: promoción vencida, precio incorrecto, promoción no disponible, información engañosa, condiciones incorrectas.
+                            Usuario: nombre o imagen inapropiada, spam, suplantación, comportamiento inapropiado.
+                            Ubicación / mapa: marcador en ubicación incorrecta, negocio faltante, negocio duplicado.
+                            Plataforma: botón no funciona, página no carga, error visual, problema con inicio de sesión, otra falla. 
+                        -->
+                        <option value="">( Sin funcionar )</option>
+                    </select>
+                </div>
+                <div class="report-form-group">
+                    <label for="report-desc"><i class="bi bi-pencil-fill"></i> Descripción:</label>
+                    <textarea name="description" id="report-desc" class="no-resize" placeholder="Describe el problema con el mayor detalle posible"></textarea>
+                </div>
+                <div class="report-form-group">
+                    <label class="file-label"><i class="bi bi-file-earmark-zip-fill"></i> Adjuntar archivo:</label>
+                    <div class="file-input-wrapper">
+                        <label for="archive-form" class="file-btn green-label" id="file-btn">
+                            <i class="bi bi-cloud-arrow-up-fill"></i>
+                            <span class="btn-text">Adjuntar archivo</span>
+                            <span class="file-name" id="file-name">Ningún archivo seleccionado</span>
+                            <input type="file" name="archive" id="archive-form">
+                        </label>
+                    </div>
+                </div>
+                <input type="button" value="Enviar reporte" class="green-btn-alt">
+            </form>
         </section>
         <section class="report-right border-card">
-
+            <div class="report-title" >
+                <i class="bi bi-shield-shaded"></i>
+                <span>
+                    <h2>Tu reporte es importante</h2>
+                    <p>Cada reporte nos ayuda a mantener nuestro barrio más seguro, limpio y ordenado.</p>
+                </span>
+            </div>
+            <div class="divider"></div>
         </section>
     </main>
+    <footer class="web-footer">
+        <div class="footer-brand">
+            <img src="{{ url_for('static', filename='imgs/logo/Almaceb-HD-Logo.png') }}" alt="Almaceb RED Logo">
+            <p>Conectando negocios de barrio con clientes reales.</p>
+        </div>
+        <div class="footer-column">
+            <h4>Enlaces</h4>
+            <a href="/">Inicio</a>
+            <a href="/Mapa">Mapa</a>
+        </div>
+        <div class="footer-column">
+            <h4>Proyecto</h4>
+            <p>IntelliRED SpA</p>
+            <p>Feria Técnico Profesional 2026</p>
+            <p>© 2026 Almaceb RED</p>
+        </div>
+    </footer>
     <script src="../static/js/scripts.js"></script>
 </body>
 </html>

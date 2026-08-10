@@ -32,6 +32,10 @@
     font-family: Arial, sans-serif;
 }
 
+* i {
+    font-weight: bold;
+}
+
 /* Sidebar */
 .sidebar-overlay {
     position: fixed;
@@ -530,6 +534,12 @@
     height: auto;
 }
 
+.divider {
+    border-top: 1px solid #ccc;
+    width: 100%;
+    height: 1px;
+}
+
 /* Carrusel */
 .carousel {
     width: min(600px, 100%);
@@ -1004,11 +1014,103 @@ form label {
 
 .report-container {
     display: flex;
-    justify-content: space-around;
+    justify-content: space-evenly;
     align-items: center;
+    padding: 20px;
 }
 
 .report-left {
-    width: 600px;
-    height: 600px;
+    width: 900px;
+    height: 670px;
+}
+
+.report-title {
+    margin: 16px;
+    display: flex;
+    gap: 10px;
+}
+
+.report-title i {
+    font-size: 30px;
+}
+
+.report-form {
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    gap: 20px;
+}
+
+.report-form-group {
+    display: flex;
+    justify-content: space-between;
+}
+
+.report-form-group label {
+    font-size: 20px;
+}
+
+.report-form-group select, textarea {
+    text-decoration: none;
+    color: var(--grey);
+    padding: 7px 7px;
+    font-size: 17px;
+    width: 500px;
+    border-radius: 12px;
+}
+
+.report-form-group textarea {
+    height: 150px;
+    resize: none
+}
+
+.file-input-wrapper {
+    position: relative;
+    display: inline-block;
+    flex: 0 0 auto;
+}
+
+.file-input-wrapper input[type="file"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 3;
+}
+
+.file-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 500px;
+    gap: 10px;
+    border-radius: 8px;
+    border-style: dotted;
+    cursor: pointer;
+    font-weight: 600;
+    user-select: none;
+}
+
+.file-btn .file-name {
+    font-size: 0.95em;
+    opacity: 0.95;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 260px;
+}
+
+.file-btn i {
+    font-size: 30px;
+}
+
+@media (max-width: 520px) {
+    .file-btn .file-name { display: none; }
+}
+
+.report-right {
+    background-color: var(--light-green);
+    width: 400px;
+    height: 500px;
+    display: flex;
+    flex-direction: column;
 }
