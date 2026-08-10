@@ -39,58 +39,85 @@
     </style>
 </head>
 <body>
-    <div class="sidebarPanel">
-        <img class="profile-sidebar"
-        src="{{ url_for('static', filename='imgs/default.jpg') }}"
-        alt="{{ url_for('static', filename='imgs/default.jpg') }}"
-        style="
-        width:80px;
-        height:80px;
-        border-radius:50%;
-        margin-bottom:12px;
-        box-shadow:0 2px 8px rgba(0,0,0,0.10);"
-        >
-        <div
-        style="font-size:20px;
-        font-weight:600;
-        color:#333;
-        margin-bottom:24px;"
-        >
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+    <aside id="sidebarPanel" class="sidebarPanel" aria-hidden="true">
+        <div class="sidebar-topbar">
+            <button id="closeSidebar" class="sidebar-close" type="button" aria-label="Cerrar menú">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
         </div>
-        <ul>
-            <li>
-                <a href="/Configuración">Editar Perfil</a>
-            </li>
-            <li>
-                <a href="/Negocio">Principal</a>
-            </li>
-            <li>
-                <a href="/Negocios">Negocios Favoritos</a>
-            </li>
-            <li>
-                <a href="/Cerrar-sesión">Cerrar sesión</a>
-            </li>
-        </ul>
-    </div>
+
+        <!-- Solo uno de estos estados se muestra a la vez. -->
+        <section class="sidebar-state" data-user-state="invitado">
+            <div class="sidebar-user">
+                <img src="../static/imgs/default.jpg" alt="Foto de perfil" class="profile-sidebar">
+                <h3>¡Bienvenido!</h3>
+                <span class="black-label">Invitado</span>
+                <h3>Únete a Almaceb RED</h3>
+                <p>Inicia sesión para seguir negocios, guardar favoritos y administrar tu perfil.</p>
+            </div>
+            <div class="sidebar-actions">
+                <a href="/Iniciar-sesión" class="green-btn-alt">Iniciar sesión</a>
+                <a href="/Registro" class="green-btn">Crear cuenta</a>
+            </div>
+            <nav class="sidebar-nav" aria-label="Menú de invitado">
+                <a class="nav-btn" href="/Terminos"><i class="fa-regular fa-file-lines"></i> <span>Términos y condiciones</span></a>
+                <a class="nav-btn" href="/Preguntas-frecuentes"><i class="fa-regular fa-circle-question"></i> <span>Preguntas frecuentes</span></a>
+            </nav>
+        </section>
+
+        <section class="sidebar-state" data-user-state="cliente">
+            <div class="sidebar-user">
+                <img src="../static/imgs/default.jpg" alt="Foto de perfil" class="profile-sidebar">
+                <h3>Hola,</h3>
+                <h2>( Nombre completo )</h2>
+                <span class="blue-label">Cliente</span>
+            </div>
+            <nav class="sidebar-nav" aria-label="Menú de cliente">
+                <a class="nav-btn" href="/Mi-perfil"><i class="bi bi-person-fill"></i> <span>Mi perfil</span></a>
+                <a class="nav-btn" href="/Negocios"><i class="bi bi-stars"></i> <span>Negocios destacados</span></a>
+                <a class="nav-btn" href="/Configuración"><i class="bi bi-gear-fill"></i> <span>Configuración</span></a>
+            </nav>
+            <a href="/Cerrar-sesión" class="sidebar-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Cerrar sesión</span></a>
+        </section>
+
+        <section class="sidebar-state" data-user-state="vendedor">
+            <div class="sidebar-user">
+                <img src="../static/imgs/default.jpg" alt="Logo del negocio" class="profile-sidebar">
+                <h3>Hola,</h3>
+                <h2>( Nombre completo )</h2>
+                <span class="green-label">Negocio</span>
+            </div>
+            <nav class="sidebar-nav" aria-label="Menú de vendedor">
+                <a class="nav-btn" href="/Mi-perfil"><i class="bi bi-person-fill"></i> <span>Mi perfil</span></a>
+                <a class="nav-btn" href="/Config-negocio"><i class="bi bi-house-gear-fill"></i> <span>Mi negocio</span></a>
+                <a class="nav-btn" href="/Negocios"><i class="bi bi-stars"></i> <span>Negocios destacados</span></a>
+                <a class="nav-btn" href="/Configuración"><i class="bi bi-gear-fill"></i> <span>Configuración</span></a>
+            </nav>
+            <a href="/Cerrar-sesión" class="sidebar-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Cerrar sesión</span></a>
+        </section>
+    </aside>
     <main>
         <nav class="nav-container">
-            <img 
-            src="../static/imgs/logo/Almaceb-Logo-inicio.png" 
-            alt="Almaceb RED Logo" 
-            class="nav-logo"
-            >
+            <a href="{{ url_for('inicio') }}">
+                <img 
+                src="../static/imgs/logo/Almaceb-Logo-inicio.png" 
+                alt="Almaceb RED Logo" 
+                class="nav-logo"
+                >
+            </a>
             <form class="search-box" action="{{ url_for('search') }}" method="get">
                 <i class="fa-solid fa-magnifying-glass"></i>
                 <input type="text" name="q" placeholder="Buscar negocios, usuarios o promociones" value="{{ request.args.get('q', '') }}" autocomplete="off">
                 <button type="submit" class="search-button green-btn-bg">Buscar</button>
                 <i class="bi bi-filter filter-toggle"></i>
             </form>
-            <div class="sidebar-toggle">
+            <button class="sidebar-toggle" type="button" aria-label="Abrir menú" aria-controls="sidebarPanel" aria-expanded="false">
                 <img
                 src="../static/imgs/default.jpg"
-                alt="../static/imgs/default.jpg"
+                alt="Abrir menú de usuario"
                 class="nav-profile">
-            </div>
+            </button>
         </nav>
         <!-- Por mientras ya que no puedo abrir un entorno virtual para visualizar la página correctamente
         {% if search_query is defined and search_query %}
@@ -136,6 +163,23 @@
             <div id="map"></div>
         </section>
     </main>
+    <!-- Mini tarjeta que aparece al seleccionar un negocio del mapa -->
+    <article id="businessCard" class="business-card" aria-hidden="true">
+        <button id="closeBusinessCard" class="close-card" type="button" aria-label="Cerrar tarjeta">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+        <span id="businessFeatured" class="featured-label yellow-label"><i class="bi bi-stars"></i> Destacado</span>
+        <div class="card-content">
+            <img id="businessCardImage" class="business-image" src="../static/imgs/default.jpg" alt="Logo del negocio">
+            <div class="business-info">
+                <h2 id="businessCardName">Nombre del negocio</h2>
+                <p id="businessCardCategory">Categoría</p>
+                <p><i class="fa-solid fa-location-dot"></i> <span id="businessCardDistance">Calculando distancia...</span></p>
+                <p><i class="fa-solid fa-tags"></i> <span id="businessCardPromotions">Sin promociones activas</span></p>
+            </div>
+        </div>
+        <a id="businessCardLink" class="blue-btn business-link" href="#">Ver negocio</a>
+    </article>
     <div id="bottomPanel" class="bottomPanel border-card">
         <div id="panelHandle" class="panel-handle"></div>
         <div class="bottomPanel-content">
@@ -246,10 +290,12 @@
             >Ver negocios destacados</a>
         </div>
     </div>
-    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
-    <!-- Por mientras ya que no puedo abrir un entorno virtual para visualizar la página correctamente -->
-    <script src="../static/js/map.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/map.js') }}"></script>
+    <!-- Por mientras que no puedo usar entornos virtuales -->
+    <script src="../static/js/scripts.js"></script>
+    <script src="../static/js/map.js"></script>
 </body>
 </html>
