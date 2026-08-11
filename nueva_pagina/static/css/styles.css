@@ -1014,9 +1014,10 @@ form label {
 
 .report-container {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: center;
     align-items: center;
     padding: 20px;
+    gap: 2em;
 }
 
 .report-left {
@@ -1048,6 +1049,10 @@ form label {
 
 .report-form-group label {
     font-size: 20px;
+}
+
+.report-form-group i {
+    font-size: 25px;
 }
 
 .report-form-group select, textarea {
@@ -1109,8 +1114,13 @@ form label {
 
 .report-right {
     background-color: var(--light-green);
+    color: var(--vivid-green);
     width: 400px;
-    height: 500px;
+    height: 550px;
     display: flex;
     flex-direction: column;
+}
+
+.report-right p {
+    color: var(--grey);
 }
