@@ -1,4 +1,4 @@
-# Este servidor solo tiene los enrutamientos, back-end lo ves tu Jose
+# Este servidor solo tiene los enrutamientos, back-end lo maneja Jose Moena
 from flask import Flask, render_template, request, redirect, session
 from difflib import SequenceMatcher
 
@@ -109,6 +109,65 @@ def search():
         usuarios=negocios_resultados,
         promociones=promociones_resultados
     )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # Mi espacio abajo para que no de conflictos, tu haz lo demás arriba Jose
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
