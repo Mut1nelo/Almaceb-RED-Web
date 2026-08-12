@@ -117,46 +117,48 @@
                 class="nav-profile">
             </button>
         </nav>
-        <!-- Por mientras ya que no puedo abrir un entorno virtual para visualizar la página correctamente
-        {% if search_query is defined and search_query %}
+        <!-- eee esto no sirve, lo comentamos por mientras 
+        { if search_query is defined and search_query %}
         <section class="search-results">
             <div class="results-header">
-                <h2>Resultados para «{{ search_query }}»</h2>
+                <h2>Resultados para «{ search_query }}»</h2>
             </div>
-            {% if usuarios %}
+            { if usuarios %}
             <div class="results-group">
                 <h3>Negocios / Usuarios</h3>
                 <ul>
-                    {% for usuario in usuarios %}
+                    { for usuario in usuarios %}
                     <li>
-                        <strong>{{ usuario.nombre }}</strong>
-                        <p>{{ usuario.descripcion or 'Sin descripción disponible.' }}</p>
-                        <small>{{ usuario.direccion or 'Dirección no disponible.' }}</small>
+                        <strong>{ usuario.nombre }}</strong>
+                        <p>{ usuario.descripcion or 'Sin descripción disponible.' }}</p>
+                        <small>{ usuario.direccion or 'Dirección no disponible.' }}</small>
                     </li>
-                    {% endfor %}
+                    { endfor %}
                 </ul>
             </div>
-            {% else %}
+            { else %}
             <p>No se encontraron negocios ni usuarios que coincidan con tu búsqueda.</p>
-            {% endif %}
+            { endif %}
 
-            {% if promociones is defined and promociones %}
+            { if promociones is defined and promociones %}
             <div class="results-group">
                 <h3>Promociones</h3>
                 <ul>
-                    {% for promo in promociones %}
+                    { for promo in promociones %}
                     <li>
-                        <strong>{{ promo.titulo }}</strong>
-                        <p>{{ promo.descripcion or 'Sin descripción disponible.' }}</p>
+                        <strong>{ promo.titulo }}</strong>
+                        <p>{ promo.descripcion or 'Sin descripción disponible.' }}</p>
                     </li>
-                    {% endfor %}
+                    { endfor %}
                 </ul>
             </div>
-            {% elif promociones is defined %}
+            { elif promociones is defined %}
             <p>No se encontraron promociones que coincidan con tu búsqueda.</p>
-            {% endif %}
+            { endif %}
         </section>
-        {% endif %} -->
+         endif %} 
+        fin del comentario -->
+
         <section class="map-view">
             <div id="map"></div>
         </section>

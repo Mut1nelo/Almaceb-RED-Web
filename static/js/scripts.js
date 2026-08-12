@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Selector temporal, cambia este valor por "invitado", "cliente" o "vendedor".
-    const tipoUsuario = 'invitado';
+    const tipoUsuario = 'vendedor';
 
     const sidebarToggle = document.querySelector('.sidebar-toggle');
     const sidebarMenu = document.getElementById('sidebarPanel');
