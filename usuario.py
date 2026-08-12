@@ -35,6 +35,20 @@ class Usuario:
        return usuarios
    
    @classmethod
+   def search(cls, term):
+       query = """
+           SELECT * FROM usuarios
+           WHERE nombre LIKE %(term)s
+              OR email LIKE %(term)s
+              OR direccion LIKE %(term)s
+              OR descripcion LIKE %(term)s
+           ORDER BY nombre ASC;
+       """
+       parametros = {'term': f"%{term}%"}
+       resultados = connectToMySQL('almacen_red').query_db(query, parametros)
+       return [cls(usuario) for usuario in resultados]
+   
+   @classmethod
    def save(cls, data):
     query = "INSERT INTO usuarios (email, password_hash, nombre, direccion, descripcion, foto_perfil, rol_id, activo) VALUES (%(email)s, %(password_hash)s, %(nombre)s, %(direccion)s, %(descripcion)s, %(foto_perfil)s, %(rol_id)s, %(activo)s)"
     return connectToMySQL('almacen_red').query_db(query, data)

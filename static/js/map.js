@@ -1,12 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Sidebar menu toggle
-    const brailleBtn = document.querySelector('.header-toggle i');
-    const sidebarMenu = document.getElementById('sidebarPanel');
-    brailleBtn.style.cursor = 'pointer';
-    brailleBtn.addEventListener('click', () => {
-        sidebarMenu.classList.toggle('active');
-        document.querySelector('.header').classList.toggle('move-right', sidebarMenu.classList.contains('active'));
-    });
+    // Panel inferior de promociones
+    const bottomPanel = document.getElementById('bottomPanel');
+    const panelHandle = document.getElementById('panelHandle');
+
+    if (bottomPanel && panelHandle) {
+        panelHandle.addEventListener('click', () => {
+            bottomPanel.classList.toggle('active');
+        });
+    }
 
     // 1. Inicializar el mapa
     // Coordenadas de San Rámon, Santiago de Chile
@@ -33,24 +34,95 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // 4. Datos dummy para los puntos de interés cerca de San Ramón
     // Cambia esto a un punto de interés real luego de hacerlo funcional
-    const iconImage = "https://github.com/Mut1nelo/Almaceb-RED-Web/blob/Flask/static/images/icons/in-1.png?raw=true";
+    const iconImage = "../static/imgs/icons/in-1.png";
     const locations = [
   {
     coords: [-33.553033, -70.650312],
-    name: 'Punto de Interés Central',
+    name: 'Burger House',
     image: iconImage,
-    description: 'Punto de referencia inicial para el área.'
+    cardImage: '../static/imgs/img-proto.png',
+    category: 'Comida rápida',
+    promotions: 2,
+    featured: true,
+    url: '/Negocio'
   }
 ];
 
-    // 5. Añadir los marcadores al mapa
+    // 5. Preparar la mini tarjeta de negocio
+    const businessCard = document.getElementById('businessCard');
+    const closeBusinessCard = document.getElementById('closeBusinessCard');
+    const businessFeatured = document.getElementById('businessFeatured');
+    const businessCardImage = document.getElementById('businessCardImage');
+    const businessCardName = document.getElementById('businessCardName');
+    const businessCardCategory = document.getElementById('businessCardCategory');
+    const businessCardDistance = document.getElementById('businessCardDistance');
+    const businessCardPromotions = document.getElementById('businessCardPromotions');
+    const businessCardLink = document.getElementById('businessCardLink');
+    let userCoords = null;
+    let selectedBusiness = null;
+
+    // Calcula la distancia entre dos puntos usando sus coordenadas.
+    const calculateDistance = (user, business) => {
+        const earthRadius = 6371;
+        const toRadians = degrees => degrees * Math.PI / 180;
+        const latDifference = toRadians(business[0] - user[0]);
+        const lngDifference = toRadians(business[1] - user[1]);
+        const userLat = toRadians(user[0]);
+        const businessLat = toRadians(business[0]);
+
+        const a = Math.sin(latDifference / 2) ** 2
+            + Math.cos(userLat) * Math.cos(businessLat)
+            * Math.sin(lngDifference / 2) ** 2;
+
+        return earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    };
+
+    const showDistance = (location) => {
+        if (!userCoords) {
+            businessCardDistance.textContent = 'Calculando distancia...';
+            return;
+        }
+
+        const distance = calculateDistance(userCoords, location.coords);
+
+        if (distance < 1) {
+            businessCardDistance.textContent = `A ${Math.round(distance * 1000)} m`;
+        } else {
+            businessCardDistance.textContent = `A ${distance.toFixed(1)} km`;
+        }
+    };
+
+    const showBusinessCard = (location) => {
+        selectedBusiness = location;
+        businessCardImage.src = location.cardImage;
+        businessCardImage.alt = `Logo de ${location.name}`;
+        businessCardName.textContent = location.name;
+        businessCardCategory.textContent = location.category;
+        showDistance(location);
+        businessCardPromotions.textContent = `${location.promotions} promociones activas`;
+        businessCardLink.href = location.url;
+        businessFeatured.hidden = !location.featured;
+        businessCard.classList.add('active');
+        businessCard.setAttribute('aria-hidden', 'false');
+    };
+
+    const hideBusinessCard = () => {
+        selectedBusiness = null;
+        businessCard.classList.remove('active');
+        businessCard.setAttribute('aria-hidden', 'true');
+    };
+
+    closeBusinessCard.addEventListener('click', hideBusinessCard);
+
+    // 6. Añadir los marcadores al mapa
     locations.forEach(location => {
-        L.marker(location.coords, { icon: markerIcon(location.image) })
-            .addTo(map)
-            .bindPopup(`
-        <b>${location.name}</b><br>${location.description}
-    `);
+        const marker = L.marker(location.coords, { icon: markerIcon(location.image) })
+            .addTo(map);
+
+        marker.on('click', () => showBusinessCard(location));
     });
+
+    map.on('click', hideBusinessCard);
 
     // Localización en tiempo real del usuario
     let userMarker = null;
@@ -59,6 +131,11 @@ document.addEventListener('DOMContentLoaded', () => {
             (pos) => {
                 const lat = pos.coords.latitude;
                 const lng = pos.coords.longitude;
+                userCoords = [lat, lng];
+
+                if (selectedBusiness) {
+                    showDistance(selectedBusiness);
+                }
                 if (!userMarker) {
                     userMarker = L.marker([lat, lng], {
                         icon: L.icon({
@@ -75,6 +152,9 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             (err) => {
                 console.warn('Error obteniendo ubicación:', err);
+                if (selectedBusiness) {
+                    businessCardDistance.textContent = 'Ubicación no disponible';
+                }
             },
             { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 }
         );
