@@ -46,6 +46,8 @@
         </div>
 
         <!-- Solo uno de estos estados se muestra a la vez. -->
+        <! -- Ahora con jinja2 bradar -->
+        {% if username == 'invitado' %} 
         <section class="sidebar-state" data-user-state="invitado">
             <div class="sidebar-user">
                 <img src="../static/imgs/default.jpg" alt="Foto de perfil" class="profile-sidebar">
@@ -63,12 +65,12 @@
                 <a class="nav-btn" href="#"><i class="fa-regular fa-circle-question"></i> <span>Preguntas frecuentes</span></a>
             </nav>
         </section>
-
+        {% elif account_type == 'client' %}
         <section class="sidebar-state" data-user-state="cliente">
             <div class="sidebar-user">
                 <img src="../static/imgs/default.jpg" alt="Foto de perfil" class="profile-sidebar">
                 <h3>Hola,</h3>
-                <h2>( Nombre completo )</h2>
+                <h2>{{ username }}</h2>
                 <span class="blue-label">Cliente</span>
             </div>
             <nav class="sidebar-nav" aria-label="Menú de cliente">
@@ -78,12 +80,12 @@
             </nav>
             <a href="#" class="sidebar-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Cerrar sesión</span></a>
         </section>
-
+        {% elif account_type == 'business' %}
         <section class="sidebar-state" data-user-state="vendedor">
             <div class="sidebar-user">
                 <img src="../static/imgs/default.jpg" alt="Logo del negocio" class="profile-sidebar">
                 <h3>Hola,</h3>
-                <h2>( Nombre completo )</h2>
+                <h2>{{ username }}</h2>
                 <span class="green-label">Negocio</span>
             </div>
             <nav class="sidebar-nav" aria-label="Menú de vendedor">
@@ -94,6 +96,7 @@
             </nav>
             <a href="#" class="sidebar-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Cerrar sesión</span></a>
         </section>
+        {% endif %}
     </aside>
     <main>
         <nav class="nav-container">
@@ -157,7 +160,7 @@
             { endif %}
         </section>
          endif %} 
-        fin del comentario -->
+        fin del comentario jijijijujuju -->
 
         <section class="map-view">
             <div id="map"></div>

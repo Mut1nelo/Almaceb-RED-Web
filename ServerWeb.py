@@ -1,8 +1,13 @@
 # Este servidor solo tiene los enrutamientos, back-end lo maneja Jose Moena
-from flask import Flask, render_template, request, redirect, session
+from flask import Flask, render_template, request, redirect, session, jsonify, flash
 from difflib import SequenceMatcher
+from usuario import Usuario
+from werkzeug.security import generate_password_hash, check_password_hash
+from mysqlconnection import connectToMySQL
 
 app = Flask(__name__)
+
+app.secret_key = "clavehipermegasupersecretayiaaaa"
 
 # Datos de ejemplo - Reemplaza con tu base de datos
 NEGOCIOS = [
@@ -60,15 +65,67 @@ def index():
 
 @app.route("/Mapa")
 def map():
-    return render_template("map.html")
+    #Si no estan en la sesion los manda a logearse jijiji
+    if 'user_id' not in session:
+        return redirect('/Iniciar-sesión')
 
-@app.route("/Registro")
+    usuarios = Usuario.get_all_users()
+    username = session.get('username', 'Invitado')
+    account_type = session.get('account_type', 'invitado')
+    print(f"DEBUG: username={username}, account_type={account_type}")  
+    return render_template("map.html", usuarios=usuarios, username=username, account_type=account_type)
+
+@app.route("/Registrarse")
 def register():
     return render_template("form-register.html")
 
-@app.route("/Iniciar-sesión")
-def login():
+@app.route("/Registro", methods=["POST"])
+def registrar_usuario():
+
+    password_hash = generate_password_hash(request.form['password'])
+
+    data_usuario = {
+        "username": request.form['username'],
+        "email": request.form['email'],
+        "password": password_hash,
+        "account_type": request.form['account_type']
+    }
+
+    user_id = Usuario.save(data_usuario)
+
+    session['user_id'] = user_id
+    session['username'] = request.form['username']
+    session['account_type'] = request.form['account_type']
+
+    return redirect('/Mapa')
+
+@app.route("/Login")
+def login_page():
     return render_template("form-login.html")
+
+@app.route("/Iniciar-sesion", methods=["POST"])
+def login():
+
+    data = {"email": request.form['email']}
+    usuario_encontrado = Usuario.check_users(data)
+    
+    if not usuario_encontrado:
+        flash("Usuario o contraseña incorrectos.", "login")
+        #flasheamos confianza
+        return redirect('/Iniciar-sesión')
+
+    #soy un maldito desarrollador
+    #aqui me tienes haciendo codigos de mierda
+    #por que alguien no mueve su maldito gordo trasero para ayudarme 🗣‼
+    if check_password_hash(usuario_encontrado.password, request.form['password']):
+        session['user_id'] = usuario_encontrado.id
+        session['username'] = usuario_encontrado.username
+        session['account_type'] = usuario_encontrado.account_type
+        print(f"DEBUG LOGIN: account_type set to {session['account_type']}")
+        return redirect('/Mapa')
+    
+    flash("Usuario o contraseña incorrectos.", "login")
+    return redirect('/Iniciar-sesión')
 
 @app.route("/Reportes")
 def report():
@@ -138,6 +195,7 @@ def search():
 
 
     # Mi espacio abajo para que no de conflictos, tu haz lo demás arriba Jose
+    #Callate tonto pesao te odio tonto feo 
 
 
 
