@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Same as map.html -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='imgs/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <title>Mis locales | Almaceb RED</title>
+</head>
+<body>
+    <!-- SIDEBAR (same as map.html, but only show business section) -->
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+    <aside id="sidebarPanel" class="sidebarPanel" aria-hidden="true">
+        <div class="sidebar-topbar">
+            <button id="closeSidebar" class="sidebar-close" type="button">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        
+        <!-- Business user section only -->
+        <section class="sidebar-state" data-user-state="vendedor">
+            <div class="sidebar-user">
+                <img src="../static/imgs/default.jpg" alt="Logo del negocio" class="profile-sidebar">
+                <h3>Hola,</h3>
+                <h2>{{ username }}</h2>
+                <span class="green-label">Negocio</span>
+            </div>
+            <nav class="sidebar-nav" aria-label="Menú de vendedor">
+                <a class="nav-btn" href="#"><i class="bi bi-person-fill"></i> <span>Mi perfil</span></a>
+                <a class="nav-btn" href="/Mi-negocio"><i class="bi bi-shop"></i> <span>Mis locales</span></a>
+                <a class="nav-btn" href="#"><i class="bi bi-stars"></i> <span>Negocios destacados</span></a>
+                <a class="nav-btn" href="#"><i class="bi bi-gear-fill"></i> <span>Configuración</span></a>
+            </nav>
+            <a href="/Cerrar-sesión" class="sidebar-logout">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                <span>Cerrar sesión</span>
+            </a>
+        </section>
+    </aside>
+
+    <!-- NAVBAR (same as map.html) -->
+    <main>
+        <nav class="nav-container">
+            <a href="/">
+                <img src="../static/imgs/logo/Almaceb-Logo-inicio.png" alt="Almaceb RED Logo" class="nav-logo">
+            </a>
+            <!-- Optional: search box or title -->
+            <h1>Mis Locales de Negocio</h1>
+            <button class="sidebar-toggle" type="button" aria-label="Abrir menú">
+                <img src="../static/imgs/default.jpg" alt="Abrir menú" class="nav-profile">
+            </button>
+        </nav>
+
+        <!-- CONTENT AREA -->
+        <div class="mi-negocio-container">
+            
+            <!-- FLASH MESSAGES -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- LEFT SIDE: FORM + LOCATIONS LIST -->
+            <section class="negocio-panel">
+                
+                <!-- FORM TO ADD NEW LOCATION -->
+                <div class="form-card">
+                    <h2>Agregar nueva ubicación</h2>
+                    <form method="POST" action="/Mi-negocio" class="add-locale-form">
+                        <div class="form-group">
+                            <label for="nombre_local">Nombre del local</label>
+                            <input 
+                                type="text" 
+                                id="nombre_local" 
+                                name="nombre_local" 
+                                placeholder="Ej: Sucursal Centro, Tienda Norte"
+                                required
+                            >
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="direccion">Dirección</label>
+                            <input 
+                                type="text" 
+                                id="direccion" 
+                                name="direccion" 
+                                placeholder="Ej: Moneda 1137, Santiago"
+                                required
+                            >
+                        </div>
+                        
+                        <button type="submit" class="green-btn">Guardar ubicación</button>
+                    </form>
+                </div>
+
+                <!-- LIST OF EXISTING LOCATIONS -->
+                <div class="locales-list-card">
+                    <h2>Tus ubicaciones ({{ locales|length }})</h2>
+                    
+                    {% if locales %}
+                        <div class="locales-list">
+                            {% for locale in locales %}
+                                <div class="locale-item border-card">
+                                    <div class="locale-info">
+                                        <h3>{{ locale.nombre_local }}</h3>
+                                        <p>
+                                            <i class="fa-solid fa-location-dot"></i>
+                                            {{ locale.direccion }}
+                                        </p>
+                                        <small>
+                                            Coordenadas: {{ locale.lat }}, {{ locale.lon }}
+                                        </small>
+                                    </div>
+                                    
+                                    <div class="locale-actions">
+                                        <!-- Edit button (optional for now) -->
+                                        <button class="blue-btn" data-locale-id="{{ locale.id }}">
+                                            <i class="bi bi-pencil"></i> Editar
+                                        </button>
+                                        
+                                        <!-- Delete button -->
+                                        <form method="POST" action="/Mi-negocio/eliminar/{{ locale.id }}" style="display: inline;">
+                                            <button type="submit" class="red-btn" onclick="return confirm('¿Eliminar esta ubicación?')">
+                                                <i class="bi bi-trash"></i> Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="empty-state">No tienes ubicaciones registradas aún. Agrega una arriba.</p>
+                    {% endif %}
+                </div>
+
+            </section>
+
+            <!-- RIGHT SIDE: MAP SHOWING ALL LOCATIONS -->
+            <section class="map-panel">
+                <div id="map" class="negocio-map"></div>
+            </section>
+        </div>
+    </main>
+
+    <style>
+        /* Mi-negocio page styles */
+    .mi-negocio-container {
+        display: flex;
+        gap: 20px;
+        padding: 20px;
+        height: calc(100vh - 80px);
+    }
+
+    .negocio-panel {
+        flex: 0 0 35%;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .map-panel {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .negocio-map {
+        width: 100%;
+        height: 100%;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+
+    .form-card, .locales-list-card {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+    }
+
+    .locale-item {
+        padding: 15px;
+        margin-bottom: 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .locale-actions {
+        display: flex;
+        gap: 10px;
+    }
+    </style>
+
+    <!-- MAP DATA (Jinja2 only, no JS mixing) -->
+    <script id="map-config" type="application/json">
+{{ map_data | tojson }}
+    </script>
+
+    <!-- LEAFLET SCRIPT (pure JavaScript) -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        // Parse map config from JSON
+        const config = JSON.parse(document.getElementById('map-config').textContent);
+        
+        // Map initialization
+        const map = L.map('map').setView([config.center_lat, config.center_lon], 13);
+        
+        // Tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+        
+        // Add markers for all user's locations
+        const markers = [];
+        config.locales.forEach(function(locale) {
+            const marker = L.marker([locale.lat, locale.lon])
+                .addTo(map)
+                .bindPopup('<b>' + locale.nombre + '</b><br>' + locale.direccion)
+                .openPopup();
+            markers.push(marker);
+        });
+        
+        // Fit map to show all markers (if multiple locations)
+        if (config.locales.length > 1) {
+            const group = new L.featureGroup(markers);
+            map.fitBounds(group.getBounds());
+        }
+    </script>
+
+</body>
+</html>

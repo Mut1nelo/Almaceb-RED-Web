@@ -41,3 +41,23 @@ class Usuario:
       if len(resultado) < 1: #si es mas chico q 1 no retorna nada 
          return False
       return cls(resultado[0])
+
+   @classmethod
+   def get_by_id(cls, user_id):
+      query = "SELECT * FROM usuarios WHERE id = %(id)s"
+      resultado = connectToMySQL('almaceb_red').query_db(query, user_id)
+
+      if not resultado:
+         return False
+      return cls[resultado[0]]
+
+   @classmethod
+   def update_location(cls, user_id, address, lat, lon):
+      query = "UPDATE usuarios SET direccion = %(direccion)s, lat = %(lat)s, lan =%(lan)s WHERE id = %(id)s"
+      data = {
+         'id': user_id,
+         'direccion': address,
+         'lat': lat,
+         'lon': lon
+      }
+      return connectToMySQL('almaceb_red').query_db(query, data)

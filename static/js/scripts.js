@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Selector temporal, cambia este valor por "invitado", "cliente" o "vendedor".
-    const tipoUsuario = 'cliente';
+    // Pesca el tipo d cuenta desde html en vez d hardcodearlo osiosi
+    const tipoUsuario = document.body.getAttribute('data-account-type') || 'invitado';
 
     const sidebarToggle = document.querySelector('.sidebar-toggle');
     const sidebarMenu = document.getElementById('sidebarPanel');
@@ -21,10 +21,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeSidebarButton = document.getElementById('closeSidebar');
     const sidebarStates = document.querySelectorAll('.sidebar-state');
 
+    // Traducciones pq no quiero cambiar muxo tu codigo 
+    const accountTypeMap = {
+        'invitado': 'invitado',
+        'client': 'cliente',
+        'business': 'vendedor'
+    };
+
     // Muestra solamente el bloque que corresponde al tipo de usuario.
     const showSidebarState = (state) => {
+        const mappedState = accountTypeMap[state] || 'invitado';
         const validStates = ['invitado', 'cliente', 'vendedor'];
-        const selectedState = validStates.includes(state) ? state : 'invitado';
+        const selectedState = validStates.includes(mappedState) ? mappedState : 'invitado';
 
         sidebarStates.forEach(sidebarState => {
             sidebarState.classList.toggle(

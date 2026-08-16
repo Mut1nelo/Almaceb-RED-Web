@@ -15,31 +15,43 @@ CREATE TABLE IF NOT EXISTS usuarios (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Optional: Create negocios table
-CREATE TABLE IF NOT EXISTS negocios (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+-- Lo dejo como comentario pq no hace nda
+-- CREATE TABLE IF NOT EXISTS negocios (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     usuario_id INT NOT NULL,
+--     nombre VARCHAR(150) NOT NULL,
+--     categoria VARCHAR(100),
+--     descripcion TEXT,
+--     direccion VARCHAR(255),
+--     telefono VARCHAR(20),
+--     email VARCHAR(150),
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+--     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+-- );
+
+CREATE TABLE locales_negocio (
+    id INT PRIMARY KEY AUTO_INCREMENT,
     usuario_id INT NOT NULL,
-    nombre VARCHAR(150) NOT NULL,
-    categoria VARCHAR(100),
-    descripcion TEXT,
-    direccion VARCHAR(255),
-    telefono VARCHAR(20),
-    email VARCHAR(150),
+    nombre_local VARCHAR(255) NOT NULL,
+    direccion VARCHAR(255) NOT NULL,
+    lat FLOAT NOT NULL,
+    lon FLOAT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
--- Optional: Create promociones table
-CREATE TABLE IF NOT EXISTS promociones (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    negocio_id INT NOT NULL,
-    titulo VARCHAR(200) NOT NULL,
-    descripcion TEXT,
-    descuento_porcentaje DECIMAL(5, 2),
-    fecha_inicio DATE,
-    fecha_fin DATE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (negocio_id) REFERENCES negocios(id) ON DELETE CASCADE
-);
+-- Este tmb
+-- CREATE TABLE IF NOT EXISTS promociones (
+--     id INT AUTO_INCREMENT PRIMARY KEY,
+--     negocio_id INT NOT NULL,
+--     titulo VARCHAR(200) NOT NULL,
+--     descripcion TEXT,
+--     descuento_porcentaje DECIMAL(5, 2),
+--     fecha_inicio DATE,
+--     fecha_fin DATE,
+--     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+--     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+--     FOREIGN KEY (negocio_id) REFERENCES negocios(id) ON DELETE CASCADE
+-- );
