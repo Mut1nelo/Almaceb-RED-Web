@@ -249,6 +249,10 @@ def eliminar_locale(locale_id):
 def report():
     return render_template("report.html")
 
+@app.route("/Editar-negocio") #Cambia despues el nombre, lo puse porque no se me ocurrió otro
+def form_business():
+    return render_template("form-business.html")
+
 @app.route("/Cerrar-sesión")
 def logout():
     session.clear()
@@ -285,65 +289,19 @@ def search():
         promociones=promociones_resultados
     )
 
+@app.route("/Crear-negocio")
+def create_business():
+    pass
 
+@app.route("/Funciones-futuras")
+def future_function():
+    return render_template("future-function.html")
 
+# Para desarrolladores
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # Mi espacio abajo para que no de conflictos, tu haz lo demás arriba Jose
-    #Callate tonto pesao te odio tonto feo 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+@app.route("/Dev-page")
+def dev_page():
+    return render_template("dev-pages.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
