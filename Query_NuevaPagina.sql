@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
 --     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 -- );
 
-CREATE TABLE locales_negocio (
+CREATE TABLE IF NOT EXISTS locales_negocio (
     id INT PRIMARY KEY AUTO_INCREMENT,
     usuario_id INT NOT NULL,
     nombre_local VARCHAR(255) NOT NULL,

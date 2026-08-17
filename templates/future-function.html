@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Compatibilidad -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Icono -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='imgs/favicon.ico') }}">
+    <!-- Estilos -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <!-- Título -->
+    <title>Función futura | Almaceb RED</title>
+    <style>
+        h1 {
+            color: #ffffff;
+            font-size: 2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            text-align: center;
+        }
+        main {
+            background: linear-gradient(to bottom, #00bf80, #ffffff);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <img
+            src="{{ url_for('static', filename='imgs/logo/Almaceb-Logo-inicio.png') }}"
+            alt="Almaceb RED Logo"
+            width="500"
+            class="index-almaceb-logo"
+            >
+    </main>
+</body>
+</html>

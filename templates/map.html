@@ -50,7 +50,7 @@
         {% if username == 'invitado' %} 
         <section class="sidebar-state" data-user-state="invitado">
             <div class="sidebar-user">
-                <img src="{{ url_for('static', filename='imgs/default.jpg'}}" alt="Foto de perfil" class="profile-sidebar">
+                <img src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Foto de perfil" class="profile-sidebar">
                 <h3>¡Bienvenido!</h3>
                 <span class="black-label">Invitado</span>
                 <h3>Únete a Almaceb RED</h3>
@@ -68,7 +68,7 @@
         {% elif account_type == 'client' %}
         <section class="sidebar-state" data-user-state="cliente">
             <div class="sidebar-user">
-                <img src="{{ url_for('static', filename='imgs/default.jpg'}}" alt="Foto de perfil" class="profile-sidebar">
+                <img src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Foto de perfil" class="profile-sidebar">
                 <h3>Hola,</h3>
                 <h2>{{ username }}</h2>
                 <span class="blue-label">Cliente</span>
@@ -83,7 +83,7 @@
         {% elif account_type == 'business' %}
         <section class="sidebar-state" data-user-state="vendedor">
             <div class="sidebar-user">
-                <img src="{{ url_for('static', filename='imgs/default.jpg'}}" alt="Logo del negocio" class="profile-sidebar">
+                <img src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Logo del negocio" class="profile-sidebar">
                 <h3>Hola,</h3>
                 <h2>{{ username }}</h2>
                 <span class="green-label">Negocio</span>
@@ -102,7 +102,7 @@
         <nav class="nav-container">
             <a href="/">
                 <img 
-                src="{{ url_for('static', filename='imgs/logo/Almaceb-Logo-inicio.png'}}"
+                src="{{ url_for('static', filename='imgs/logo/Almaceb-Logo-inicio.png') }}"
                 alt="Almaceb RED Logo"
                 class="nav-logo"
                 >
@@ -115,7 +115,7 @@
             </form>
             <button class="sidebar-toggle" type="button" aria-label="Abrir menú" aria-controls="sidebarPanel" aria-expanded="false">
                 <img
-                src="{{ url_for('static', filename='imgs/default.jpg'}}"
+                src="{{ url_for('static', filename='imgs/default.jpg') }}"
                 alt="Abrir menú de usuario"
                 class="nav-profile">
             </button>
@@ -173,7 +173,7 @@
         </button>
         <span id="businessFeatured" class="featured-label yellow-label"><i class="bi bi-stars"></i> Destacado</span>
         <div class="card-content">
-            <img id="businessCardImage" class="business-image" src="{{ url_for('static', filename='imgs/default.jpg'}}" alt="Logo del negocio">
+            <img id="businessCardImage" class="business-image" src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Logo del negocio">
             <div class="business-info">
                 <h2 id="businessCardName">Nombre del negocio</h2>
                 <p id="businessCardCategory">Categoría</p>
@@ -192,13 +192,13 @@
             <div class="bottomPanel-business">
                 <!-- Imagen de la promoción -->
                 <img
-                src="{{ url_for('static', filename='imgs/img-proto.png'}}"
+                src="{{ url_for('static', filename='imgs/img-proto.png') }}"
                 alt="{{ url_for('static', filename='imgs/default.jpg') }}"
                 class="promo-img"
                 >
                 <!-- Logo del negocio -->
                 <img
-                src="{{ url_for('static', filename='imgs/img-proto.png'}}"
+                src="{{ url_for('static', filename='imgs/img-proto.png') }}"
                 alt="{{ url_for('static', filename='imgs/default.jpg') }}"
                 class="business-logo"
                 >
@@ -216,13 +216,13 @@
             <div class="bottomPanel-business">
                 <!-- Imagen de la promoción -->
                 <img
-                src="{{ url_for('static', filename='imgs/img-proto.png'}}"
+                src="{{ url_for('static', filename='imgs/img-proto.png') }}"
                 alt="{{ url_for('static', filename='imgs/default.jpg') }}"
                 class="promo-img"
                 >
                 <!-- Logo del negocio -->
                 <img
-                src="{{ url_for('static', filename='imgs/img-proto.png'}}"
+                src="{{ url_for('static', filename='imgs/img-proto.png') }}"
                 alt="{{ url_for('static', filename='imgs/default.jpg') }}"
                 class="business-logo"
                 >
@@ -240,13 +240,13 @@
             <div class="bottomPanel-business">
                 <!-- Imagen de la promoción -->
                 <img
-                src="{{ url_for('static', filename='imgs/img-proto.png'}}"
+                src="{{ url_for('static', filename='imgs/img-proto.png') }}"
                 alt="{{ url_for('static', filename='imgs/default.jpg') }}"
                 class="promo-img"
                 >
                 <!-- Logo del negocio -->
                 <img
-                src="{{ url_for('static', filename='imgs/img-proto.png'}}"
+                src="{{ url_for('static', filename='imgs/img-proto.png') }}"
                 alt="{{ url_for('static', filename='imgs/default.jpg') }}"
                 class="business-logo"
                 >
