@@ -36,7 +36,7 @@
         }
     </style>
 </head>
-<body>
+<body data-account-type="{{ account_type }}">
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
     <aside id="sidebarPanel" class="sidebarPanel" aria-hidden="true">
         <div class="sidebar-topbar">
@@ -46,6 +46,8 @@
         </div>
 
         <!-- Solo uno de estos estados se muestra a la vez. -->
+        <! -- Ahora con jinja2 bradar -->
+        {% if username == 'invitado' %} 
         <section class="sidebar-state" data-user-state="invitado">
             <div class="sidebar-user">
                 <img src="../static/imgs/default.jpg" alt="Foto de perfil" class="profile-sidebar">
@@ -63,12 +65,12 @@
                 <a class="nav-btn" href="#"><i class="fa-regular fa-circle-question"></i> <span>Preguntas frecuentes</span></a>
             </nav>
         </section>
-
+        {% elif account_type == 'client' %}
         <section class="sidebar-state" data-user-state="cliente">
             <div class="sidebar-user">
                 <img src="../static/imgs/default.jpg" alt="Foto de perfil" class="profile-sidebar">
                 <h3>Hola,</h3>
-                <h2>( Nombre completo )</h2>
+                <h2>{{ username }}</h2>
                 <span class="blue-label">Cliente</span>
             </div>
             <nav class="sidebar-nav" aria-label="Menú de cliente">
@@ -78,22 +80,23 @@
             </nav>
             <a href="#" class="sidebar-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Cerrar sesión</span></a>
         </section>
-
+        {% elif account_type == 'business' %}
         <section class="sidebar-state" data-user-state="vendedor">
             <div class="sidebar-user">
                 <img src="../static/imgs/default.jpg" alt="Logo del negocio" class="profile-sidebar">
                 <h3>Hola,</h3>
-                <h2>( Nombre completo )</h2>
+                <h2>{{ username }}</h2>
                 <span class="green-label">Negocio</span>
             </div>
             <nav class="sidebar-nav" aria-label="Menú de vendedor">
                 <a class="nav-btn" href="#"><i class="bi bi-person-fill"></i> <span>Mi perfil</span></a>
-                <a class="nav-btn" href="#"><i class="bi bi-house-gear-fill"></i> <span>Mi negocio</span></a>
+                <a class="nav-btn" href="/Mi-negocio"><i class="bi bi-house-gear-fill"></i> <span>Mi negocio</span></a>
                 <a class="nav-btn" href="#"><i class="bi bi-stars"></i> <span>Negocios destacados</span></a>
                 <a class="nav-btn" href="#"><i class="bi bi-gear-fill"></i> <span>Configuración</span></a>
             </nav>
             <a href="#" class="sidebar-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Cerrar sesión</span></a>
         </section>
+        {% endif %}
     </aside>
     <main>
         <nav class="nav-container">
@@ -117,46 +120,48 @@
                 class="nav-profile">
             </button>
         </nav>
-        <!-- Por mientras ya que no puedo abrir un entorno virtual para visualizar la página correctamente
-        {% if search_query is defined and search_query %}
+        <!-- eee esto no sirve, lo comentamos por mientras 
+        { if search_query is defined and search_query %}
         <section class="search-results">
             <div class="results-header">
-                <h2>Resultados para «{{ search_query }}»</h2>
+                <h2>Resultados para «{ search_query }}»</h2>
             </div>
-            {% if usuarios %}
+            { if usuarios %}
             <div class="results-group">
                 <h3>Negocios / Usuarios</h3>
                 <ul>
-                    {% for usuario in usuarios %}
+                    { for usuario in usuarios %}
                     <li>
-                        <strong>{{ usuario.nombre }}</strong>
-                        <p>{{ usuario.descripcion or 'Sin descripción disponible.' }}</p>
-                        <small>{{ usuario.direccion or 'Dirección no disponible.' }}</small>
+                        <strong>{ usuario.nombre }}</strong>
+                        <p>{ usuario.descripcion or 'Sin descripción disponible.' }}</p>
+                        <small>{ usuario.direccion or 'Dirección no disponible.' }}</small>
                     </li>
-                    {% endfor %}
+                    { endfor %}
                 </ul>
             </div>
-            {% else %}
+            { else %}
             <p>No se encontraron negocios ni usuarios que coincidan con tu búsqueda.</p>
-            {% endif %}
+            { endif %}
 
-            {% if promociones is defined and promociones %}
+            { if promociones is defined and promociones %}
             <div class="results-group">
                 <h3>Promociones</h3>
                 <ul>
-                    {% for promo in promociones %}
+                    { for promo in promociones %}
                     <li>
-                        <strong>{{ promo.titulo }}</strong>
-                        <p>{{ promo.descripcion or 'Sin descripción disponible.' }}</p>
+                        <strong>{ promo.titulo }}</strong>
+                        <p>{ promo.descripcion or 'Sin descripción disponible.' }}</p>
                     </li>
-                    {% endfor %}
+                    { endfor %}
                 </ul>
             </div>
-            {% elif promociones is defined %}
+            { elif promociones is defined %}
             <p>No se encontraron promociones que coincidan con tu búsqueda.</p>
-            {% endif %}
+            { endif %}
         </section>
-        {% endif %} -->
+         endif %} 
+        fin del comentario jijijijujuju -->
+
         <section class="map-view">
             <div id="map"></div>
         </section>
