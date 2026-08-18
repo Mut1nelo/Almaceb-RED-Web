@@ -297,6 +297,21 @@
 
 /* Elementos */
 
+.green-line {
+    width: fit-content;
+    margin-inline: auto;
+}
+
+.green-line::after {
+    content: "";
+    display: block;
+    width: 50%;
+    height: 3px;
+    background-color: #00bf80;
+    border-radius: 10px;
+    margin-top: 5px;
+}
+
 .green-link {
     color: var(--vivid-green);
     text-decoration: none;
@@ -304,16 +319,8 @@
     position: relative;
 }
 
-.green-link::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: -3px;
-    width: 0%;
-    height: 2px;
-    background-color: var(--green);
-    border-radius: 10px;
-    transition: width 0.25s ease;
+.green-link:hover {
+    text-decoration: underline;
 }
 
 .green-btn {
@@ -517,6 +524,13 @@
     text-align: center;
 }
 
+/* Clases reutilizables */
+
+.flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
 .bgGrey {
     background-color: var(--map-background);
 }
@@ -696,7 +710,6 @@
 #hero-actions a {
     padding: 10px 20px;
     border-radius: 5px;
-    color: #fff;
     text-decoration: none;
     font-size: 18px;
 }

@@ -30,8 +30,17 @@
 </head>
 <body>
     <main>
+        <div class="nav-back-container">
+            <button 
+            class="green-btn back-button" 
+            type="button"
+            
+            >
+                Volver
+            </button>
+        </div>
         <h1>Esta página es para ver otras páginas enrutadas, un acceso rápido simplemente</h1>
-        <section class="dev-list border-card">
+        <section class="dev-list border-card flex-column">
             <a class="nav-btn" href="/"><span>Inicio</span></a>
             <a class="nav-btn" href="/Mapa"><span>Mapa</span></a>
             <a class="nav-btn" href="/Negocio">Negocio</a>
@@ -43,5 +52,6 @@
             <a class="nav-btn" href="/Funciones-futuras"><span>Funciones Futuras</span></a>
         </section>
     </main>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
