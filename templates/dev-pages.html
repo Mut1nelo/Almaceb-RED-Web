@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Icono -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='imgs/favicon.ico') }}">
+    <!-- Estilos -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <title>Modo Desarrollador</title>
+    <style>
+        body {
+            background-color: #ffffff;
+        }
+        h1 {
+            color: #ffffff;
+            font-size: 2em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+            text-align: center;
+        }
+        main {
+            background: linear-gradient(to bottom, #00bf80, #ffffff);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px 20px;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <h1>Esta página es para ver otras páginas enrutadas, un acceso rápido simplemente</h1>
+        <section class="dev-list border-card">
+            <a class="nav-btn" href="/"><span>Inicio</span></a>
+            <a class="nav-btn" href="/Mapa"><span>Mapa</span></a>
+            <a class="nav-btn" href="/Reportes"><span>Reportes</span></a>
+            <a class="nav-btn" href="/Iniciar-sesión"><span>Iniciar Sesión</span></a>
+            <a class="nav-btn" href="/Registrarse"><span></span>Registrarse</a>
+            <a class="nav-btn" href="/Mi-negocio"><span>Mi negocio</span></a>
+            <a class="nav-btn" href="/Editar-negocio"><span>Editar negocio</span></a>
+            <a class="nav-btn" href="/Funciones-futuras"><span>Funciones Futuras</span></a>
+        </section>
+    </main>
+</body>
+</html>
