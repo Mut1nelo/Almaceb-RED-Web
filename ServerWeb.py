@@ -286,7 +286,7 @@ def search_businesses():
         account_type='client'    # Sustituye con tu lógica real de sesión si aplica
     )
 
-    @app.route("/Crear-negocio")
+@app.route("/Crear-negocio")
 def create_business():
     pass
 
