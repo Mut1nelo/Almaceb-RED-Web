@@ -90,11 +90,11 @@ def index():
 def map():
     #Si no estan en la sesion los manda a logearse jijiji
     if 'user_id' not in session:
-        return redirect('/Iniciar-sesión')
+        account_type = 'invitado'
 
     usuarios = Usuario.get_all_users()
-    username = session.get('username', 'Invitado')
-    account_type = session.get('account_type', 'Invitado')
+    username = session.get('username', 'invitado')
+    account_type = session.get('account_type', 'invitado')
     print(f"DEBUG: username={username}, account_type={account_type}")  
 
     negocios = Locales.get_all_businesess()
@@ -168,7 +168,7 @@ def login():
     if not usuario_encontrado:
         flash("Usuario o contraseña incorrectos.", "login")
         #flasheamos confianza
-        return redirect('/Iniciar-sesión')
+        return redirect('/Iniciar-sesion')
 
     #soy un maldito desarrollador
     #aqui me tienes haciendo codigos de mierda
@@ -181,12 +181,12 @@ def login():
         return redirect('/Mapa')
     
     flash("Usuario o contraseña incorrectos.", "login")
-    return redirect('/Iniciar-sesión')
+    return redirect('/Iniciar-sesion')
 
 @app.route("/Mi-negocio", methods=["GET", "POST"])
 def mi_negocio():
     if 'user_id' not in session:
-        return redirect('/Iniciar-sesión')
+        return redirect('/Iniciar-sesion')
     
     user_id = session['user_id']
     account_type = session.get('account_type')
@@ -246,7 +246,7 @@ def mi_negocio():
 @app.route("/Mi-negocio/eliminar/<int:locale_id>", methods=["POST"])
 def eliminar_locale(locale_id):
     if 'user_id' not in session or session.get('account_type') != 'business':
-        return redirect('/Iniciar-sesión')
+        return redirect('/Iniciar-sesion')
     
     LocalNegocio.delete(locale_id)
     flash("Ubicación eliminada", "success")
