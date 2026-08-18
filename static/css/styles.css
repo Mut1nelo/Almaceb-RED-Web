@@ -755,8 +755,16 @@
 
 .left-form h1, .left-form h2 {
     color: #ffffff;
-    font-size: 2em;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
+}
+
+.left-form h1 {
+    font-size: 2.5em;
+}
+
+.left-form h2 {
+    font-size: 1.8em;
+    font-weight: normal;
 }
 
 .left-form {

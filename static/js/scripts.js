@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Pesca el tipo d cuenta desde html en vez d hardcodearlo osiosi
+    // Pesca el tipo de cuenta desde html en vez de complicarlo
     const tipoUsuario = document.body.getAttribute('data-account-type') || 'invitado';
 
     const sidebarToggle = document.querySelector('.sidebar-toggle');

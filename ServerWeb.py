@@ -94,7 +94,7 @@ def map():
 
     usuarios = Usuario.get_all_users()
     username = session.get('username', 'Invitado')
-    account_type = session.get('account_type', 'invitado')
+    account_type = session.get('account_type', 'Invitado')
     print(f"DEBUG: username={username}, account_type={account_type}")  
 
     negocios = Locales.get_all_businesess()
@@ -252,11 +252,15 @@ def eliminar_locale(locale_id):
     flash("Ubicación eliminada", "success")
     return redirect('/Mi-negocio')
 
+@app.route("/Negocio")
+def business():
+    return render_template("business.html")
+
 @app.route("/Reportes")
 def report():
     return render_template("report.html")
 
-@app.route("/Editar-negocio") #Cambia despues el nombre, lo puse porque no se me ocurrió otro
+@app.route("/Crear-negocio") #Cambia despues el nombre, lo puse porque no se me ocurrió otro
 def form_business():
     return render_template("form-business.html")
 
