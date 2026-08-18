@@ -163,3 +163,35 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
 });
+
+const markerGroup = L.featureGroup();
+
+locales.forEach(local => {
+    if(local.lat && local.lon) {
+        // Creamos el marcador
+        const marker = L.marker([local.lat, local.lon]);
+        
+        // Evento al hacer click en el pin del mapa
+        marker.on('click', function() {
+            document.getElementById('cardTitle').innerText = local.nombre;
+            document.getElementById('cardType').innerText = local.tipo;
+            
+            const businessCard = document.getElementById('businessCard');
+            businessCard.setAttribute('aria-hidden', 'false');
+            businessCard.style.display = 'block';
+        });
+
+        // Agregamos el marcador individual al grupo principal
+        markerGroup.addLayer(marker);
+    }
+});
+
+// Añadimos el grupo entero con todos los pines al mapa de una sola vez
+markerGroup.addTo(map);
+
+// 🔥 AJUSTE AUTOMÁTICO DE PANTALLA:
+// Si la búsqueda arrojó resultados, encuadramos la cámara del mapa automáticamente
+if (locales.length > 0) {
+    // getBounds() calcula el área rectangular exacta que cubre a todos tus locales filtrados
+    map.fitBounds(markerGroup.getBounds(), { padding: [50, 50] });
+}

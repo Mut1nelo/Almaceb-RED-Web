@@ -1,7 +1,7 @@
 # Este servidor solo tiene los enrutamientos, back-end lo maneja Jose Moena
 from flask import Flask, render_template, request, redirect, session, jsonify, flash
 from difflib import SequenceMatcher
-from usuario import Usuario
+from usuario import Usuario, Locales
 from werkzeug.security import generate_password_hash, check_password_hash
 from mysqlconnection import connectToMySQL
 import requests
@@ -29,21 +29,14 @@ PROMOCIONES = [
 ]
 
 def calcular_similitud(query, texto):
-    """Calcula la similitud entre el query y un texto (0-1)"""
-    return SequenceMatcher(None, query.lower(), texto.lower()).ratio()
+    if not texto:
+        return 0
+    return SequenceMatcher(None, query.lower(), str(texto).lower()).ratio()
 
 def buscar_en_lista(query, lista, campos_busqueda):
-    """
-    Busca un query en una lista de diccionarios
-    Args:
-        query: texto de búsqueda
-        lista: lista de diccionarios a buscar
-        campos_busqueda: lista de nombres de campos donde buscar
-    Returns:
-        lista ordenada por relevancia
-    """
+    # Si la búsqueda está vacía o es muy corta, devolvemos todos los locales de la BD
     if not query or len(query.strip()) < 2:
-        return []
+        return lista
     
     query = query.strip()
     resultados = []
@@ -51,15 +44,17 @@ def buscar_en_lista(query, lista, campos_busqueda):
     for item in lista:
         max_similitud = 0
         for campo in campos_busqueda:
-            if campo in item:
-                similitud = calcular_similitud(query, str(item[campo]))
+            # Como 'item' es una instancia de la clase Locales, usamos getattr() para leer sus atributos
+            valor_campo = getattr(item, campo, None)
+            if valor_campo:
+                similitud = calcular_similitud(query, valor_campo)
                 max_similitud = max(max_similitud, similitud)
         
-        # Incluye el resultado si tiene al menos 30% de similitud
+        # Filtro de tolerancia (30% de coincidencia mínima)
         if max_similitud >= 0.3:
             resultados.append({"item": item, "relevancia": max_similitud})
     
-    # Ordena por relevancia (mayor primero)
+    # Ordenar de mayor a menor relevancia
     resultados.sort(key=lambda x: x["relevancia"], reverse=True)
     return [r["item"] for r in resultados]
 
@@ -101,7 +96,19 @@ def map():
     username = session.get('username', 'Invitado')
     account_type = session.get('account_type', 'invitado')
     print(f"DEBUG: username={username}, account_type={account_type}")  
-    return render_template("map.html", usuarios=usuarios, username=username, account_type=account_type)
+
+    negocios = Locales.get_all_businesess()
+
+    return render_template(
+        "map.html",
+        usuarios=usuarios,
+        username=username,
+        account_type=account_type,
+        negocios=negocios)
+
+    #Ahora buscamos los negocios
+    
+
 
     # result = None
     # if request.method == 'POST':
@@ -254,38 +261,28 @@ def logout():
     session.clear()
     return redirect("/")
 
-@app.route("/search")
-def search():
-    """Maneja búsquedas de negocios, promociones y usuarios"""
-    query = request.args.get("q", "").strip()
+@app.route("/search", methods=['GET'])
+def search_businesses():
+    # Capturamos el texto del input 'name="q"' de tu formulario HTML
+    query_busqueda = request.args.get('q', '').strip()
     
-    # Inicializa variables
-    negocios_resultados = []
-    promociones_resultados = []
+    # 1. Traemos todos los locales mediante el método que corregimos en tu modelo
+    todos_los_locales = Locales.get_all_businesess()
     
-    if query and len(query) >= 2:
-        # Busca en negocios
-        negocios_resultados = buscar_en_lista(
-            query, 
-            NEGOCIOS, 
-            ["nombre", "categoria", "descripcion"]
-        )
-        
-        # Busca en promociones
-        promociones_resultados = buscar_en_lista(
-            query, 
-            PROMOCIONES, 
-            ["titulo", "descripcion"]
-        )
+    # 2. Ejecutamos tu lógica real de ordenamiento y filtrado por relevancia
+    campos_a_evaluar = ['nombre_negocio', 'business_type']
+    locales_filtrados = buscar_en_lista(query_busqueda, todos_los_locales, campos_a_evaluar)
     
+    # 3. Renderizamos exactamente la misma plantilla del mapa
+    # Pasamos únicamente los locales que pasaron el filtro de similitud
     return render_template(
-        "map.html",
-        search_query=query,
-        usuarios=negocios_resultados,
-        promociones=promociones_resultados
+        'map.html', 
+        lista_negocios=locales_filtrados,
+        username='invitado',     # Sustituye con tu lógica real de sesión si aplica
+        account_type='client'    # Sustituye con tu lógica real de sesión si aplica
     )
 
-
+    
 
 
 
