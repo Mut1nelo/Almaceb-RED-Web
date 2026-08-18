@@ -80,4 +80,62 @@ document.addEventListener('DOMContentLoaded', () => {
             fileNameEl.textContent = (files && files.length) ? files[0].name : 'Ningún archivo seleccionado';
         });
     }
+
+    // Carrusel de promociones de la página del negocio.
+    const promotionList = document.querySelector('.promotion-list');
+    const promotionPrev = document.querySelector('.promotion-prev');
+    const promotionNext = document.querySelector('.promotion-next');
+
+    if (promotionList && promotionPrev && promotionNext) {
+        const movePromotions = (direction) => {
+            const promotionCard = promotionList.querySelector('.promotion-card');
+
+            if (promotionCard) {
+                const cardGap = 24;
+                const distance = promotionCard.offsetWidth + cardGap;
+
+                promotionList.scrollBy({
+                    left: distance * direction,
+                    behavior: 'smooth'
+                });
+            }
+        };
+
+        promotionPrev.addEventListener('click', () => movePromotions(-1));
+        promotionNext.addEventListener('click', () => movePromotions(1));
+    }
+
+    // Abre y cierra la galería completa de productos.
+    const galleryOpen = document.querySelector('.gallery-open');
+    const galleryModal = document.querySelector('.gallery-modal');
+    const galleryClose = document.querySelector('.gallery-close');
+
+    if (galleryOpen && galleryModal && galleryClose) {
+        const openGallery = () => {
+            galleryModal.hidden = false;
+            document.body.classList.add('gallery-modal-open');
+            galleryClose.focus();
+        };
+
+        const closeGallery = () => {
+            galleryModal.hidden = true;
+            document.body.classList.remove('gallery-modal-open');
+            galleryOpen.focus();
+        };
+
+        galleryOpen.addEventListener('click', openGallery);
+        galleryClose.addEventListener('click', closeGallery);
+
+        galleryModal.addEventListener('click', (event) => {
+            if (event.target === galleryModal) {
+                closeGallery();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !galleryModal.hidden) {
+                closeGallery();
+            }
+        });
+    }
 });

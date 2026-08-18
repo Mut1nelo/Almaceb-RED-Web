@@ -256,6 +256,11 @@ def eliminar_locale(locale_id):
 def business():
     return render_template("business.html")
 
+# Te deje la plantilla
+@app.route("/Negocio/<int:negocio_id>")
+def negocio(negocio_id):
+    pass
+
 @app.route("/Reportes")
 def report():
     return render_template("report.html")

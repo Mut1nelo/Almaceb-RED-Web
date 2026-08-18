@@ -12,9 +12,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <!-- Titulo -->
-    <title>(nombre.negocio) | Almaceb RED</title>
+    <title>(Nombre del negocio) | Almaceb RED</title>
 </head>
-<body data-account-type="{{ account_type }}">
+<body data-account-type="{{ account_type }}" class="bgGrey">
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
     <aside id="sidebarPanel" class="sidebarPanel" aria-hidden="true">
         <div class="sidebar-topbar">
@@ -87,7 +87,6 @@
         </a>
         <div class="nav-back-container">
             <button class="green-btn back-button" type="button">
-                <i class="fa-solid fa-arrow-left"></i>
                 Volver
             </button>
         </div>
@@ -98,7 +97,400 @@
             class="nav-profile">
         </button>
     </nav>
-    <h1>asdlasd</h1>
+    <!-- Todo el contenido del negocio -->
+    <main class="business-page">
+        <header class="business-header border-card">
+            <div class="business-visual">
+                <img 
+                    src="{{ url_for ('static', filename='imgs/img-proto.png') }}"
+                    alt="Banner del Negocio"
+                    id="business-banner"
+                    class="business-banner"
+                    >
+                <img
+                    src="{{ url_for('static', filename='imgs/default.jpg') }}"
+                    alt="Perfil negocio"
+                    id="business-profile"
+                    class="business-profile"
+                >
+            </div>
+            <div class="business-main-info">
+                <h1>(Nombre del negocio)</h1>
+                <div class="business-meta">
+                    <div class="meta-item">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <span>
+                            (Dirección del negocio)
+                        </span>
+                    </div>
+                    <div class="meta-item">
+                        <!-- Abierto -->
+                        <span class="business-open-dot"></span>
+                        <span class="business-open">
+                            Abierto
+                        </span>
+                        <!-- Cerrado
+                        <span class="business-close-dot"></span>
+                        <span class="business-close">
+                            Cerrado
+                        </span>
+                        -->
+                        <span>
+                            · (Horario de termino)
+                        </span>
+                    </div>
+                </div>
+                <p class="business-description">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Donec mattis lacus orci, id elementum ante sollicitudin
+                    venenatis. Sed auctor lacinia turpis, at tristique mi
+                    pellentesque vel. Nulla faucibus, nisi iaculis eleifend
+                    posuere, massa dui elementum massa, non aliquet velit lacus
+                    non nunc. Morbi tincidunt metus quam, a luctus tellus
+                    aliquet sit amet.
+                </p>
+                <div class="business-actions">
+                    <!-- Botón especial porque necesita los bordes más redondeados -->
+                    <button class="btn-business btn-i" style="border-radius:2em;"> 
+                        <i class="bi bi-heart-fill"></i>
+                        Seguir
+                    </button>
+                    <button class="white-btn">
+                        Contactar
+                    </button>
+                    <button class="icon-btn">
+                        <i class="bi bi-share"></i>
+                    </button>
+                    <a class="icon-btn" href="/Reportes">
+                        <i class="bi bi-flag-fill"></i>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Información + Promociones -->
+        <section id="info-promotions">
+            <article class="business-info border-card">
+                <div class="section-heading">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <h2 class="green-line">Información</h2>
+                </div>
+                <div class="info-list">
+                    <div class="info-row">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <span class="info-label">
+                            Dirección
+                        </span>
+                        <span class="info-value">
+                            (Dirección del negocio)
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <i class="bi bi-telephone-fill"></i>
+                        <span class="info-label">
+                            Teléfono
+                        </span>
+                        <span class="info-value">
+                            (Número del negocio)
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <i class="bi bi-envelope-fill"></i>
+                        <span class="info-label">
+                            Correo
+                        </span>
+                        <span class="info-value">
+                            (Email del negocio, si tiene)
+                        </span>
+                    </div>
+                    <div class="info-row">
+                        <i class="bi bi-clock-fill"></i>
+                        <span class="info-label">
+                            Horarios
+                        </span>
+                        <span class="info-value">
+                            (Día) a (Día) · (Hora de inicio) - (Hora de termino)
+                        </span>
+                    </div>
+                </div>
+            </article>
+
+            <article class="business-promotions border-card">
+                <div class="promotions-header">
+                    <div class="section-heading">
+                        <i class="bi bi-tag-fill"></i>
+                        <h2 class="green-line">Promociones</h2>
+                    </div>
+                    <div class="carousel-buttons">
+                        <button class="carousel-button promotion-prev" type="button" aria-label="Promoción anterior">
+                            <i class="bi bi-chevron-left"></i>
+                        </button>
+                        <button class="carousel-button promotion-next" type="button" aria-label="Promoción siguiente">
+                            <i class="bi bi-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="promotion-list">
+                    <div class="promotion-card">
+                        <img
+                            src="{{ url_for('static', filename='imgs/products/6.jpg') }}"
+                            alt="Imagen de la promoción"
+                        >
+                        <div class="promotion-info">
+                            <h3>
+                                (Nombre de la promoción)
+                            </h3>
+                            <p class="promotion-price">
+                                (Precio de la promoción)
+                            </p>
+                            <small>
+                                (Fecha de termino de la promoción)
+                            </small>
+                        </div>
+                    </div>
+                    <div class="promotion-card">
+                        <img
+                            src="{{ url_for('static', filename='imgs/products/2.jpg') }}"
+                            alt="Torta del día"
+                        >
+                        <div class="promotion-info">
+                            <h3>
+                                Torta del día
+                            </h3>
+                            <p class="promotion-price">
+                                $6.990
+                            </p>
+                            <small>
+                                Válido hasta el 17 de agosto
+                            </small>
+                        </div>
+                    </div>
+                    <div class="promotion-card">
+                        <img
+                            src="{{ url_for('static', filename='imgs/products/3.jpg') }}"
+                            alt="Dulces con descuento"
+                        >
+                        <div class="promotion-info">
+                            <h3>
+                                10% de descuento en dulces
+                            </h3>
+                            <p class="promotion-price">
+                                Todo el día
+                            </p>
+                            <small>
+                                Antes de las 14:00
+                            </small>
+                        </div>
+                    </div>
+                    <div class="promotion-card">
+                        <img
+                            src="{{ url_for('static', filename='imgs/products/4.jpg') }}"
+                            alt="Croissants de la promoción"
+                        >
+                        <div class="promotion-info">
+                            <h3>
+                                3 Croissants
+                            </h3>
+                            <p class="promotion-price">
+                                $2.990
+                            </p>
+                            <small>
+                                Válido hasta el 24 de agosto
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </article>
+        </section>
+        <section class="middle-grid">
+            <!-- GALERÍA -->
+            <article class="products-gallery border-card">
+                <div class="gallery-header">
+                    <div class="section-heading">
+                        <i class="bi bi-image-fill"></i>
+                        <h2 class="green-line">Productos del negocio</h2>
+                    </div>
+                    <button class="green-link gallery-open" type="button">
+                        Ver todas
+                    </button>
+                </div>
+                <div class="products-images">
+                    <img
+                        src="{{ url_for('static', filename='imgs/products/5.jpg') }}"
+                        alt="Vitrina con productos de panadería"
+                    >
+                    <img
+                        src="{{ url_for('static', filename='imgs/products/6.jpg') }}"
+                        alt="Variedad de panes"
+                    >
+                    <img
+                        src="{{ url_for('static', filename='imgs/products/7.jpg') }}"
+                        alt="Pan de molde"
+                    >
+                    <img
+                        src="{{ url_for('static', filename='imgs/products/8.jpg') }}"
+                        alt="Cupcakes decorados"
+                    >
+                </div>
+            </article>
+            <!-- CATEGORÍAS -->
+            <article class="business-categories border-card">
+                <div class="section-heading">
+                    <i class="bi bi-list-ul"></i>
+                    <h2 class="green-line">Categorías</h2>
+                </div>
+                <div class="categories-list">
+                    <div class="category-item">
+                        <i class="bi bi-circle-fill"></i>
+                        <span>Panadería</span>
+                    </div>
+                    <div class="category-item">
+                        <i class="bi bi-circle-fill"></i>
+                        <span>Pastelería</span>
+                    </div>
+                    <div class="category-item">
+                        <i class="bi bi-shop"></i>
+                        <span>Almacén</span>
+                    </div>
+                    <div class="category-item">
+                        <i class="bi bi-cup-hot-fill"></i>
+                        <span>Cafetería</span>
+                    </div>
+                    <div class="category-item">
+                        <i class="bi bi-flower1"></i>
+                        <span>Verdulería</span>
+                    </div>
+                    <div class="category-item">
+                        <i class="bi bi-basket-fill"></i>
+                        <span>Bazar</span>
+                    </div>
+                </div>
+            </article>
+        </section>
+        <!-- RESEÑAS + PRODUCTOS DESTACADOS -->
+        <!-- Por ahora no nos concentremos en algo complicado
+        <section class="bottom-grid">
+            <article class="reviews border-card">
+                <div class="section-heading">
+                    <i class="bi bi-star-fill"></i>
+                    <h2 class="green-line">Reseñas destacadas</h2>
+                </div>
+                <div class="review-user">
+                    <img
+                        src="{{ url_for('static', filename='imgs/img-proto.png') }}"
+                        alt="Usuario"
+                    >
+                    <div>
+                        <h3>
+                            Sofía
+                        </h3>
+                        <div class="stars">
+                            ★★★★★
+                        </div>
+                    </div>
+                </div>
+                <p class="review-text">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Donec mattis lacus orci, id elementum ante sollicitudin
+                    venenatis. Sed auctor lacinia turpis, at tristique mi
+                    pellentesque vel. Nulla faucibus, nisi iaculis eleifend
+                    posuere, massa dui elementum massa, non aliquet velit lacus
+                    non nunc. Morbi tincidunt metus quam, a luctus tellus
+                    aliquet sit amet.
+                </p>
+                <div class="review-more">
+                    <a href="#" class="green-link">
+                        Ver todos
+                    </a>
+                </div>
+            </article>
+            <article class="featured-products border-card">
+                <div class="section-heading">
+                    <i class="bi bi-heart-fill"></i>
+                    <h2 class="green-line">Productos destacados</h2>
+                </div>
+                <div class="featured-list">
+                    <div class="featured-card">
+                        <img
+                            src="{{ url_for('static', filename='imgs/img-proto.png') }}"
+                            alt="Pan dulce"
+                        >
+                        <h3>
+                            Pan dulce
+                        </h3>
+                        <span class="votes-label">
+                            67 votos
+                        </span>
+                    </div>
+                    <div class="featured-card">
+                        <img
+                            src="{{ url_for('static', filename='imgs/img-proto.png') }}"
+                            alt="Delicia"
+                        >
+                        <h3>
+                            Delicia
+                        </h3>
+                        <span class="votes-label">
+                            54 votos
+                        </span>
+                    </div>
+                    <div class="featured-card">
+                        <img
+                            src="{{ url_for('static', filename='imgs/img-proto.png') }}"
+                            alt="Calzones rotos"
+                        >
+                        <h3>
+                            Calzones rotos
+                        </h3>
+                        <span class="votes-label">
+                            20 votos
+                        </span>
+                    </div>
+                </div>
+            </article>
+        </section> -->
+    </main>
+    <footer class="web-footer">
+        <div class="footer-brand">
+            <img src="{{ url_for('static', filename='imgs/logo/Almaceb-HD-Logo.png') }}" alt="Almaceb RED Logo">
+            <p>Conectando negocios de barrio con clientes reales.</p>
+        </div>
+        <div class="footer-column">
+            <h4>Enlaces</h4>
+            <a href="/">Inicio</a>
+        </div>
+        <div class="footer-column">
+            <h4>Proyecto</h4>
+            <p>IntelliRED SpA</p>
+            <p>Feria Técnico Profesional 2026</p>
+            <p>© 2026 Almaceb RED</p>
+        </div>
+    </footer>
+
+    <!-- Galería completa de productos -->
+    <div class="gallery-modal" role="dialog" aria-modal="true" aria-labelledby="gallery-modal-title" hidden>
+        <div class="gallery-modal-content border-card">
+            <div class="gallery-modal-header">
+                <div class="section-heading">
+                    <i class="bi bi-images"></i>
+                    <h2 id="gallery-modal-title" class="green-line">Productos del negocio</h2>
+                </div>
+                <button class="gallery-close" type="button" aria-label="Cerrar galería">
+                    <i class="bi bi-x-lg"></i>
+                </button>
+            </div>
+            <div class="gallery-modal-grid">
+                <img src="{{ url_for('static', filename='imgs/products/1.jpg') }}" alt="Dulces rellenos">
+                <img src="{{ url_for('static', filename='imgs/products/2.jpg') }}" alt="Torta de chocolate">
+                <img src="{{ url_for('static', filename='imgs/products/3.jpg') }}" alt="Galletas con mermelada">
+                <img src="{{ url_for('static', filename='imgs/products/4.jpg') }}" alt="Croissants recién horneados">
+                <img src="{{ url_for('static', filename='imgs/products/5.jpg') }}" alt="Vitrina con productos de panadería">
+                <img src="{{ url_for('static', filename='imgs/products/6.jpg') }}" alt="Variedad de panes">
+                <img src="{{ url_for('static', filename='imgs/products/7.jpg') }}" alt="Pan de molde">
+                <img src="{{ url_for('static', filename='imgs/products/8.jpg') }}" alt="Cupcakes decorados">
+            </div>
+        </div>
+    </div>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>
