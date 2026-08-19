@@ -42,6 +42,18 @@ CREATE TABLE IF NOT EXISTS locales_negocio (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
+CREATE TABLE negocios (
+	id INT PRIMARY KEY AUTO_INCREMENT,
+	nombre_negocio VARCHAR(64) NOT NULL UNIQUE,
+    business_type ENUM('Comida rápida', 'Almacen', 'Restaurante','Panaderia') DEFAULT 'Almacen',
+    lat FLOAT NOT NULL,
+    lon FLOAT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    );
+
+-- jeje esto te falta
+
 -- Este tmb
 -- CREATE TABLE IF NOT EXISTS promociones (
 --     id INT AUTO_INCREMENT PRIMARY KEY,
