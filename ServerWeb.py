@@ -1,7 +1,7 @@
 # Este servidor solo tiene los enrutamientos, back-end lo maneja Jose Moena
 from flask import Flask, render_template, request, redirect, session, jsonify, flash
 from difflib import SequenceMatcher
-from usuario import Usuario, Locales
+from usuario import Usuario
 from werkzeug.security import generate_password_hash, check_password_hash
 from mysqlconnection import connectToMySQL
 import requests
@@ -97,7 +97,7 @@ def map():
     account_type = session.get('account_type', 'invitado')
     print(f"DEBUG: username={username}, account_type={account_type}")  
 
-    negocios = Locales.get_all_businesess()
+    negocios = LocalNegocio.get_all()
 
     return render_template(
         "map.html",
@@ -261,6 +261,10 @@ def business():
 def negocio(negocio_id):
     pass
 
+@app.route("/Negocios-destacados")
+def featured_business():
+    return render_template("featured-business.html")
+
 @app.route("/Reportes")
 def report():
     return render_template("report.html")
@@ -280,10 +284,10 @@ def search_businesses():
     query_busqueda = request.args.get('q', '').strip()
     
     # 1. Traemos todos los locales mediante el método que corregimos en tu modelo
-    todos_los_locales = Locales.get_all_businesess()
+    todos_los_locales = LocalNegocio.get_all()
     
     # 2. Ejecutamos tu lógica real de ordenamiento y filtrado por relevancia
-    campos_a_evaluar = ['nombre_negocio', 'business_type']
+    campos_a_evaluar = ['nombre_local', 'direccion']
     locales_filtrados = buscar_en_lista(query_busqueda, todos_los_locales, campos_a_evaluar)
     
     # 3. Renderizamos exactamente la misma plantilla del mapa

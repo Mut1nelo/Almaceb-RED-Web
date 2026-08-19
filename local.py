@@ -13,6 +13,16 @@ class LocalNegocio:
         self.updated_at = data.get('updated_at')
 
     @classmethod
+    def get_all(cls):
+        """Get all business locations."""
+        query = "SELECT * FROM locales_negocio"
+        resultados = connectToMySQL('almaceb_red').query_db(query)
+
+        if resultados is False:
+            return []
+        return [cls(resultado) for resultado in resultados]
+
+    @classmethod
     def get_by_usuario(cls, usuario_id):
         """Get all locations for a business user"""
         query = "SELECT * FROM locales_negocio WHERE usuario_id = %(usuario_id)s"
