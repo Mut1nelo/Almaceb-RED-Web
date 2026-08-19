@@ -261,6 +261,10 @@ def business():
 def negocio(negocio_id):
     pass
 
+@app.route("/Negocios-destacados")
+def featured_business():
+    return render_template("featured-business.html")
+
 @app.route("/Reportes")
 def report():
     return render_template("report.html")

@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Compatibilidad -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Icono -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='imgs/favicon.ico') }}">
+    <!-- Estilos -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!-- Titulo -->
+    <title>Negocios Destacados | Almaceb RED</title>
+</head>
+<body data-account-type="{{ account_type }}" class="bgGrey">
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+    <aside id="sidebarPanel" class="sidebarPanel" aria-hidden="true">
+        <div class="sidebar-topbar">
+            <button id="closeSidebar" class="sidebar-close" type="button" aria-label="Cerrar menú">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+
+        <!-- Solo uno de estos estados se muestra a la vez. -->
+        <!-- Ahora con jinja2 -->
+        {% if username == 'invitado' %} 
+        <section class="sidebar-state" data-user-state="invitado">
+            <div class="sidebar-user">
+                <img src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Foto de perfil" class="profile-sidebar">
+                <h3>¡Bienvenido!</h3>
+                <span class="black-label">Invitado</span>
+                <h3>Únete a Almaceb RED</h3>
+                <p>Inicia sesión para seguir negocios, guardar favoritos y administrar tu perfil.</p>
+            </div>
+            <div class="sidebar-actions">
+                <a href="/Iniciar-sesión" class="green-btn-alt">Iniciar sesión</a>
+                <a href="/Registro" class="green-btn">Crear cuenta</a>
+            </div>
+            <nav class="sidebar-nav" aria-label="Menú de invitado">
+                <a class="nav-btn" href="#"><i class="fa-regular fa-file-lines"></i> <span>Términos y condiciones</span></a>
+                <a class="nav-btn" href="#"><i class="fa-regular fa-circle-question"></i> <span>Preguntas frecuentes</span></a>
+            </nav>
+        </section>
+        {% elif account_type == 'client' %}
+        <section class="sidebar-state" data-user-state="cliente">
+            <div class="sidebar-user">
+                <img src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Foto de perfil" class="profile-sidebar">
+                <h3>Hola,</h3>
+                <h2>{{ username }}</h2>
+                <span class="blue-label">Cliente</span>
+            </div>
+            <nav class="sidebar-nav" aria-label="Menú de cliente">
+                <a class="nav-btn" href="#"><i class="bi bi-person-fill"></i> <span>Mi perfil</span></a>
+                <a class="nav-btn" href="#"><i class="bi bi-stars"></i> <span>Negocios destacados</span></a>
+                <a class="nav-btn" href="#"><i class="bi bi-gear-fill"></i> <span>Configuración</span></a>
+            </nav>
+            <a href="#" class="sidebar-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Cerrar sesión</span></a>
+        </section>
+        {% elif account_type == 'business' %}
+        <section class="sidebar-state" data-user-state="vendedor">
+            <div class="sidebar-user">
+                <img src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Logo del negocio" class="profile-sidebar">
+                <h3>Hola,</h3>
+                <h2>{{ username }}</h2>
+                <span class="green-label">Negocio</span>
+            </div>
+            <nav class="sidebar-nav" aria-label="Menú de vendedor">
+                <a class="nav-btn" href="#"><i class="bi bi-person-fill"></i> <span>Mi perfil</span></a>
+                <a class="nav-btn" href="/Mi-negocio"><i class="bi bi-house-gear-fill"></i> <span>Mi negocio</span></a>
+                <a class="nav-btn" href="#"><i class="bi bi-stars"></i> <span>Negocios destacados</span></a>
+                <a class="nav-btn" href="#"><i class="bi bi-gear-fill"></i> <span>Configuración</span></a>
+            </nav>
+            <a href="/Cerrar-sesión" class="sidebar-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Cerrar sesión</span></a>
+        </section>
+        {% endif %}
+    </aside>
+
+    <nav class="nav-container">
+        <a href="/">
+            <img 
+            src="{{ url_for('static', filename='imgs/logo/Almaceb-Logo-inicio.png') }}"
+            alt="Almaceb RED Logo"
+            class="nav-logo"
+            >
+        </a>
+        <div class="nav-back-container">
+            <button class="green-btn back-button" type="button">
+                <i class="fa-solid fa-arrow-left"></i>
+                Volver
+            </button>
+        </div>
+        <button class="sidebar-toggle" type="button" aria-label="Abrir menú" aria-controls="sidebarPanel" aria-expanded="false">
+            <img
+            src="{{ url_for('static', filename='imgs/default.jpg') }}"
+            alt="Abrir menú de usuario"
+            class="nav-profile">
+        </button>
+    </nav>
+    <!-- Contenido -->
+    <main>
+        <header id="featured-header" class="border-card">
+            <h1><i class="bi bi-star-fill" style="color: var(--yellow);"></i> Negocios destacados</h1>
+            <p>Descubre los negocios mejor valorados y más populares de la comunidad.</p>
+            <div id="featured-filters">
+                <button class="nav-btn">
+                    <i class="bi bi-list-ul"></i>
+                    Todos
+                </button>
+                <button class="nav-btn">
+                    <span class="svg bread-icon"></span>
+                    Panadería
+                </button>
+                <button class="nav-btn">
+                    <i class="bi bi-cake2-fill"></i>
+                    Pastelería
+                </button>
+                <button class="nav-btn">
+                    <span class="svg almacen-icon"></span>
+                    Almacén
+                </button>
+                <button class="nav-btn">
+                    <i class="bi bi-cup-hot-fill"></i>
+                    Cafetería
+                </button>
+                <button class="nav-btn">
+                    <span class="svg vegetable-icon"></span>
+                    Verdulería
+                </button>
+                <button class="nav-btn">
+                    <i class="bi bi-three-dots"></i>
+                    Otras
+                </button>
+            </div>
+        </header>
+        <span id="middle-order">
+            <p class="white-label">Ordenar por:</p>
+            <select name="" id="" class="order">
+                <option value="">
+                    <i class="bi bi-star"></i> Valoración
+                </option>
+            </select>
+        </span>
+        <section id="featured-card-container">
+            <article class="featured-card">
+                <div>
+                    <img
+                    src=""
+                    alt=""
+                    >
+                    <span>1</span>
+                </div>
+                <div>
+                    <img
+                    src=""
+                    alt=""
+                    class="featured-profile"
+                    >
+                    <h3>(Nombre del negocio)</h3>
+                    <label for="" class="green-label">(Categoria principal)</label>
+                </div>
+                <span>
+                    <i class="bi bi-geo-alt-fill"></i> (Dirección del negocio)
+                </span>
+                
+            </article>
+        </section>
+    </main>
+    <!-- Footer -->
+    <footer class="web-footer">
+        <div class="footer-brand">
+            <img src="{{ url_for('static', filename='imgs/logo/Almaceb-HD-Logo.png') }}" alt="Almaceb RED Logo">
+            <p>Conectando negocios de barrio con clientes reales.</p>
+        </div>
+        <div class="footer-column">
+            <h4>Enlaces</h4>
+            <a href="/">Inicio</a>
+        </div>
+        <div class="footer-column">
+            <h4>Proyecto</h4>
+            <p>IntelliRED SpA</p>
+            <p>Feria Técnico Profesional 2026</p>
+            <p>© 2026 Almaceb RED</p>
+        </div>
+    </footer>
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>

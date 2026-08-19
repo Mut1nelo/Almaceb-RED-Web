@@ -212,6 +212,7 @@
     box-sizing: border-box;
     width: 100%;
     overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
 .nav-container.move-left {
@@ -297,6 +298,29 @@
 
 /* Elementos */
 
+.svg {
+    width: 24px;
+    height: 24px;
+    display: inline-block;
+
+    background-color: currentColor;
+}
+
+.bread-icon {
+    -webkit-mask: url("../imgs/icons/bread-svgrepo-com.svg") center / contain no-repeat;
+    mask: url("../imgs/icons/bread-svgrepo-com.svg") center / contain no-repeat;
+}
+
+.vegetable-icon {
+    -webkit-mask: url("../imgs/icons/vegetables-salad-svgrepo-com.svg") center / contain no-repeat;
+    mask: url("../imgs/icons/vegetables-salad-svgrepo-com.svg") center / contain no-repeat;
+}
+
+.almacen-icon {
+    -webkit-mask: url("../imgs/icons/store-svgrepo-com.svg") center / contain no-repeat;
+    mask: url("../imgs/icons/store-svgrepo-com.svg") center / contain no-repeat;
+}
+
 .green-line {
     width: fit-content;
     margin-inline: auto;
@@ -363,14 +387,18 @@
 }
 
 .nav-btn {
-    display: inline-block;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
     padding: 11px 20px;
     border-radius: 1em;
     color: #000000;
+    background-color: #ffffff;
     font-weight: bold;
     text-decoration: none;
     cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease;
+    transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, fill 0.2s ease;
 }
 
 .nav-btn:hover {
@@ -378,6 +406,12 @@
     color: var(--vivid-green);
     transform: translateY(-2px);
     box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+    border-color: var(--light-green);
+}
+
+.nav-btn:hover span {
+    color: var(--vivid-green);
+    fill: var(--vivid-green);
 }
 
 .red-btn {
@@ -564,6 +598,16 @@
     text-align: center;
 }
 
+.white-label {
+    text-decoration: none;
+    font-weight: bold;
+    background-color: #ffffff;
+    color: #000000;
+    padding: 7px 14px;
+    border-radius: 2em;
+    text-align: center;
+}
+
 /* Clases reutilizables */
 
 .flex-column {
@@ -578,7 +622,7 @@
 .border-card {
     background-color: #ffffff;
     border: 1px solid #ccc;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
     padding: 10px;
     border-radius: 1em;
 }
@@ -1544,8 +1588,6 @@ body.gallery-modal-open {
     }
 }
 
-/* Parte baja de la página del negocio */
-
 .middle-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -1701,4 +1743,65 @@ body.gallery-modal-open {
     .bottom-grid .featured-list {
         grid-template-columns: 1fr;
     }
+}
+
+/* ================================================ */
+/*              Negocios destacados                 */
+/* ================================================ */
+
+#featured-header {
+    margin: 30px;
+    padding: 25px;
+}
+
+#featured-filters {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: auto;
+    gap: 8px;
+    padding-top: 16px;
+    border-top: 1px solid #eeeeee;
+    margin-top: 14px;
+}
+
+#middle-order {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+#middle-order p {
+    margin: 0;
+    border-radius: 0.7em;
+}
+
+.order {
+    text-decoration: none;
+    font-weight: bold;
+    background-color: var(--light-green);
+    color: var(--vivid-green);
+    border: solid 2px var(--vivid-green);
+    padding: 10px 20px;
+    border-radius: 0.7em;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+}
+
+#featured-card-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 20px;
+    width: 100%;
+}
+
+.featured-card {
+    background-color: #ffffff;
+    border-radius: 1em;
+    padding: 12px 12px 14px;
+    border: 1px solid #555555;
+    border-radius: 2em;
+    background-color: #ffffff;
+    box-shadow: 0 4px 9px rgba(0, 0, 0, 0.18);
 }
