@@ -1,11 +1,12 @@
 # Este servidor solo tiene los enrutamientos, back-end lo maneja Jose Moena
-from flask import Flask, render_template, request, redirect, session, jsonify, flash
+from flask import Flask, render_template, request, redirect, session, jsonify, flash, url_for
 from difflib import SequenceMatcher
 from usuario import Usuario
 from werkzeug.security import generate_password_hash, check_password_hash
 from mysqlconnection import connectToMySQL
 import requests
-from local import LocalNegocio
+from local import Business, BUSINESS_TYPES
+import json
 
 app = Flask(__name__)
 
@@ -97,18 +98,26 @@ def map():
     account_type = session.get('account_type', 'invitado')
     print(f"DEBUG: username={username}, account_type={account_type}")  
 
-    negocios = LocalNegocio.get_all()
+    businesses = Business.get_all()
+    businesses_json = json.dumps([
+        {
+            'id': b.id,
+            'nombre_negocio': b.nombre_negocio,
+            'business_type': b.business_type,
+            'lat': float(b.lat),
+            'lon': float(b.lon)
+        }
+        for b in businesses
+    ])
 
     return render_template(
         "map.html",
         usuarios=usuarios,
         username=username,
         account_type=account_type,
-        negocios=negocios)
+        businesses_json=businesses_json)
 
     #Ahora buscamos los negocios
-    
-
 
     # result = None
     # if request.method == 'POST':
@@ -183,74 +192,76 @@ def login():
     flash("Usuario o contraseña incorrectos.", "login")
     return redirect('/Iniciar-sesion')
 
-@app.route("/Mi-negocio", methods=["GET", "POST"])
-def mi_negocio():
-    if 'user_id' not in session:
-        return redirect('/Iniciar-sesion')
-    
-    user_id = session['user_id']
-    account_type = session.get('account_type')
-    if account_type != 'business':
-        flash("Solo usuarios de tipo negocio pueden acceder aquí", "error")
-        return redirect('/Mapa')
-    
-    if request.method == "POST":
-        nombre_local = request.form.get('nombre_local')
-        direccion = request.form.get('direccion')
-        
-        if nombre_local and direccion:
-            geocode_result = geocode_das_address(direccion)
-            
-            if geocode_result:
-                data = {
-                    'usuario_id': user_id,
-                    'nombre_local': nombre_local,
-                    'direccion': direccion,
-                    'lat': float(geocode_result['lat']),
-                    'lon': float(geocode_result['lon'])
-                }
-                LocalNegocio.save(data)
-                flash("Ubicación guardada correctamente", "success")
-                return redirect('/Mi-negocio')
-            else:
-                flash("No se encontraron coordenadas para esa dirección", "error")
-        else:
-            flash("Por favor completa todos los campos", "error")
-    
-    locales = LocalNegocio.get_by_usuario(user_id)
-    username = session.get('username', 'Negocio')
-    
-    map_data = {
-        'center_lat': locales[0].lat if locales else -33.8688,  # Default Santiago
-        'center_lon': locales[0].lon if locales else -51.2093,
-        'locales': [
-            {
-                'id': locale.id,
-                'nombre': locale.nombre_local,
-                'lat': locale.lat,
-                'lon': locale.lon,
-                'direccion': locale.direccion
-            }
-            for locale in locales
-        ]
-    }
-    
-    return render_template(
-        "mi-negocio.html",
-        username=username,
-        locales=locales,
-        map_data=map_data,
-        account_type=account_type
-    )
+# Claude me hizo otra funcion jejej
 
-@app.route("/Mi-negocio/eliminar/<int:locale_id>", methods=["POST"])
-def eliminar_locale(locale_id):
-    if 'user_id' not in session or session.get('account_type') != 'business':
-        return redirect('/Iniciar-sesion')
+# @app.route("/Mi-negocio", methods=["GET", "POST"])
+# def mi_negocio():
+#     if 'user_id' not in session:
+#         return redirect('/Iniciar-sesion')
     
-    LocalNegocio.delete(locale_id)
-    flash("Ubicación eliminada", "success")
-    return redirect('/Mi-negocio')
+#     user_id = session['user_id']
+#     account_type = session.get('account_type')
+#     if account_type != 'business':
+#         flash("Solo usuarios de tipo negocio pueden acceder aquí", "error")
+#         return redirect('/Mapa')
+    
+#     if request.method == "POST":
+#         nombre_local = request.form.get('nombre_local')
+#         direccion = request.form.get('direccion')
+        
+#         if nombre_local and direccion:
+#             geocode_result = geocode_das_address(direccion)
+            
+#             if geocode_result:
+#                 data = {
+#                     'usuario_id': user_id,
+#                     'nombre_local': nombre_local,
+#                     'direccion': direccion,
+#                     'lat': float(geocode_result['lat']),
+#                     'lon': float(geocode_result['lon'])
+#                 }
+#                 LocalNegocio.save(data)
+#                 flash("Ubicación guardada correctamente", "success")
+#                 return redirect('/Mi-negocio')
+#             else:
+#                 flash("No se encontraron coordenadas para esa dirección", "error")
+#         else:
+#             flash("Por favor completa todos los campos", "error")
+    
+#     locales = LocalNegocio.get_by_usuario(user_id)
+#     username = session.get('username', 'Negocio')
+    
+#     map_data = {
+#         'center_lat': locales[0].lat if locales else -33.8688,  # Default Santiago
+#         'center_lon': locales[0].lon if locales else -51.2093,
+#         'locales': [
+#             {
+#                 'id': locale.id,
+#                 'nombre': locale.nombre_local,
+#                 'lat': locale.lat,
+#                 'lon': locale.lon,
+#                 'direccion': locale.direccion
+#             }
+#             for locale in locales
+#         ]
+#     }
+    
+#     return render_template(
+#         "mi-negocio.html",
+#         username=username,
+#         locales=locales,
+#         map_data=map_data,
+#         account_type=account_type
+#     )
+
+# @app.route("/Mi-negocio/eliminar/<int:locale_id>", methods=["POST"])
+# def eliminar_locale(locale_id):
+#     if 'user_id' not in session or session.get('account_type') != 'business':
+#         return redirect('/Iniciar-sesion')
+    
+#     LocalNegocio.delete(locale_id)
+#     flash("Ubicación eliminada", "success")
+#     return redirect('/Mi-negocio')
 
 @app.route("/Negocio")
 def business():
@@ -269,49 +280,72 @@ def featured_business():
 def report():
     return render_template("report.html")
 
-@app.route("/Crear-negocio") #Cambia despues el nombre, lo puse porque no se me ocurrió otro
-def form_business():
-    return render_template("form-business.html")
 
-@app.route("/Cerrar-sesión")
+@app.route('/Crear-negocio', methods=['GET', 'POST']) #Cambia despues el nombre, lo puse porque no se me ocurrió otro, y si no quiero -J
+def crear_negocio():
+    if request.method == 'GET':
+        return render_template('form-business.html')
+
+    if 'user_id' not in session:
+        return redirect(url_for('Login'))
+
+    nombre_negocio = request.form.get('business-name')
+    business_type = request.form.get('business-type')
+    lat = request.form.get('latitude')
+    lon = request.form.get('longitude')
+
+    try:
+        Business.save(nombre_negocio, business_type, lat, lon)
+        return redirect('/Mapa')
+
+    except ValueError as e:
+        return render_template('error.html', error=str(e)), 400
+    except Exception as e:
+        return render_template('error.html', error=str(e)), 500
+    
+
+@app.route("/Cerrar-sesion")
 def logout():
     session.clear()
     return redirect("/")
 
-@app.route("/search", methods=['GET'])
-def search_businesses():
-    # Capturamos el texto del input 'name="q"' de tu formulario HTML
-    query_busqueda = request.args.get('q', '').strip()
+#Esto lo voy a rehacer
+# @app.route("/search", methods=['GET'])
+# def search_businesses():
+#     # Capturamos el texto del input 'name="q"' de tu formulario HTML
+#     query_busqueda = request.args.get('q', '').strip()
     
-    # 1. Traemos todos los locales mediante el método que corregimos en tu modelo
-    todos_los_locales = LocalNegocio.get_all()
+#     # 1. Traemos todos los locales mediante el método que corregimos en tu modelo
+#     todos_los_locales = LocalNegocio.get_all()
     
-    # 2. Ejecutamos tu lógica real de ordenamiento y filtrado por relevancia
-    campos_a_evaluar = ['nombre_local', 'direccion']
-    locales_filtrados = buscar_en_lista(query_busqueda, todos_los_locales, campos_a_evaluar)
+#     # 2. Ejecutamos tu lógica real de ordenamiento y filtrado por relevancia
+#     campos_a_evaluar = ['nombre_local', 'direccion']
+#     locales_filtrados = buscar_en_lista(query_busqueda, todos_los_locales, campos_a_evaluar)
     
-    # 3. Renderizamos exactamente la misma plantilla del mapa
-    # Pasamos únicamente los locales que pasaron el filtro de similitud
-    return render_template(
-        'map.html', 
-        lista_negocios=locales_filtrados,
-        username='invitado',     # Sustituye con tu lógica real de sesión si aplica
-        account_type='client'    # Sustituye con tu lógica real de sesión si aplica
-    )
-
-@app.route("/Crear-negocio")
-def create_business():
-    pass
+#     # 3. Renderizamos exactamente la misma plantilla del mapa
+#     # Pasamos únicamente los locales que pasaron el filtro de similitud
+#     return render_template(
+#         'map.html', 
+#         lista_negocios=locales_filtrados,
+#         username='invitado',     # Sustituye con tu lógica real de sesión si aplica
+#         account_type='client'    # Sustituye con tu lógica real de sesión si aplica
+#     )
 
 @app.route("/Funciones-futuras")
 def future_function():
     return render_template("future-function.html")
+
+@app.route("/Ranking")
+def ranking():
+    return render_template("ranking.html")
 
 # Para desarrolladores
 
 @app.route("/Dev-page")
 def dev_page():
     return render_template("dev-pages.html")
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

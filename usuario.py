@@ -62,25 +62,3 @@ class Usuario:
          'lon': lon
       }
       return connectToMySQL('almaceb_red').query_db(query, data)
-
-class Locales:
-   def __init__(self, data):
-      self.id = data['id']
-      self.nombre_negocio = data['nombre_negocio']
-      self.business_type = data['business_type']
-      self.lat = data['lat']
-      self.lon = data['lon']
-      self.created_at = data['created_at']
-      self.updated_at = data['updated_at']
-
-   @classmethod
-   def get_all_businesess(cls):
-      query = "SELECT * FROM negocios"
-      
-      results  = connectToMySQL('almaceb_red').query_db(query)
-      negocios = []
-
-      for negocio in results:
-         negocios.append( cls(negocio) )
-         
-      return negocios

@@ -86,25 +86,42 @@
         <section class="right-form border-card">
             <h1 class="green-line">Crea tu negocio</h1>
             <h2>Jose, edita el formulario, me da flojera</h2>
-            <form action="/Crear-negocio" method="POST">
-                <div class="form-group">
-                    <label for="business-name">Nombre del negocio</label><br>
-                    <input type="text" id="business-name" name="business-name" placeholder="Ingresa el nombre del negocio" required>
-                </div>
-                <div class="form-group">
-                    <label for="">Lorem ipsum dolor sit amet consectetur adipisicing elit.</label><br>
-                    <input type="" id="" name="" placeholder="Lorem ipsum dolor sit amet consectetur adipisicing elit." required>
-                </div>
-                <div class="form-group">
-                    <label for="">Lorem ipsum dolor sit amet consectetur adipisicing elit.</label><br>
-                    <input type="" id="" name="" placeholder="Lorem ipsum dolor sit amet consectetur adipisicing elit." required>
-                </div>
-                <div class="form-group">
-                    <label for="">Lorem ipsum dolor sit amet consectetur adipisicing elit.</label><br>
-                    <input type="" id="" name="" placeholder="Lorem ipsum dolor sit amet consectetur adipisicing elit." required>
-                </div>
-                <button type="submit" class="green-btn">Crear negocio</button>
-            </form>
+            <h3>Bueno hrmno, 👍</h3>
+        <form action="/Crear-negocio" method="POST" id="businessForm">
+            <div class="form-group">
+                <label for="business-name">Nombre del negocio</label><br>
+                <input type="text" id="business-name" name="business-name" placeholder="Ingresa el nombre del negocio" required>
+            </div>
+            <div class="form-group">
+                <label for="business-type">Tipo de Negocio</label><br>
+                <select id="business-type" name="business-type" required>
+                    <option value="" disabled selected>Elige tu tipo de Negocio</option>
+                    <option value="Comida rápida">Comida rápida</option>
+                    <option value="Almacen">Almacen</option>
+                    <option value="Restaurante">Restaurante</option>
+                    <option value="Panaderia">Panaderia</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="business-address">Direccion de tu Negocio</label><br>
+                <input type="text" id="business-address" name="business-address" placeholder="Ingresa la direccion de tu negocio">
+                <button type="button" id="lookupBtn">🔍 Buscar dirección</button>
+            </div>
+            <div class="form-group">
+                <label for="business-address-detect">o Detecta tu Ubicacion Actual (Mas Preciso)</label>
+                <input type="button" id="locateBtn" value="Detectar Ubicacion">
+            </div>
+
+            <p id="foundLocation"></p>
+            <p id="status"></p>
+
+            <input type="hidden" name="latitude" id="latitude">
+            <input type="hidden" name="longitude" id="longitude">
+            <input type="hidden" name="display_name" id="display_name">
+            <input type="hidden" name="address" id="address">
+
+            <button type="submit" class="green-btn" id="saveBtn" disabled>Crear negocio</button>
+        </form>
         </section>
     </main>
     <footer class="web-footer">
@@ -132,6 +149,77 @@
         document.querySelectorAll('.carousel-img').forEach(img => {
             img.addEventListener('dragstart', event => event.preventDefault());
         });
+    </script>
+    <script>
+            const saveBtn = document.getElementById('saveBtn');
+    const status = document.getElementById('status');
+    const foundLocation = document.getElementById('foundLocation');
+
+    function fillCoords(lat, lon, display_name, address) {
+        document.getElementById('latitude').value = lat;
+        document.getElementById('longitude').value = lon;
+        document.getElementById('display_name').value = display_name || '';
+        document.getElementById('address').value = JSON.stringify(address || {});
+        foundLocation.textContent = `Ubicación encontrada: ${display_name}`;
+        saveBtn.disabled = false;
+    }
+
+    // --- Detectar ubicación (reverse geocoding) ---
+    document.getElementById('locateBtn').addEventListener('click', () => {
+        if (!navigator.geolocation) {
+            status.textContent = 'Tu navegador no soporta geolocalización.';
+            return;
+        }
+        status.textContent = 'Detectando ubicación...';
+
+        navigator.geolocation.getCurrentPosition(async (position) => {
+            const { latitude, longitude } = position.coords;
+            try {
+                const res = await fetch(
+                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+                    { headers: { 'Accept-Language': 'es' } }
+                );
+                const data = await res.json();
+                fillCoords(latitude, longitude, data.display_name, data.address);
+                document.getElementById('business-address').value = data.display_name || '';
+                status.textContent = '';
+            } catch (err) {
+                status.textContent = 'Error: ' + err.message;
+            }
+        }, (err) => {
+            status.textContent = 'Permiso denegado o error: ' + err.message;
+        });
+    });
+
+    // --- Buscar dirección escrita (forward geocoding) ---
+    document.getElementById('lookupBtn').addEventListener('click', async () => {
+        const query = document.getElementById('business-address').value.trim();
+        if (!query) {
+            status.textContent = 'Escribe una dirección primero.';
+            return;
+        }
+        status.textContent = 'Buscando...';
+
+        try {
+            const res = await fetch(
+                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=1`,
+                { headers: { 'Accept-Language': 'es' } }
+            );
+            const results = await res.json();
+
+            if (results.length === 0) {
+                status.textContent = 'No se encontró esa dirección.';
+                saveBtn.disabled = true;
+                return;
+            }
+
+            const match = results[0];
+            fillCoords(match.lat, match.lon, match.display_name, match.address);
+            status.textContent = '';
+        } catch (err) {
+            status.textContent = 'Error: ' + err.message;
+        }
+    });
     </script>
 </body>
 </html>

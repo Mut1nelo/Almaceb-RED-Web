@@ -1,54 +1,48 @@
-#Script python de un local
 from mysqlconnection import connectToMySQL
 
-class LocalNegocio:
+BUSINESS_TYPES = ['Comida rápida', 'Almacen', 'Restaurante', 'Panaderia']
+
+class Business:
     def __init__(self, data):
         self.id = data['id']
-        self.usuario_id = data['usuario_id']
-        self.nombre_local = data['nombre_local']
-        self.direccion = data['direccion']
+        self.nombre_negocio = data['nombre_negocio']
+        self.business_type = data['business_type']
         self.lat = data['lat']
         self.lon = data['lon']
-        self.created_at = data.get('created_at')
-        self.updated_at = data.get('updated_at')
+
+    @classmethod
+    def save(cls, nombre_negocio, business_type, lat, lon):
+        if not nombre_negocio or lat is None or lon is None:
+            raise ValueError("Missing required fields")
+
+        if business_type not in BUSINESS_TYPES:
+            raise ValueError("Invalid business type")
+
+        query = """
+            INSERT INTO negocios (nombre_negocio, business_type, lat, lon)
+            VALUES (%(nombre_negocio)s, %(business_type)s, %(lat)s, %(lon)s)
+        """
+        data = {
+            'nombre_negocio': nombre_negocio,
+            'business_type': business_type,
+            'lat': lat,
+            'lon': lon
+        }
+
+        result = connectToMySQL('almaceb_red').query_db(query, data)
+
+        if result is False:
+            # NOTE: nombre_negocio is UNIQUE — a duplicate name will land here too
+            raise RuntimeError("Failed to save business (possibly a duplicate name)")
+
+        return result
 
     @classmethod
     def get_all(cls):
-        """Get all business locations."""
-        query = "SELECT * FROM locales_negocio"
-        resultados = connectToMySQL('almaceb_red').query_db(query)
+        query = "SELECT * FROM negocios"
+        results = connectToMySQL('almaceb_red').query_db(query)
 
-        if resultados is False:
-            return []
-        return [cls(resultado) for resultado in resultados]
+        if results is False:
+            raise RuntimeError("Failed to fetch businesses")
 
-    @classmethod
-    def get_by_usuario(cls, usuario_id):
-        """Get all locations for a business user"""
-        query = "SELECT * FROM locales_negocio WHERE usuario_id = %(usuario_id)s"
-        resultados = connectToMySQL('almaceb_red').query_db(query, {'usuario_id': usuario_id})
-        
-        locales = []
-        if resultados:
-            for resultado in resultados:
-                locales.append(cls(resultado))
-        return locales
-
-    @classmethod
-    def save(cls, data):
-        """Save a new business location"""
-        query = "INSERT INTO locales_negocio (usuario_id, nombre_local, direccion, lat, lon) VALUES (%(usuario_id)s, %(nombre_local)s, %(direccion)s, %(lat)s, %(lon)s)"
-        return connectToMySQL('almaceb_red').query_db(query, data)
-
-    @classmethod
-    def delete(cls, locale_id):
-        """Delete a business location"""
-        query = "DELETE FROM locales_negocio WHERE id = %(id)s"
-        return connectToMySQL('almaceb_red').query_db(query, {'id': locale_id})
-
-    @classmethod
-    def update(cls, locale_id, data):
-        """Update a business location"""
-        query = "UPDATE locales_negocio SET nombre_local = %(nombre_local)s, direccion = %(direccion)s, lat = %(lat)s, lon = %(lon)s WHERE id = %(id)s"
-        data['id'] = locale_id
-        return connectToMySQL('almaceb_red').query_db(query, data)
+        return [cls(row) for row in results]
