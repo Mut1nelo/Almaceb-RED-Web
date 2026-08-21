@@ -23,6 +23,15 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
+            gap: 20px;
+        }
+        #future-card {
+            max-width: 600px;
+            text-align: center;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
         }
     </style>
 </head>
@@ -31,9 +40,20 @@
         <img
             src="{{ url_for('static', filename='imgs/logo/Almaceb-Logo-inicio.png') }}"
             alt="Almaceb RED Logo"
-            width="500"
-            class="index-almaceb-logo"
+            width="400"
             >
+            <h1>¡Ups! Encontraste una función futura</h1>
+            <section id="future-card" class="border-card">
+                <h2 class="green-line">Está función estará disponible próximamente</h2>
+                <p>Almaceb RED se encuentra actualmente en una versión MVP (Producto Mínimo Viable).
+                    Algunas funciones avanzadas serán incorporadas en futuras versiones del proyecto.
+                </p>
+                <p>Gracias por probar Almaceb RED.</p>
+            </section>
+            <section>
+                <button onclick="history.back()" class="white-btn">Volver atrás</button>
+                <a href="/Mapa" class="green-btn">Volver al mapa</a>
+            </section>
     </main>
 </body>
 </html>
