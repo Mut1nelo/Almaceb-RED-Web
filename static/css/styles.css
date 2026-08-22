@@ -215,6 +215,10 @@
     box-shadow: 0 2px 4px rgba(0,0,0,0.5);
 }
 
+.nav-container.map-nav {
+    overflow: visible;
+}
+
 .nav-container.move-left {
     padding-right: 340px;
     transition: padding-right 0.2s ease;
@@ -244,20 +248,179 @@
     margin-right: 15px;
 }
 
+.search-area {
+    position: relative;
+    flex: 1 1 auto;
+    min-width: 0;
+    margin-right: 10px;
+}
+
 .search-box {
     display: flex;
-    flex: 1 1 auto;
+    width: 100%;
     min-width: 0;
     align-items: center;
     background-color: #f0f0f0;
     border-radius: 25px;
     padding: 8px 15px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-    margin-right: 10px;
 }
 
-.search-Results:hover{
-    cursor: grab;
+.search-results-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    z-index: 30;
+    width: 100%;
+    max-height: min(470px, calc(100vh - 110px));
+    padding: 0;
+    overflow: hidden;
+    border-color: #e1e1e1;
+    border-radius: 20px;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.16);
+}
+
+.search-results-panel[hidden] {
+    display: none;
+}
+
+.search-results-header {
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.search-results-header h2 {
+    margin-bottom: 5px;
+    color: #222222;
+    font-size: 20px;
+}
+
+.search-results-header p {
+    color: var(--grey);
+    font-size: 14px;
+}
+
+.search-results {
+    max-height: min(375px, calc(100vh - 190px));
+    overflow-y: auto;
+    list-style: none;
+    scrollbar-color: #b9b9b9 transparent;
+    scrollbar-width: thin;
+}
+
+.search-result-item + .search-result-item {
+    border-top: 1px solid #eeeeee;
+}
+
+.search-result-button {
+    display: grid;
+    grid-template-columns: 54px minmax(0, 1fr) 18px;
+    align-items: center;
+    gap: 13px;
+    width: 100%;
+    padding: 12px 18px;
+    border: 0;
+    color: #222222;
+    background-color: #ffffff;
+    text-align: left;
+    cursor: pointer;
+    transition: background-color 0.18s ease;
+}
+
+.search-result-button:hover,
+.search-result-button:focus-visible {
+    background-color: #f5fff9;
+}
+
+.search-result-button:focus-visible {
+    outline: 2px solid var(--green);
+    outline-offset: -2px;
+}
+
+.search-result-image,
+.search-result-image-placeholder {
+    width: 54px;
+    height: 54px;
+    border-radius: 12px;
+}
+
+.search-result-image {
+    display: block;
+    object-fit: cover;
+}
+
+.search-result-image-placeholder {
+    display: grid;
+    place-items: center;
+    color: var(--vivid-green);
+    background-color: var(--light-green);
+    font-size: 21px;
+}
+
+.search-result-content {
+    min-width: 0;
+}
+
+.search-result-content h3 {
+    overflow: hidden;
+    color: #222222;
+    font-size: 16px;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.search-result-meta {
+    margin-top: 4px;
+    overflow: hidden;
+    color: var(--grey);
+    font-size: 14px;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.search-result-promotions.green-label {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 3px 9px;
+    font-size: 12px;
+}
+
+.search-result-arrow {
+    color: var(--grey);
+    font-size: 15px;
+    text-align: right;
+}
+
+.search-results-state {
+    display: grid;
+    grid-template-columns: 38px minmax(0, 1fr);
+    gap: 12px;
+    padding: 22px 20px;
+}
+
+.search-results-state-icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    color: var(--vivid-green);
+    background-color: var(--light-green);
+}
+
+.search-results-state h3 {
+    color: #222222;
+    font-size: 15px;
+    line-height: 1.35;
+}
+
+.search-results-state p {
+    margin-top: 4px;
+    color: var(--grey);
+    font-size: 13px;
+    line-height: 1.4;
 }
 
 /* Lo puse cerca de los cosos de search no me mates porfa -J*/
@@ -267,7 +430,7 @@
     margin-right: 10px;
 }
 
-.nav-container.move-left .search-box {
+.nav-container.move-left .search-area {
     max-width: calc(100% - 70px);
 }
 
@@ -300,6 +463,73 @@
     border-radius: 50%;
     object-fit: cover;
     flex: 0 0 auto;
+}
+
+@media (max-width: 680px) {
+    .map-nav {
+        padding: 10px;
+    }
+
+    .map-nav .nav-logo {
+        width: 82px;
+        margin-right: 9px;
+    }
+
+    .search-area {
+        margin-right: 8px;
+    }
+
+    .search-box {
+        padding: 7px 10px;
+    }
+
+    .search-box input {
+        font-size: 14px;
+    }
+
+    .search-box .search-button {
+        padding: 9px 12px;
+    }
+
+    .map-nav .sidebar-toggle {
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 430px) {
+    .map-nav .nav-logo {
+        width: 68px;
+        margin-right: 7px;
+    }
+
+    .search-box .fa-magnifying-glass {
+        margin-right: 6px;
+    }
+
+    .search-box .search-button {
+        padding-inline: 9px;
+    }
+
+    .map-nav .nav-profile {
+        width: 36px;
+        height: 36px;
+    }
+
+    .search-results-panel {
+        width: min(360px, calc(100vw - 92px));
+    }
+
+    .search-result-button {
+        grid-template-columns: 46px minmax(0, 1fr) 14px;
+        gap: 10px;
+        padding-inline: 13px;
+    }
+
+    .search-result-image,
+    .search-result-image-placeholder {
+        width: 46px;
+        height: 46px;
+    }
 }
 
 /* Elementos */
@@ -614,6 +844,12 @@
 }
 
 /* Clases reutilizables */
+
+.flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-content: center;
+}
 
 .flex-column {
     display: flex;
@@ -1812,4 +2048,9 @@ body.gallery-modal-open {
     box-shadow: 0 4px 9px rgba(0, 0, 0, 0.18);
 }
 
-/* Como hiciste toda esta mierda hrmno -J
+/* Como hiciste toda esta mierda hrmno */
+/* Con las manos */
+
+/* ================================================ */
+/*              Negocios destacados                 */
+/* ================================================ */

@@ -1,6 +1,15 @@
 from mysqlconnection import connectToMySQL
 
-BUSINESS_TYPES = ['Comida rápida', 'Almacen', 'Restaurante', 'Panaderia']
+BUSINESS_TYPES = [
+    'Almacén',
+    'Bazar',
+    'Cafetería',
+    'Comida rápida',
+    'Panadería',
+    'Pastelería',
+    'Restaurante',
+    'Verdulería'
+]
 
 class Business:
     def __init__(self, data):

@@ -76,14 +76,13 @@ def index():
 
 @app.route("/Mapa")
 def map():
-    #Si no estan en la sesion los manda a logearse jijiji, no ya no lo hace 😞
     if 'user_id' not in session:
         account_type = 'invitado'
 
     usuarios = Usuario.get_all_users()
     username = session.get('username', 'invitado')
     account_type = session.get('account_type', 'invitado')
-    print(f"DEBUG: username={username}, account_type={account_type}")  
+    print(f"DEBUG: username={username}, account_type={account_type}")
 
     businesses = Business.get_all()
     businesses_json = json.dumps([
@@ -103,29 +102,6 @@ def map():
         username=username,
         account_type=account_type,
         businesses_json=businesses_json)
-
-    #Ahora buscamos los negocios
-
-    # result = None
-    # if request.method == 'POST':
-    #     address = request.form.get('address') or user.address
-    #     if address:
-    #         try:
-    #             result = geocode_address(address)
-    #             if result:
-    #                 user.address = address
-    #                 user.lat = float(result['lat'])
-    #                 user.lon = float(result['lon'])
-    #                 db.session.commit()
-    #             else:
-    #                 result = []
-    #         except requests.exceptions.RequestException:
-    #             flash('Error al consultar el servicio de geocodificación. Intenta de nuevo.', 'error')
-    #             result = []
-    #         except ValueError:
-    #             flash('Respuesta no válida del servicio de geocodificación.', 'error')
-    #             result = []
-    #lo comente pq a lo mejor lo necesitamos dsps 
 
 @app.route("/Registrarse")
 def register():
@@ -267,6 +243,15 @@ def negocio(negocio_id):
 def featured_business():
     return render_template("featured-business.html")
 
+@app.route("/Perfil-usuario")
+def user_profile():
+    return redirect(url_for('future_function'))
+
+# Otra plantilla pero para la busqueda de usuarios
+# @app.route("/Perfil-usuario/<int:usuarios_id>")
+# def user_profile(usuarios_id):
+#     return redirect(url_for('future_function'))
+
 @app.route("/Reportes")
 def report():
     return render_template("report.html")
@@ -290,7 +275,7 @@ def crear_negocio():
     if request.method == 'GET':
         return render_template('form-business.html')
 
-    #no seria innecesario ya q en el jinja2  se modifica lo q puede y no puede ver el usuario -J
+    #no seria innecesario ya q en el jinja2  se modifica lo q puede y no puede ver el usuario (No)
     #igual bien, mas seguro -j
 
     # 4. POST: recibir datos del formulario

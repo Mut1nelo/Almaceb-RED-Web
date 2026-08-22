@@ -101,7 +101,7 @@
         {% endif %}
     </aside>
     <main>
-        <nav class="nav-container">
+        <nav class="nav-container map-nav">
             <a href="/">
                 <img 
                 src="{{ url_for('static', filename='imgs/logo/Almaceb-Logo-inicio.png') }}"
@@ -110,12 +110,34 @@
                 >
             </a>
 
-            <form id="searchForm" class="search-box">
-                <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" id="searchInput" name="q" placeholder="Buscar negocio..." autocomplete="off">
-                <button type="submit" class="search-button green-btn-bg">Buscar</button>
-            </form>
-            <ul id="searchResults" class="search-Results"></ul>
+            <div id="searchArea" class="search-area">
+                <form id="searchForm" class="search-box" role="search" aria-label="Buscar negocios">
+                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                    <input
+                        type="search"
+                        id="searchInput"
+                        name="q"
+                        placeholder="Buscar negocios..."
+                        autocomplete="off"
+                        aria-controls="searchResultsPanel"
+                        aria-expanded="false"
+                    >
+                    <button type="submit" class="search-button green-btn-bg">Buscar</button>
+                </form>
+
+                <section
+                    id="searchResultsPanel"
+                    class="search-results-panel border-card"
+                    aria-label="Resultados de búsqueda"
+                    hidden
+                >
+                    <header class="search-results-header">
+                        <h2>Resultados</h2>
+                        <p id="searchResultsSummary">Negocios encontrados</p>
+                    </header>
+                    <ul id="searchResults" class="search-results" aria-live="polite"></ul>
+                </section>
+            </div>
 
             <button class="sidebar-toggle" type="button" aria-label="Abrir menú" aria-controls="sidebarPanel" aria-expanded="false">
                 <img

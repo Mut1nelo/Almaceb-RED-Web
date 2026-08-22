@@ -85,8 +85,7 @@
         </section>
         <section class="right-form border-card">
             <h1 class="green-line">Crea tu negocio</h1>
-            <h2>Jose, edita el formulario, me da flojera</h2>
-            <h3>Bueno hrmno, 👍</h3>
+            <h2>Completa los datos necesarios para crear un negocio</h2>
         <form action="/Crear-negocio" method="POST" id="businessForm">
             <div class="form-group">
                 <label for="business-name">Nombre del negocio</label><br>
@@ -94,22 +93,31 @@
             </div>
             <div class="form-group">
                 <label for="business-type">Tipo de Negocio</label><br>
-                <select id="business-type" name="business-type" required>
+                <select id="business-type" name="business-type" class="form-select" required>
                     <option value="" disabled selected>Elige tu tipo de Negocio</option>
+                    <option value="Almacén">Almacén</option>
+                    <option value="Bazar">Bazar</option>
+                    <option value="Cafetería">Cafetería</option>
                     <option value="Comida rápida">Comida rápida</option>
-                    <option value="Almacen">Almacen</option>
+                    <option value="Panadería">Panadería</option>
+                    <option value="Pastelería">Pastelería</option>
                     <option value="Restaurante">Restaurante</option>
-                    <option value="Panaderia">Panaderia</option>
+                    <option value="Verdulería">Verdulería</option>
                 </select>
             </div>
             <div class="form-group">
-                <label for="business-address">Direccion de tu Negocio</label><br>
-                <input type="text" id="business-address" name="business-address" placeholder="Ingresa la direccion de tu negocio">
-                <button type="button" id="lookupBtn">🔍 Buscar dirección</button>
+                <label for="business-address">Dirección de tu negocio</label><br>
+                <div class="flex-between">
+                    <input type="text" id="business-address" name="business-address" placeholder="Ingresa la dirección de tu negocio">
+                    <button type="button" id="lookupBtn" class="white-btn">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        Buscar
+                    </button>
+                </div>
             </div>
             <div class="form-group">
-                <label for="business-address-detect">o Detecta tu Ubicacion Actual (Mas Preciso)</label>
-                <input type="button" id="locateBtn" value="Detectar Ubicacion">
+                <label for="business-address-detect">o detecta tu ubicación actual (Más preciso)</label>
+                <input type="button" id="locateBtn" value="Detectar ubicación" class="green-btn-alt">
             </div>
 
             <p id="foundLocation"></p>
@@ -151,7 +159,7 @@
         });
     </script>
     <script>
-            const saveBtn = document.getElementById('saveBtn');
+    const saveBtn = document.getElementById('saveBtn');
     const status = document.getElementById('status');
     const foundLocation = document.getElementById('foundLocation');
 
