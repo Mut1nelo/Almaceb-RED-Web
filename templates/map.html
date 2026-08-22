@@ -109,12 +109,14 @@
                 class="nav-logo"
                 >
             </a>
-            <form class="search-box" action="/search" method="get">
+
+            <form id="searchForm" class="search-box">
                 <i class="fa-solid fa-magnifying-glass"></i>
-                <input type="text" name="q" placeholder="Buscar negocios, usuarios o promociones" value="{{ request.args.get('q', '') }}" autocomplete="off">
+                <input type="text" id="searchInput" name="q" placeholder="Buscar negocio..." autocomplete="off">
                 <button type="submit" class="search-button green-btn-bg">Buscar</button>
-                <i class="bi bi-filter filter-toggle"></i>
             </form>
+            <ul id="searchResults" class="search-Results"></ul>
+
             <button class="sidebar-toggle" type="button" aria-label="Abrir menú" aria-controls="sidebarPanel" aria-expanded="false">
                 <img
                 src="{{ url_for('static', filename='imgs/default.jpg') }}"
@@ -122,47 +124,6 @@
                 class="nav-profile">
             </button>
         </nav>
-        <!-- eee esto no sirve, lo comentamos por mientras 
-        { if search_query is defined and search_query %}
-        <section class="search-results">
-            <div class="results-header">
-                <h2>Resultados para «{ search_query }}»</h2>
-            </div>
-            { if usuarios %}
-            <div class="results-group">
-                <h3>Negocios / Usuarios</h3>
-                <ul>
-                    { for usuario in usuarios %}
-                    <li>
-                        <strong>{ usuario.nombre }}</strong>
-                        <p>{ usuario.descripcion or 'Sin descripción disponible.' }}</p>
-                        <small>{ usuario.direccion or 'Dirección no disponible.' }}</small>
-                    </li>
-                    { endfor %}
-                </ul>
-            </div>
-            { else %}
-            <p>No se encontraron negocios ni usuarios que coincidan con tu búsqueda.</p>
-            { endif %}
-
-            { if promociones is defined and promociones %}
-            <div class="results-group">
-                <h3>Promociones</h3>
-                <ul>
-                    { for promo in promociones %}
-                    <li>
-                        <strong>{ promo.titulo }}</strong>
-                        <p>{ promo.descripcion or 'Sin descripción disponible.' }}</p>
-                    </li>
-                    { endfor %}
-                </ul>
-            </div>
-            { elif promociones is defined %}
-            <p>No se encontraron promociones que coincidan con tu búsqueda.</p>
-            { endif %}
-        </section>
-         endif %} 
-        fin del comentario jijijijujuju -->
 
         <section class="map-view">
             <div id="map"></div>

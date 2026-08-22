@@ -15,47 +15,30 @@ app.secret_key = "clavehipermegasupersecretayiaaaa" #Cambiala hijo de tu mamita
 
 #Aqui van todas las funciones q tengamos q declarar fuera d una ruta
 
-# Datos de ejemplo - Reemplaza con tu base de datos
-NEGOCIOS = [
-    {"id": 1, "nombre": "Panadería El Grano", "categoria": "Panadería", "descripcion": "Pan fresco diario", "direccion": "Calle 1 #123"},
-    {"id": 2, "nombre": "Almacén Central", "categoria": "Almacén", "descripcion": "Todo para el hogar", "direccion": "Av. Principal 456"},
-    {"id": 3, "nombre": "Tienda de Ropa Urban", "categoria": "Ropa", "descripcion": "Moda casual y deportiva", "direccion": "Centro Comercial"},
-    {"id": 4, "nombre": "Burger House", "categoria": "Comida Rapida", "descripcion": "Café y pasteles", "direccion": "Plaza Central"},
-]
-
-PROMOCIONES = [
-    {"id": 1, "titulo": "Descuento 20% en pan", "negocio_id": 1, "descripcion": "Todo el pan con 20% de descuento"},
-    {"id": 2, "titulo": "Compra 2 lleva 3", "negocio_id": 2, "descripcion": "Ofertas en artículos seleccionados"},
-    {"id": 3, "titulo": "10% off en compras mayores a $50", "negocio_id": 3, "descripcion": "Aplica en prendas seleccionadas"},
-]
-
 def calcular_similitud(query, texto):
     if not texto:
         return 0
     return SequenceMatcher(None, query.lower(), str(texto).lower()).ratio()
 
+
 def buscar_en_lista(query, lista, campos_busqueda):
-    # Si la búsqueda está vacía o es muy corta, devolvemos todos los locales de la BD
     if not query or len(query.strip()) < 2:
         return lista
-    
+
     query = query.strip()
     resultados = []
-    
+
     for item in lista:
         max_similitud = 0
         for campo in campos_busqueda:
-            # Como 'item' es una instancia de la clase Locales, usamos getattr() para leer sus atributos
             valor_campo = getattr(item, campo, None)
             if valor_campo:
                 similitud = calcular_similitud(query, valor_campo)
                 max_similitud = max(max_similitud, similitud)
-        
-        # Filtro de tolerancia (30% de coincidencia mínima)
+
         if max_similitud >= 0.3:
             resultados.append({"item": item, "relevancia": max_similitud})
-    
-    # Ordenar de mayor a menor relevancia
+
     resultados.sort(key=lambda x: x["relevancia"], reverse=True)
     return [r["item"] for r in resultados]
 
@@ -89,7 +72,7 @@ def index():
 
 @app.route("/Mapa")
 def map():
-    #Si no estan en la sesion los manda a logearse jijiji
+    #Si no estan en la sesion los manda a logearse jijiji, no ya no lo hace 😞
     if 'user_id' not in session:
         account_type = 'invitado'
 
@@ -270,7 +253,8 @@ def business():
 # Te deje la plantilla
 @app.route("/Negocio/<int:negocio_id>")
 def negocio(negocio_id):
-    pass
+    return render_template('future-function.html')
+#Perate ya dsps lo arreglo q tengo sueño
 
 @app.route("/Negocios-destacados")
 def featured_business():
@@ -281,7 +265,7 @@ def report():
     return render_template("report.html")
 
 
-@app.route('/Crear-negocio', methods=['GET', 'POST']) #Cambia despues el nombre, lo puse porque no se me ocurrió otro, y si no quiero -J
+@app.route('/Crear-negocio', methods=['GET', 'POST']) #Cambia despues el nombre, lo puse porque no se me ocurrió otro.    y si no quiero -J
 def crear_negocio():
     if request.method == 'GET':
         return render_template('form-business.html')
@@ -304,32 +288,29 @@ def crear_negocio():
         return render_template('error.html', error=str(e)), 500
     
 
-@app.route("/Cerrar-sesion")
+@app.route("/Cerrar-sesión")
 def logout():
     session.clear()
     return redirect("/")
 
-#Esto lo voy a rehacer
-# @app.route("/search", methods=['GET'])
-# def search_businesses():
-#     # Capturamos el texto del input 'name="q"' de tu formulario HTML
-#     query_busqueda = request.args.get('q', '').strip()
-    
-#     # 1. Traemos todos los locales mediante el método que corregimos en tu modelo
-#     todos_los_locales = LocalNegocio.get_all()
-    
-#     # 2. Ejecutamos tu lógica real de ordenamiento y filtrado por relevancia
-#     campos_a_evaluar = ['nombre_local', 'direccion']
-#     locales_filtrados = buscar_en_lista(query_busqueda, todos_los_locales, campos_a_evaluar)
-    
-#     # 3. Renderizamos exactamente la misma plantilla del mapa
-#     # Pasamos únicamente los locales que pasaron el filtro de similitud
-#     return render_template(
-#         'map.html', 
-#         lista_negocios=locales_filtrados,
-#         username='invitado',     # Sustituye con tu lógica real de sesión si aplica
-#         account_type='client'    # Sustituye con tu lógica real de sesión si aplica
-#     )
+#Esto lo voy a rehacer, ya lo rehice -J
+@app.route("/search")
+def search():
+    query = request.args.get('q', '')
+
+    all_businesses = Business.get_all()
+    resultados = buscar_en_lista(query, all_businesses, ['nombre_negocio', 'business_type'])
+
+    return jsonify([
+        {
+            'id': b.id,
+            'nombre_negocio': b.nombre_negocio,
+            'business_type': b.business_type,
+            'lat': float(b.lat),
+            'lon': float(b.lon)
+        }
+        for b in resultados
+    ])
 
 @app.route("/Funciones-futuras")
 def future_function():

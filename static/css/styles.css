@@ -256,6 +256,12 @@
     margin-right: 10px;
 }
 
+.search-Results:hover{
+    cursor: grab;
+}
+
+/* Lo puse cerca de los cosos de search no me mates porfa -J*/
+
 .fa-magnifying-glass {
     color: #888;    
     margin-right: 10px;

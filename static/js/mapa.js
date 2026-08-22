@@ -30,16 +30,17 @@ document.addEventListener('DOMContentLoaded', () => {
         popupAnchor: [0, -45]
     });
 
-    // 4. Datos reales desde Flask (negociosData viene inyectado en map.html)
+    // 4. Datos reales desde Flask
     const defaultIcon = "../static/imgs/icons/in-1.png";
     const locations = (typeof negociosData !== 'undefined' ? negociosData : []).map(n => ({
+        id: n.id,
         coords: [n.lat, n.lon],
         name: n.nombre_negocio,
         image: defaultIcon,
-        cardImage: '../static/imgs/img-proto.png', // swap for a real image field later if you add one
+        cardImage: '../static/imgs/img-proto.png',
         category: n.business_type,
-        promotions: 0,       // placeholder until you have a promotions table
-        featured: false,     // placeholder until you have a featured flag
+        promotions: 0,
+        featured: false,
         url: `/Negocio/${n.id || ''}`
     }));
 
@@ -104,18 +105,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     closeBusinessCard.addEventListener('click', hideBusinessCard);
 
-    // 6. Añadir marcadores usando un featureGroup (para poder hacer fitBounds)
+    // 6. Añadir marcadores (UNA SOLA VEZ) + guardar referencia por id
     const markerGroup = L.featureGroup();
+    const markersById = {};
 
     locations.forEach(location => {
         const marker = L.marker(location.coords, { icon: markerIcon(location.image) });
         marker.on('click', () => showBusinessCard(location));
         markerGroup.addLayer(marker);
+        markersById[location.id] = { marker, location };
     });
 
     markerGroup.addTo(map);
 
-    // Encuadrar automáticamente si hay negocios
     if (locations.length > 0) {
         map.fitBounds(markerGroup.getBounds(), { padding: [50, 50] });
     }
@@ -159,4 +161,59 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
         console.warn('Geolocalización no soportada por este navegador.');
     }
-});
+
+    // 7. Lógica de búsqueda (AHORA DENTRO del mismo scope)
+    const searchForm = document.getElementById('searchForm');
+    const searchInput = document.getElementById('searchInput');
+    const searchResults = document.getElementById('searchResults');
+
+    searchForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        await runSearch(searchInput.value);
+    });
+
+    async function runSearch(query) {
+        if (!query || query.trim().length < 2) {
+            searchResults.innerHTML = '<li>Escribe al menos 2 caracteres</li>';
+            return;
+        }
+
+        try {
+            const res = await fetch(`/search?q=${encodeURIComponent(query)}`);
+            const data = await res.json();
+            renderResults(data);
+        } catch (err) {
+            console.error('Error en búsqueda:', err);
+            searchResults.innerHTML = '<li>Error al buscar</li>';
+        }
+    }
+
+    function renderResults(results) {
+        searchResults.innerHTML = '';
+
+        if (results.length === 0) {
+            searchResults.innerHTML = '<li>Sin resultados</li>';
+            return;
+        }
+
+        results.forEach(r => {
+            const li = document.createElement('li');
+            li.textContent = `${r.nombre_negocio} — ${r.business_type}`;
+            li.addEventListener('click', () => selectResult(r));
+            searchResults.appendChild(li);
+        });
+    }
+
+    function selectResult(result) {
+        const entry = markersById[result.id];
+        if (!entry) return;
+
+        map.setView(entry.location.coords, 18);
+        entry.marker.openPopup?.();
+        showBusinessCard(entry.location);
+
+        searchResults.innerHTML = '';
+        searchInput.value = result.nombre_negocio;
+    }
+
+}); // Movemos todo dentro del DOM content
