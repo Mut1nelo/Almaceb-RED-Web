@@ -1,4 +1,8 @@
-# Este servidor solo tiene los enrutamientos, back-end lo maneja Jose Moena
+# ======================================================================================
+# Jose, tratemos de usar enrutamientos sin tildes porque nos confunde siempre y da error
+# ======================================================================================
+
+# Desarrollo y enrutamientos lo maneja Javier Faúndez, back-end y base de datos lo maneja Jose Moena
 from flask import Flask, render_template, request, redirect, session, jsonify, flash, url_for
 from difflib import SequenceMatcher
 from usuario import Usuario
@@ -159,12 +163,15 @@ def login():
     
     if not usuario_encontrado:
         flash("Usuario o contraseña incorrectos.", "login")
-        #flasheamos confianza
-        return redirect('/Iniciar-sesion')
+        #flasheamos confianza | Estaba mal enrutada, con razón siempre me daba error de JINJA
+        return redirect(url_for('login_page'))
 
-    #soy un maldito desarrollador
-    #aqui me tienes haciendo codigos de mierda
-    #por que alguien no mueve su maldito gordo trasero para ayudarme 🗣‼
+    # Soy un maldito desarrollador
+    # Aqui me tienes haciendo codigos de mierda
+    # Por que alguien no mueve su maldito gordo trasero para ayudarme 🗣‼
+
+    # No soy chatbot Claude 🗣‼
+
     if check_password_hash(usuario_encontrado.password, request.form['password']):
         session['user_id'] = usuario_encontrado.id
         session['username'] = usuario_encontrado.username
@@ -173,7 +180,7 @@ def login():
         return redirect('/Mapa')
     
     flash("Usuario o contraseña incorrectos.", "login")
-    return redirect('/Iniciar-sesion')
+    return redirect(url_for('login_page'))
 
 # Claude me hizo otra funcion jejej
 
@@ -248,7 +255,7 @@ def login():
 
 @app.route("/Negocio")
 def business():
-    return render_template("business.html")
+    return redirect(url_for('future_function'))
 
 # Te deje la plantilla
 @app.route("/Negocio/<int:negocio_id>")
@@ -265,28 +272,52 @@ def report():
     return render_template("report.html")
 
 
-@app.route('/Crear-negocio', methods=['GET', 'POST']) #Cambia despues el nombre, lo puse porque no se me ocurrió otro.    y si no quiero -J
+@app.route('/Crear-negocio', methods=['GET', 'POST'])
 def crear_negocio():
+    # Cualquiera podía crear un negocio
+    # 1. Comprobar que haya iniciado sesión
+    if 'user_id' not in session:
+        # Otro error de enrutamiento loco, ya lo corregi
+        return redirect(url_for('login_page'))
+
+    # 2. Comprobar que sea una cuenta de negocio
+    if session.get('account_type') != 'business':
+        # Con ! no puede entrar
+        flash("Solo las cuentas de negocio pueden crear un negocio.", "error")
+        return redirect(url_for('map'))
+
+    # 3. Si cumple lo anterior, puede ver el formulario
     if request.method == 'GET':
         return render_template('form-business.html')
 
-    if 'user_id' not in session:
-        return redirect(url_for('Login'))
-
+    # 4. POST: recibir datos del formulario
     nombre_negocio = request.form.get('business-name')
     business_type = request.form.get('business-type')
     lat = request.form.get('latitude')
     lon = request.form.get('longitude')
 
     try:
-        Business.save(nombre_negocio, business_type, lat, lon)
-        return redirect('/Mapa')
+        Business.save(
+            nombre_negocio,
+            business_type,
+            lat,
+            lon
+        )
+
+        return redirect(url_for('map'))
 
     except ValueError as e:
-        return render_template('error.html', error=str(e)), 400
+        return render_template(
+            'error.html',
+            error=str(e)
+        ), 400
+
     except Exception as e:
-        return render_template('error.html', error=str(e)), 500
-    
+        return render_template(
+            'error.html',
+            error=str(e)
+        ), 500
+    # Error.html? Qué es eso? Se come?
 
 @app.route("/Cerrar-sesión")
 def logout():
@@ -312,6 +343,10 @@ def search():
         for b in resultados
     ])
 
+@app.route("/Configuracion")
+def config():
+    return redirect(url_for('future_function'))
+
 @app.route("/Funciones-futuras")
 def future_function():
     return render_template("future-function.html")
@@ -325,8 +360,6 @@ def ranking():
 @app.route("/Dev-page")
 def dev_page():
     return render_template("dev-pages.html")
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)

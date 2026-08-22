@@ -7,8 +7,15 @@ class Business:
         self.id = data['id']
         self.nombre_negocio = data['nombre_negocio']
         self.business_type = data['business_type']
+    # El formulario de creación pide una dirección y obtiene correctamente las coordenadas, pero Flask solamente guarda esto:
         self.lat = data['lat']
         self.lon = data['lon']
+    # La dirección se pierde.
+
+    # La tabla negocios actual no tiene usuario_id, así que no sabemos quién es dueño del negocio.
+
+    # Antes de conectar business.html con Jinja, conviene agregar a la tabla:
+    # Nombre, Categoría, Descripción, Dirección, Teléfono, Correo, Horarios, Imagen y las promociones
 
     @classmethod
     def save(cls, nombre_negocio, business_type, lat, lon):
