@@ -260,7 +260,7 @@ def business():
 # Te deje la plantilla
 @app.route("/Negocio/<int:negocio_id>")
 def negocio(negocio_id):
-    return render_template('future-function.html')
+    return redirect(url_for('future_function'))
 #Perate ya dsps lo arreglo q tengo sueño
 
 @app.route("/Negocios-destacados")
@@ -290,6 +290,9 @@ def crear_negocio():
     if request.method == 'GET':
         return render_template('form-business.html')
 
+    #no seria innecesario ya q en el jinja2  se modifica lo q puede y no puede ver el usuario -J
+    #igual bien, mas seguro -j
+
     # 4. POST: recibir datos del formulario
     nombre_negocio = request.form.get('business-name')
     business_type = request.form.get('business-type')
@@ -318,6 +321,7 @@ def crear_negocio():
             error=str(e)
         ), 500
     # Error.html? Qué es eso? Se come?
+    # Es mi poya con ceboya
 
 @app.route("/Cerrar-sesión")
 def logout():
