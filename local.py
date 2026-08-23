@@ -62,3 +62,59 @@ class Business:
             raise RuntimeError("Failed to fetch businesses")
 
         return [cls(row) for row in results]
+
+    @classmethod
+    def get_by_id(cls, negocio_id):
+
+        query = """
+            SELECT *
+            FROM negocios
+            WHERE id = %(id)s;
+        """
+
+        data = {
+            "id": negocio_id
+        }
+
+        results = connectToMySQL('almaceb_red').query_db(
+            query,
+            data
+        )
+
+        if not results:
+            return None
+
+        return cls(results[0])
+
+    @classmethod
+    def update(
+        cls,
+        negocio_id,
+        nombre_negocio,
+        business_type,
+        lat,
+        lon
+    ):
+
+        query = """
+            UPDATE negocios
+            SET
+                nombre_negocio = %(nombre_negocio)s,
+                business_type = %(business_type)s,
+                lat = %(lat)s,
+                lon = %(lon)s
+            WHERE id = %(id)s;
+        """
+
+        data = {
+            "id": negocio_id,
+            "nombre_negocio": nombre_negocio,
+            "business_type": business_type,
+            "lat": lat,
+            "lon": lon
+        }
+
+        return connectToMySQL('almaceb_red').query_db(
+            query,
+            data
+        )

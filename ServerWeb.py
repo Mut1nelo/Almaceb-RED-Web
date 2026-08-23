@@ -14,10 +14,10 @@ import json
 
 app = Flask(__name__)
 
-app.secret_key = "clavehipermegasupersecretayiaaaa" #Cambiala hijo de tu mamita
+app.secret_key = "clavehipermegasupersecretayiaaaa" # Cambiala hijo de tu mamita
 
 
-#Aqui van todas las funciones q tengamos q declarar fuera d una ruta
+# Aqui van todas las funciones q tengamos q declarar fuera d una ruta
 
 def calcular_similitud(query, texto):
     if not texto:
@@ -273,7 +273,12 @@ def crear_negocio():
 
     # 3. Si cumple lo anterior, puede ver el formulario
     if request.method == 'GET':
-        return render_template('form-business.html')
+        return render_template(
+            'form-business.html',
+            editando=False,
+            negocio=None,
+            business_types=BUSINESS_TYPES
+        )
 
     #no seria innecesario ya q en el jinja2  se modifica lo q puede y no puede ver el usuario (No)
     #igual bien, mas seguro -j
@@ -307,6 +312,55 @@ def crear_negocio():
         ), 500
     # Error.html? Qué es eso? Se come?
     # Es mi poya con ceboya
+
+# Para renderizar el mismo formulario pero para editar el negocio
+@app.route('/Negocio/<int:negocio_id>/Editar', methods=['GET', 'POST'])
+def editar_negocio(negocio_id):
+
+    # Debe haber iniciado sesión
+    if 'user_id' not in session:
+        return redirect(url_for('login_page'))
+
+    # Solo vendedores
+    if session.get('account_type') != 'business':
+        flash("No tienes permiso para editar negocios.", "error")
+        return redirect(url_for('map'))
+
+
+    # Buscar negocio
+    negocio = Business.get_by_id(negocio_id)
+
+    if not negocio:
+        return "Negocio no encontrado", 404
+
+
+    # Mostrar formulario con datos
+    if request.method == 'GET':
+        return render_template(
+            'form-business.html',
+            editando=True,
+            negocio=negocio,
+            business_types=BUSINESS_TYPES
+        )
+
+
+    # Guardar cambios
+    nombre_negocio = request.form.get('business-name')
+    business_type = request.form.get('business-type')
+    lat = request.form.get('latitude')
+    lon = request.form.get('longitude')
+
+    Business.update(
+        negocio_id,
+        nombre_negocio,
+        business_type,
+        lat,
+        lon
+    )
+
+    return redirect(
+        url_for('negocio', negocio_id=negocio_id)
+    )
 
 @app.route("/Cerrar-sesion")
 def logout():
@@ -345,7 +399,6 @@ def ranking():
     return render_template("ranking.html")
 
 # Para desarrolladores
-
 @app.route("/Dev-page")
 def dev_page():
     return render_template("dev-pages.html")

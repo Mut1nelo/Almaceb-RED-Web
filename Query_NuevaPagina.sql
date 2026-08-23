@@ -45,7 +45,16 @@ CREATE TABLE IF NOT EXISTS locales_negocio (
 CREATE TABLE negocios (
 	id INT PRIMARY KEY AUTO_INCREMENT,
 	nombre_negocio VARCHAR(64) NOT NULL UNIQUE,
-    business_type ENUM('Comida rápida', 'Almacen', 'Restaurante','Panaderia') DEFAULT 'Almacen',
+    business_type ENUM(
+        'Almacén',
+        'Bazar',
+        'Cafetería',
+        'Comida rápida',
+        'Panadería',
+        'Pastelería',
+        'Restaurante',
+        'Verdulería'
+    ) NOT NULL DEFAULT 'Almacén',
     lat FLOAT NOT NULL,
     lon FLOAT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
