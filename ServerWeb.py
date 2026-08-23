@@ -308,7 +308,7 @@ def crear_negocio():
     # Error.html? Qué es eso? Se come?
     # Es mi poya con ceboya
 
-@app.route("/Cerrar-sesión")
+@app.route("/Cerrar-sesion")
 def logout():
     session.clear()
     return redirect("/")
