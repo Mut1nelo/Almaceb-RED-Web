@@ -15,10 +15,10 @@ CREATE TABLE IF NOT EXISTS usuarios (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
-CREATE TABLE reportes (
+CREATE TABLE IF NOT EXISTS reportes (
     id INT AUTO_INCREMENT PRIMARY KEY,
 
-    usuario_id INT NULL,
+    usuario_id INT NOT NULL,
 
     tipo_reporte VARCHAR(50) NOT NULL,
     elemento_tipo VARCHAR(50) NOT NULL,
@@ -34,9 +34,13 @@ CREATE TABLE reportes (
         'En revisión',
         'Resuelto',
         'Descartado'
-    ) DEFAULT 'Pendiente',
+    ) NOT NULL DEFAULT 'Pendiente',
 
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    FOREIGN KEY (usuario_id)
+        REFERENCES usuarios(id)
+        ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS locales_negocio (

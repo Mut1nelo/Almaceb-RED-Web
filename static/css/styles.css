@@ -1464,7 +1464,6 @@ form label {
     background-color: var(--light-green);
     color: var(--vivid-green);
     width: 400px;
-    height: 550px;
     display: flex;
     flex-direction: column;
 }

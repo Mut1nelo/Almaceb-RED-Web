@@ -6,6 +6,7 @@
 from flask import Flask, render_template, request, redirect, session, jsonify, flash, url_for
 from difflib import SequenceMatcher
 from usuario import Usuario
+from report import Report
 from werkzeug.security import generate_password_hash, check_password_hash
 from mysqlconnection import connectToMySQL
 import requests
@@ -256,6 +257,64 @@ def user_profile():
 def report():
     return render_template("report.html")
 
+@app.route('/Reportar', methods=['GET', 'POST'])
+def reportar():
+
+    if 'user_id' not in session:
+        return redirect(url_for('login_page'))
+
+    if request.method == 'GET':
+
+        elemento_tipo = request.args.get('elemento_tipo')
+        elemento_id = request.args.get('elemento_id')
+
+        return render_template(
+            'report.html',
+            elemento_tipo=elemento_tipo,
+            elemento_id=elemento_id
+        )
+
+    tipo_reporte = request.form.get('tipo_reporte')
+    elemento_tipo = request.form.get('elemento_tipo')
+    elemento_id = request.form.get("elemento_id")
+
+    if elemento_id:
+        elemento_id = int(elemento_id)
+    else:
+        elemento_id = None
+
+    motivo = request.form.get('motivo')
+    descripcion = request.form.get('descripcion')
+
+    try:
+        resultado = Report.save(
+            usuario_id=session["user_id"],
+            tipo_reporte=tipo_reporte,
+            elemento_tipo=elemento_tipo,
+            elemento_id=elemento_id,
+            motivo=motivo,
+            descripcion=descripcion
+        )
+
+        print("RESULTADO DEL REPORTE:", resultado)
+
+        flash('Reporte enviado correctamente.', 'success')
+
+        return redirect(url_for('map'))
+
+    except ValueError as e:
+
+        return render_template(
+            'error.html',
+            error=str(e)
+        ), 400
+
+    except Exception as e:
+
+        return render_template(
+            'error.html',
+            error=str(e)
+        ), 500
 
 @app.route('/Crear-negocio', methods=['GET', 'POST'])
 def crear_negocio():

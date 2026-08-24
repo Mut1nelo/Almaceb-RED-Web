@@ -107,59 +107,153 @@
                 </span>
             </div>
             <div class="divider"></div>
-            <form action="" class="report-form" method="POST">
+            <form
+                action="{{ url_for('reportar') }}"
+                class="report-form"
+                method="POST"
+                enctype="multipart/form-data"
+            >
+                <!-- Si el reporte viene desde un negocio/promoción/etc. -->
+                <input
+                    type="hidden"
+                    name="elemento_id"
+                    id="report-elemento-id"
+                    value="{{ elemento_id if elemento_id else '' }}"
+                >
+                <!-- Tipo general de reporte -->
                 <div class="report-form-group">
-                    <label for="report-type"><i class="bi bi-list-ul"></i> Tipo de reporte:</label>
-                    <select name="" id="">
-                        <option value="">Selecciona una opción</option>
-                        <option value="">Información incorrecta</option>
-                        <option value="">Contenido inapropiado</option>
-                        <option value="">Problema técnico </option>
-                        <option value="">Posible fraude o engaño</option>
-                        <option value="">Otro</option>
+                    <label for="report-type">
+                        <i class="bi bi-list-ul"></i>
+                        Tipo de reporte:
+                    </label>
+                    <select name="tipo_reporte" id="report-type" required>
+                        <option value="" selected disabled>
+                            Selecciona una opción
+                        </option>
+                        <option value="informacion_incorrecta">
+                            Información incorrecta
+                        </option>
+                        <option value="contenido_inapropiado">
+                            Contenido inapropiado
+                        </option>
+                        <option value="problema_tecnico">
+                            Problema técnico
+                        </option>
+                        <option value="posible_fraude">
+                            Posible fraude o engaño
+                        </option>
+                        <option value="otro">
+                            Otro
+                        </option>
                     </select>
                 </div>
+                <!-- Qué se está reportando -->
                 <div class="report-form-group">
-                    <label for=""><i class="bi bi-geo-fill"></i> Elemento reportado:</label>
-                    <select name="" id="">
-                        <option value="">Selecciona una opción</option>
-                        <option value="">Negocio</option>
-                        <option value="">Promoción</option>
-                        <option value="">Usuario</option>
-                        <option value="">Ubicación / mapa</option>
-                        <option value="">Plataforma</option>
-                        <option value="">Otro</option>
+                    <label for="report-element">
+                        <i class="bi bi-geo-fill"></i>
+                        Elemento reportado:
+                    </label>
+                    <select name="elemento_tipo" id="report-element" required>
+                        <option
+                            value=""
+                            {% if not elemento_tipo %}selected{% endif %}
+                            disabled
+                        >
+                            Selecciona una opción
+                        </option>
+                        <option
+                            value="negocio"
+                            {% if elemento_tipo == 'negocio' %}selected{% endif %}
+                        >
+                            Negocio
+                        </option>
+                        <option
+                            value="promocion"
+                            {% if elemento_tipo == 'promocion' %}selected{% endif %}
+                        >
+                            Promoción
+                        </option>
+                        <option
+                            value="usuario"
+                            {% if elemento_tipo == 'usuario' %}selected{% endif %}
+                        >
+                            Usuario
+                        </option>
+                        <option
+                            value="ubicacion"
+                            {% if elemento_tipo == 'ubicacion' %}selected{% endif %}
+                        >
+                            Ubicación / mapa
+                        </option>
+                        <option
+                            value="plataforma"
+                            {% if elemento_tipo == 'plataforma' %}selected{% endif %}
+                        >
+                            Plataforma
+                        </option>
+                        <option
+                            value="otro"
+                            {% if elemento_tipo == 'otro' %}selected{% endif %}
+                        >
+                            Otro
+                        </option>
                     </select>
                 </div>
+                <!-- Motivo específico -->
                 <div class="report-form-group">
-                    <label for=""><i class="bi bi-exclamation-triangle-fill"></i> Motivo:</label>
-                    <select name="" id="">
-                        <!-- Cambia dependiendo del elemento elegido -->
-                        <!-- Negocio: información incorrecta, negocio cerrado/no existe, categoría incorrecta, imágenes inapropiadas, negocio duplicado.
-                            Promoción: promoción vencida, precio incorrecto, promoción no disponible, información engañosa, condiciones incorrectas.
-                            Usuario: nombre o imagen inapropiada, spam, suplantación, comportamiento inapropiado.
-                            Ubicación / mapa: marcador en ubicación incorrecta, negocio faltante, negocio duplicado.
-                            Plataforma: botón no funciona, página no carga, error visual, problema con inicio de sesión, otra falla. 
-                        -->
-                        <option value="">( Sin funcionar )</option>
+                    <label for="report-reason">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        Motivo:
+                    </label>
+                    <select name="motivo" id="report-reason" required>
+                        <option value="" selected disabled>
+                            Selecciona primero qué estás reportando
+                        </option>
                     </select>
                 </div>
+                <!-- Descripción -->
                 <div class="report-form-group">
-                    <label for="report-desc"><i class="bi bi-pencil-fill"></i> Descripción:</label>
-                    <textarea name="description" id="report-desc" class="no-resize" placeholder="Describe el problema con el mayor detalle posible"></textarea>
+                    <label for="report-desc">
+                        <i class="bi bi-pencil-fill"></i>
+                        Descripción:
+                    </label>
+                    <textarea
+                        name="descripcion"
+                        id="report-desc"
+                        class="no-resize"
+                        placeholder="Describe el problema con el mayor detalle posible"
+                        minlength="10"
+                        maxlength="500"
+                        required
+                    ></textarea>
                 </div>
+                <!-- Evidencia opcional -->
                 <div class="report-form-group">
-                    <label class="file-label"><i class="bi bi-file-earmark-zip-fill"></i> Adjuntar archivo:</label>
+                    <label class="file-label" for="archive-form">
+                        <i class="bi bi-file-earmark-image-fill"></i>
+                        Adjuntar evidencia:
+                    </label>
                     <div class="file-input-wrapper">
                         <label for="archive-form" class="file-btn green-label" id="file-btn">
                             <i class="bi bi-cloud-arrow-up-fill"></i>
                             <span class="btn-text">Adjuntar archivo</span>
-                            <span class="file-name" id="file-name">Ningún archivo seleccionado</span>
-                            <input type="file" name="archive" id="archive-form">
+                            <span class="file-name" id="file-name">
+                                Ningún archivo seleccionado
+                            </span>
+
+                            <input
+                                type="file"
+                                name="archive"
+                                id="archive-form"
+                                accept=".png,.jpg,.jpeg,.webp,.pdf"
+                            >
                         </label>
                     </div>
                 </div>
-                <input type="button" value="Enviar reporte" class="green-btn-alt">
+                <button type="submit" class="green-btn-alt">
+                    <i class="bi bi-send-fill"></i>
+                    Enviar reporte
+                </button>
             </form>
         </section>
         <section class="report-right border-card">
@@ -188,8 +282,8 @@
             <div class="report-title" >
                 <i class="bi bi-capslock-fill"></i>
                 <span>
-                    <h2>Recibirás seguimiento si corresponde</h2>
-                    <p>Te mantendremos informado sobre el estado de tu reporte.</p>
+                    <h2>Ayúdanos con información clara</h2>
+                    <p>Mientras más detalles entregues, más fácil será revisar el problema.</p>
                 </span>
             </div>
         </section>
@@ -210,6 +304,8 @@
             <p>© 2026 Almaceb RED</p>
         </div>
     </footer>
+    <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/report.js') }}"></script>
 </body>
 </html>
