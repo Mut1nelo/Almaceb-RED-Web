@@ -45,12 +45,16 @@ class Usuario:
 
    @classmethod
    def get_by_id(cls, user_id):
-      query = "SELECT * FROM usuarios WHERE id = %(id)s"
-      resultado = connectToMySQL('almaceb_red').query_db(query, user_id)
+    query = "SELECT * FROM usuarios WHERE id = %(id)s"
+    resultado = connectToMySQL("almaceb_red").query_db(
+        query,
+        {"id": user_id}
+    )
 
-      if not resultado:
-         return False
-      return cls[resultado[0]]
+    if not resultado:
+        return None
+
+    return cls(resultado[0])
 
    @classmethod
    def update_location(cls, user_id, address, lat, lon):

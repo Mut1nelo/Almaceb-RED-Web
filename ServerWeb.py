@@ -388,7 +388,40 @@ def search():
 
 @app.route("/Configuracion")
 def config():
-    return redirect(url_for('future_function'))
+    if "user_id" not in session:
+        return redirect(url_for("login_page"))
+
+    sections = {"perfil", "editar", "terminos", "preguntas"}
+    section = request.args.get("seccion", "perfil")
+
+    if section not in sections:
+        section = "perfil"
+
+    usuario = Usuario.get_by_id(session["user_id"])
+
+    return render_template(
+        "config.html",
+        usuario=usuario,
+        section=section,
+        account_type=session.get("account_type", "client")
+    )
+
+@app.route("/Configuracion/Editar", methods=["POST"])
+def actualizar_perfil():
+    if "user_id" not in session:
+        return redirect(url_for("login_page"))
+
+    data = {
+        "id": session["user_id"],
+        "nombre_completo": request.form.get("nombre_completo", "").strip(),
+        "telefono": request.form.get("telefono", "").strip(),
+        "ubicacion": request.form.get("ubicacion", "").strip(),
+        "biografia": request.form.get("biografia", "").strip()
+    }
+
+    Usuario.update_profile(data)
+
+    return redirect(url_for("config", seccion="perfil"))
 
 @app.route("/Funciones-futuras")
 def future_function():

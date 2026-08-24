@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <!-- Compatibilidad -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Icono -->
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='imgs/favicon.ico') }}">
+    <!-- Estilos -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <!-- Título -->
+    <title>Reportar problema | Almaceb RED</title>
+    <style>
+        /* Estilos específicos para report.html */
+    </style>
+</head>
+<body data-account-type="{{ account_type }}">
+    <div id="sidebarOverlay" class="sidebar-overlay"></div>
+    <aside id="sidebarPanel" class="sidebarPanel" aria-hidden="true">
+        <div class="sidebar-topbar">
+            <button id="closeSidebar" class="sidebar-close" type="button" aria-label="Cerrar menú">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <!-- Por ahora no funciona en otras páginas que no sea el mapa -->
+    </aside>
+
+    <nav class="nav-container">
+        <a href="/">
+            <img 
+            src="{{ url_for('static', filename='imgs/logo/Almaceb-Logo-inicio.png') }}"
+            alt="Almaceb RED Logo"
+            class="nav-logo"
+            >
+        </a>
+        <div class="nav-back-container">
+            <button class="green-btn back-button" type="button">
+                <i class="fa-solid fa-arrow-left"></i>
+                Volver
+            </button>
+        </div>
+        <button class="sidebar-toggle" type="button" aria-label="Abrir menú" aria-controls="sidebarPanel" aria-expanded="false">
+            <img
+            src="{{ url_for('static', filename='imgs/default.jpg') }}"
+            alt="Abrir menú de usuario"
+            class="nav-profile">
+        </button>
+    </nav>
+    <main class="bgGrey config-page">
+        <section class="config-left border-card">
+            <div>
+                <a class="nav-btn" href="{{ url_for('config', seccion='perfil') }}">
+                    <i class="bi bi-person-fill"></i> Mi perfil
+                </a>
+                <a class="nav-btn" href="{{ url_for('config', seccion='editar') }}">
+                    <i class="bi bi-pencil-fill"></i> Editar perfil
+                </a>
+                <a class="nav-btn" href="{{ url_for('config', seccion='terminos') }}">
+                    <i class="bi bi-file-earmark-text-fill"></i> Términos y condiciones
+                </a>
+                <a class="nav-btn" href="{{ url_for('config', seccion='preguntas') }}">
+                    <i class="bi bi-question-circle-fill"></i> Preguntas frecuentes
+                </a>
+            </div>
+            <a href="/Cerrar-sesion" class="sidebar-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Cerrar sesión</span></a>
+        </section>
+        <section class="config-right border-card">
+            {% if section == "perfil" %}
+                <img
+                    src="{{ url_for('static', filename='imgs/default.jpg') }}"
+                    alt=""
+                    class=""
+                    width="300"
+                    >
+                <h1>Hola, {{ usuario.nombre_completo or usuario.username }}</h1>
+                <div class="config-content">
+                    <h2 class="green-line">Mis datos</h2>
+                    <div class="report-form-group config-group">
+                        <strong>Fecha de registro:</strong>
+                        <p>{{ usuario.created_at }}</p>
+                    </div>
+                    <div class="report-form-group config-group">
+                        <strong>Nombre completo:</strong>
+                        <p>{{ usuario.username }}</p>
+                    </div>
+                    <div class="report-form-group config-group">
+                        <strong>Correo:</strong>
+                        <p>{{ usuario.email }}</p>
+                    </div>
+                    <div class="report-form-group config-group">
+                        <strong>Teléfono:</strong>
+                        <p>{{ usuario.telefono or "Sin especificar" }}</p>
+                    </div>
+                    <div class="report-form-group config-group">
+                        <strong>Ubicación:</strong>
+                        <p>{{ usuario.ubicacion or "Sin especificar" }}</p>
+                    </div>
+                    <p class="group-p">
+                        <strong>Cuenta vendedor:</strong>
+                        {{ "Sí" if usuario.account_type == "business" else "No" }}
+                    </p>
+                    <p class="group-p"><strong>Biografía:</strong> {{ usuario.biografia or "-" }}</p>
+                </div>
+            {% elif section == "editar" %}
+                <form action="{{ url_for('actualizar_perfil') }}" class="config-content" method="POST">
+                    <!-- Campos precargados del usuario -->
+                    <h2 class="green-line">Editar perfil</h2>
+
+                </form>
+
+            {% elif section == "terminos" %}
+                <!-- Contenido de términos -->
+                 <div class="config-content">
+                    <h2 class="green-line">Términos y condiciones</h1>
+                    <article class="terms-and-faq-article">
+                        <h4>1. Uso de la plataforma</h4>
+                        <p>
+                            Almaceb RED permite a los usuarios descubrir negocios locales y a los comerciantes
+                            publicar información y promociones de sus establecimientos.
+                        </p>
+                    </article>
+                    <article class="terms-and-faq-article">
+                        <h4>2. Responsabilidad del contenido</h4>
+                        <p>
+                            Cada negocio es responsable de la información, imágenes y promociones que publica en su perfil.
+                        </p>
+                    </article>
+                    <article class="terms-and-faq-article">
+                        <h4>3. Uso adecuado</h4>
+                        <p>
+                            Los usuarios deben utilizar la plataforma de manera respetuosa y no publicar
+                            contenido ofensivo, engañoso o ilegal.
+                        </p>
+                    </article>
+                    <article class="terms-and-faq-article">
+                        <h4>4. Privacidad</h4>
+                        <p>
+                            Los datos personales serán utilizados únicamente para el funcionamiento de la
+                            plataforma y no serán compartidos sin autorización.
+
+                        </p>
+                    </article>
+                    <article class="terms-and-faq-article">
+                        <h4>5. Cambios en la plataforma</h4>
+                        <p>
+                            Almaceb RED podrá actualizar sus funciones y estos términos cuando sea necesario.
+                        </p>
+                    </article>
+                 </div>
+            {% elif section == "preguntas" %}
+                <!-- Preguntas frecuentes -->
+                <div class="config-content">
+                    <h2 class="green-line">Preguntas frecuentes</h2>
+                    <article class="terms-and-faq-article">
+                        <h4>¿Qué es Almaceb RED?</h4>
+                        <p>
+                            Es una plataforma que ayuda a encontrar y promocionar negocios locales.
+                        </p>
+                    </article>
+                    <article class="terms-and-faq-article">
+                        <h4>¿Cómo sigo un negocio?</h4>
+                        <p>
+                            Ingresa al perfil del negocio y presiona "Seguir".
+                        </p>
+                    </article>
+                    <article class="terms-and-faq-article">
+                        <h4>¿Cómo encuentro negocios cercanos?</h4>
+                        <p>
+                            Ve a la sección Mapa o utiliza el buscador.
+                        </p>
+                    </article>
+                    <article class="terms-and-faq-article">
+                        <h4>¿Cómo publico promociones?</h4>
+                        <p>
+                            Si tienes una cuenta de negocio, en el mapa abre el panel lateral,
+                            entra a “mi negocio” y selecciona "Nueva promoción".
+                        </p>
+                    </article>
+                    <article class="terms-and-faq-article">
+                        <h4>¿Cómo contacto un negocio?</h4>
+                        <p>
+                            Desde su perfil puedes ver sus datos de contacto.
+                        </p>
+                    </article>
+                </div>
+                <h3>¿No encontraste tu respuesta? Contacta al administrador.</h3>
+            {% endif %}
+        </section>
+    </main>
+    <footer class="web-footer">
+        <div class="footer-brand">
+            <img src="{{ url_for('static', filename='imgs/logo/Almaceb-HD-Logo.png') }}" alt="Almaceb RED Logo">
+            <p>Conectando negocios de barrio con clientes reales.</p>
+        </div>
+        <div class="footer-column">
+            <h4>Enlaces</h4>
+            <a href="/">Inicio</a>
+        </div>
+        <div class="footer-column">
+            <h4>Proyecto</h4>
+            <p>IntelliRED SpA</p>
+            <p>Feria Técnico Profesional 2026</p>
+            <p>© 2026 Almaceb RED</p>
+        </div>
+    </footer>
+    <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+</body>
+</html>

@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 4. Datos reales desde Flask
-    const defaultIcon = "../static/imgs/icons/in-1.png";
+    const defaultIcon = "../static/imgs/default-business.png";
     const locations = (typeof negociosData !== 'undefined' ? negociosData : []).map(n => ({
         id: n.id,
         coords: [n.lat, n.lon],

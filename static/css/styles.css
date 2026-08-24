@@ -625,12 +625,15 @@
 .nav-btn {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 11px 20px;
+    gap: 14px;
+    padding: 13px 14px;
     border-radius: 1em;
     color: #000000;
     background-color: #ffffff;
     font-weight: bold;
+    align-items: center;
+    margin-top: auto;
+    width: 100%;
     text-decoration: none;
     cursor: pointer;
     transition: background-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, color 0.2s ease, fill 0.2s ease;
@@ -1359,7 +1362,7 @@ form label {
 /*                    Reportes                      */
 /* ------------------------------------------------ */
 
-.report-container {
+.report-page {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -2048,9 +2051,132 @@ body.gallery-modal-open {
     box-shadow: 0 4px 9px rgba(0, 0, 0, 0.18);
 }
 
+.featured-image {
+    height: 300px;
+    position: relative;
+    overflow: hidden;
+}
+
+.featured-banner {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.rank {
+    position: absolute;
+    top: 9px;
+    left: 9px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    color: white;
+    font-size: 19px;
+    font-weight: 800;
+}
+
+.rank-1 { background: #ffd500; }
+.rank-2 { background: #aeb5bf; }
+.rank-3 { background: #b36c3d; }
+
+.featured-profile {
+    width: 130px;
+    height: 130px;
+    position: absolute;
+    bottom: 80px;
+    left: 14px;
+    border: 1px solid #000;
+}
+
+.featured-card-content {
+    padding: 27px 7px 12px;
+    position: relative;
+}
+
+.featured-card-content h2 {
+    font-size: 25px;
+    margin-bottom: 5px;
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+}
+
+.rating span {
+    color: #ffab00;
+    font-size: 18px;
+    letter-spacing: -2px;
+}
+
+.rating strong {
+    color: #009e62;
+    font-size: 13px;
+}
+
 /* Como hiciste toda esta mie### hrmno */
 /* Con las manos */
 
 /* ================================================ */
 /*                  Configuración                   */
 /* ================================================ */
+
+.config-page {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    gap: 2em;
+}
+
+.config-left {
+    display: inline-flex;
+    flex-direction: column;
+    width: 350px;
+    height: 700px;
+    font-size: 20px;
+}
+
+.config-right {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    width: 1100px;
+    height: 700px;
+    justify-content: space-between;
+}
+
+.config-right h1 {
+    font-size: 2.5em;
+}
+
+.config-content {
+    width: 100%;
+}
+
+.config-content h2 {
+    width: fit-content;
+    margin-inline: 0;
+}
+
+.config-group {
+    width: 500px;
+}
+
+.config-group,
+.group-p {
+    margin-top: 20px;
+}
+
+.terms-and-faq-article {
+    margin-top: 17px;
+}
+
+.terms-and-faq-article h4 {
+    margin-bottom: 10px;
+}
