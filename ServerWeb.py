@@ -388,27 +388,36 @@ def search():
 
 @app.route("/Configuracion")
 def config():
-    if "user_id" not in session:
-        return redirect(url_for("login_page"))
-
     sections = {"perfil", "editar", "terminos", "preguntas"}
     section = request.args.get("seccion", "perfil")
 
     if section not in sections:
         section = "perfil"
 
-    usuario = Usuario.get_by_id(session["user_id"])
+    is_authenticated = "user_id" in session
+    usuario = None
+
+    if is_authenticated:
+        usuario = Usuario.get_by_id(session["user_id"])
+
+        # Si la sesión apunta a un usuario que ya no existe, vuelve a tratarla
+        # como invitada para evitar que la plantilla intente mostrar datos vacíos.
+        if usuario is None:
+            session.clear()
+            is_authenticated = False
 
     return render_template(
         "config.html",
         usuario=usuario,
         section=section,
-        account_type=session.get("account_type", "client")
+        is_authenticated=is_authenticated,
+        account_type=session.get("account_type", "invitado")
     )
 
 @app.route("/Configuracion/Editar", methods=["POST"])
 def actualizar_perfil():
     if "user_id" not in session:
+        flash("Debes iniciar sesión para editar tu perfil.", "login")
         return redirect(url_for("login_page"))
 
     data = {

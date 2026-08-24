@@ -15,20 +15,29 @@ CREATE TABLE IF NOT EXISTS usuarios (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Lo dejo como comentario pq no hace nda
--- CREATE TABLE IF NOT EXISTS negocios (
---     id INT AUTO_INCREMENT PRIMARY KEY,
---     usuario_id INT NOT NULL,
---     nombre VARCHAR(150) NOT NULL,
---     categoria VARCHAR(100),
---     descripcion TEXT,
---     direccion VARCHAR(255),
---     telefono VARCHAR(20),
---     email VARCHAR(150),
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
---     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
--- );
+CREATE TABLE reportes (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+
+    usuario_id INT NULL,
+
+    tipo_reporte VARCHAR(50) NOT NULL,
+    elemento_tipo VARCHAR(50) NOT NULL,
+    elemento_id INT NULL,
+
+    motivo VARCHAR(100) NOT NULL,
+    descripcion VARCHAR(500) NOT NULL,
+
+    archivo VARCHAR(255) NULL,
+
+    estado ENUM(
+        'Pendiente',
+        'En revisión',
+        'Resuelto',
+        'Descartado'
+    ) DEFAULT 'Pendiente',
+
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 
 CREATE TABLE IF NOT EXISTS locales_negocio (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -60,8 +69,6 @@ CREATE TABLE negocios (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     );
-
--- jeje esto te falta
 
 -- Este tmb
 -- CREATE TABLE IF NOT EXISTS promociones (
