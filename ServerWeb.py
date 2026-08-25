@@ -212,7 +212,7 @@ def featured_business():
 
 @app.route("/Perfil-usuario")
 def user_profile():
-    return redirect(url_for('future_function'))
+    return render_template("user-profile.html")
 
 # Otra plantilla pero para la busqueda de usuarios
 # @app.route("/Perfil-usuario/<int:usuarios_id>")
