@@ -4,13 +4,18 @@ COLLATE utf8mb4_spanish_ci;
 
 USE almaceb_red;
 
--- Create the usuarios table
+-- Crear la tabla de usuarios
 CREATE TABLE IF NOT EXISTS usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
     email VARCHAR(150) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     account_type ENUM('client', 'business') DEFAULT 'client',
+
+    telefono VARCHAR(20) NULL,
+    bio VARCHAR(500) NULL,
+    foto_perfil VARCHAR(255) NULL,
+
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
@@ -55,7 +60,7 @@ CREATE TABLE IF NOT EXISTS locales_negocio (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 );
 
-CREATE TABLE negocios (
+CREATE TABLE IF NOT EXISTS negocios (
 	id INT PRIMARY KEY AUTO_INCREMENT,
 	nombre_negocio VARCHAR(64) NOT NULL UNIQUE,
     business_type ENUM(
