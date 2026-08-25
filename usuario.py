@@ -1,6 +1,8 @@
 # Importamos la función que devolverá una instancia de una conexión
 from mysqlconnection import connectToMySQL
 
+DB_NAME = 'almaceb_red'
+
 # Creamos la clase basada en la tabla de usuarios (si, esto me lo robe de la tarea q hicimos jijiji)
 class Usuario:
    def __init__( self , data ):
@@ -18,7 +20,7 @@ class Usuario:
        query = "SELECT * FROM usuarios;"
 
        # Llamamos a función connectToMySQL con el esquema al que te diriges
-       resultados = connectToMySQL('almaceb_red').query_db(query)
+       resultados = connectToMySQL(DB_NAME).query_db(query)
 
        # instancias bien lindas bonitas hermosas
        usuarios = []
@@ -31,13 +33,13 @@ class Usuario:
    @classmethod
    def save(cls, data):
     query = "INSERT INTO usuarios (username, email, password_hash, account_type) VALUES (%(username)s,%(email)s,%(password)s, %(account_type)s)"
-    return connectToMySQL('almaceb_red').query_db(query, data)
+    return connectToMySQL(DB_NAME).query_db(query, data)
 
    @classmethod
    def check_users(cls, data):
       #esto se explica solo la vdd, si no cachas le preguntas a chatjepete
       query = "SELECT * FROM usuarios WHERE email = %(email)s"
-      resultado = connectToMySQL('almaceb_red').query_db(query, data)
+      resultado = connectToMySQL(DB_NAME).query_db(query, data)
 
       if len(resultado) < 1: #si es mas chico q 1 no retorna nada 
          return False
@@ -46,7 +48,7 @@ class Usuario:
    @classmethod
    def get_by_id(cls, user_id):
     query = "SELECT * FROM usuarios WHERE id = %(id)s"
-    resultado = connectToMySQL("almaceb_red").query_db(
+    resultado = connectToMySQL(DB_NAME).query_db(
         query,
         {"id": user_id}
     )
@@ -65,4 +67,4 @@ class Usuario:
          'lat': lat,
          'lon': lon
       }
-      return connectToMySQL('almaceb_red').query_db(query, data)
+      return connectToMySQL(DB_NAME).query_db(query, data)

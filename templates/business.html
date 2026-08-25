@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
     <!-- Titulo -->
-    <title>(Nombre del negocio) | Almaceb RED</title>
+    <title>{{ business.nombre_negocio }} | Almaceb RED</title>
 </head>
 <body data-account-type="{{ account_type }}" class="bgGrey">
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
@@ -113,12 +113,12 @@
                 >
             </div>
             <div class="business-main-info">
-                <h1>(Nombre del negocio)</h1>
+                <h1>{{ business.nombre_negocio }}</h1>
                 <div class="business-meta">
                     <div class="meta-item">
                         <i class="bi bi-geo-alt-fill"></i>
                         <span>
-                            (Dirección del negocio)
+                            {{ business.direccion }}
                         </span>
                     </div>
                     <div class="meta-item">
@@ -134,27 +134,18 @@
                         </span>
                         -->
                         <span>
-                            · (Horario de termino)
+                            · {{ business.horario_hora_fin }}
                         </span>
                     </div>
                 </div>
                 <p class="business-description">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                    Donec mattis lacus orci, id elementum ante sollicitudin
-                    venenatis. Sed auctor lacinia turpis, at tristique mi
-                    pellentesque vel. Nulla faucibus, nisi iaculis eleifend
-                    posuere, massa dui elementum massa, non aliquet velit lacus
-                    non nunc. Morbi tincidunt metus quam, a luctus tellus
-                    aliquet sit amet.
+                    {{ business.descripcion }}
                 </p>
                 <div class="business-actions">
                     <!-- Botón especial porque necesita los bordes más redondeados -->
                     <button class="btn-business btn-i" style="border-radius:2em;"> 
                         <i class="bi bi-heart-fill"></i>
                         Seguir
-                    </button>
-                    <button class="white-btn">
-                        Contactar
                     </button>
                     <button class="icon-btn">
                         <i class="bi bi-share"></i>
@@ -180,7 +171,7 @@
                             Dirección
                         </span>
                         <span class="info-value">
-                            (Dirección del negocio)
+                            {{ business.direccion }}
                         </span>
                     </div>
                     <div class="info-row">
@@ -189,7 +180,7 @@
                             Teléfono
                         </span>
                         <span class="info-value">
-                            (Número del negocio)
+                            {{ business.telefono }}
                         </span>
                     </div>
                     <div class="info-row">
@@ -198,7 +189,7 @@
                             Correo
                         </span>
                         <span class="info-value">
-                            (Email del negocio, si tiene)
+                            {{ business.correo }}
                         </span>
                     </div>
                     <div class="info-row">
@@ -207,7 +198,7 @@
                             Horarios
                         </span>
                         <span class="info-value">
-                            (Día) a (Día) · (Hora de inicio) - (Hora de termino)
+                            {{ business.horario_dia_inicio }} a {{ business.horario_dia_fin }} · {{ business.horario_hora_inicio }} - {{ business.horario_hora_fin }}
                         </span>
                     </div>
                 </div>
@@ -366,6 +357,7 @@
             </article>
         </section>
         <!-- RESEÑAS + PRODUCTOS DESTACADOS -->
+        <!-- niger -->
         <!-- Por ahora no nos concentremos en algo complicado
         <section class="bottom-grid">
             <article class="reviews border-card">

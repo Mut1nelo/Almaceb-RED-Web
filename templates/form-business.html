@@ -105,201 +105,185 @@
                 Completa los datos necesarios para crear un negocio
                 {% endif %}
             </h2>
-        <form
-            action="{% if editando %}{{ url_for('editar_negocio', negocio_id=negocio.id) }}{% else %}{{ url_for('crear_negocio') }}{% endif %}"
-            method="POST"
-            id="businessForm"
-        >
+        <form id="businessForm" method="POST" action="{{ url_for('editar_negocio', negocio_id=negocio.id) if editando else url_for('crear_negocio') }}">
             <div class="form-group">
                 <label for="business-name">Nombre del negocio</label><br>
-                <input
-                    type="text"
-                    id="business-name"
-                    name="business-name"
-                    placeholder="Nombre del negocio"
+                <input type="text" id="business-name" name="business-name"
                     value="{{ negocio.nombre_negocio if editando else '' }}"
-                    required
-                >
+                    placeholder="Ingresa el nombre del negocio" required>
             </div>
+
             <div class="form-group">
                 <label for="business-type">Tipo de Negocio</label><br>
-                <select id="business-type" name="business-type" class="form-select" required>
-                    <option
-                        value=""
-                        disabled
-                        {% if not editando %}selected{% endif %}
-                    >
-                        Elige tu tipo de negocio
-                    </option>
+                <select id="business-type" name="business-type" required>
+                    <option value="" disabled {{ 'selected' if not editando else '' }}>Elige tu tipo de Negocio</option>
                     {% for tipo in business_types %}
-                    <!-- Podrías haber hecho eso, me lo dijo ChatGPT -->
-                    <option
-                        value="{{ tipo }}"
-                        {% if editando and negocio.business_type == tipo %}
-                            selected
-                        {% endif %}
-                    >
-                        {{ tipo }}
-                    </option>
+                        <option value="{{ tipo }}" {{ 'selected' if editando and negocio.business_type == tipo else '' }}>
+                            {{ tipo }}
+                        </option>
                     {% endfor %}
                 </select>
             </div>
+
             <div class="form-group">
-                <label for="business-address">Dirección de tu negocio</label><br>
-                <div class="flex-between">
-                    <input
-                        type="text"
-                        id="business-address"
-                        name="business-address"
-                        placeholder="Ingresa la dirección del negocio"
-                    >
-                    <button type="button" id="lookupBtn" class="white-btn">
-                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
-                        Buscar
-                    </button>
-                </div>
+                <label for="business-address">Dirección de tu Negocio</label><br>
+                <input type="text" id="business-address" name="business-address"
+                    value="{{ negocio.direccion if editando else '' }}"
+                    placeholder="Ingresa la dirección de tu negocio">
+                <button type="button" id="lookupBtn">🔍 Buscar dirección</button>
             </div>
+
             <div class="form-group">
-                <label for="business-address-detect">o detecta tu ubicación actual (Más preciso)</label>
-                <input type="button" id="locateBtn" value="Detectar ubicación" class="green-btn-alt">
+                <label for="business-address-detect">o Detecta tu Ubicación Actual (Más Preciso)</label>
+                <input type="button" id="locateBtn" value="Detectar Ubicación">
             </div>
 
             <p id="foundLocation"></p>
             <p id="status"></p>
 
-            <input
-                type="hidden"
-                name="latitude"
-                id="latitude"
-                value="{{ negocio.lat if editando else '' }}"
-            >
-            <input
-                type="hidden"
-                name="longitude"
-                id="longitude"
-                value="{{ negocio.lon if editando else '' }}"
-            >
-            <input
-                type="hidden"
-                name="display_name"
-                id="display_name"
-            >
-            <input
-                type="hidden"
-                name="address"
-                id="address"
-            >
-            <button
-                type="submit"
-                class="green-btn"
-                id="saveBtn"
-                {% if not editando %}disabled{% endif %}
-            >
-                {% if editando %}
-                    Guardar cambios
-                {% else %}
-                    Crear negocio
-                {% endif %}
+            <div class="form-group">
+                <label for="telefono">Teléfono</label><br>
+                <input type="tel" id="telefono" name="telefono"
+                    value="{{ negocio.telefono if editando and negocio.telefono else '' }}"
+                    placeholder="+56 9 1234 5678">
+            </div>
+
+            <div class="form-group">
+                <label for="correo">Correo</label><br>
+                <input type="email" id="correo" name="correo"
+                    value="{{ negocio.correo if editando and negocio.correo else '' }}"
+                    placeholder="tunegocio@correo.com">
+            </div>
+
+            <div class="form-group">
+                <label for="descripcion">Descripción</label><br>
+                <textarea id="descripcion" name="descripcion" rows="4"
+                        placeholder="Cuéntale a tus clientes sobre tu negocio">{{ negocio.descripcion if editando and negocio.descripcion else '' }}</textarea>
+            </div>
+            <div class="form-group">
+            <label for="horario_dia_inicio">Día de inicio</label><br>
+                <select id="horario_dia_inicio" name="horario_dia_inicio">
+                    <option value="" disabled selected>Selecciona un día</option>
+                    <option value="Lunes" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Lunes' }}>Lunes</option>
+                    <option value="Martes" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Martes' }}>Martes</option>
+                    <option value="Miércoles" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Miércoles' }}>Miércoles</option>
+                    <option value="Jueves" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Jueves' }}>Jueves</option>
+                    <option value="Viernes" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Viernes' }}>Viernes</option>
+                    <option value="Sábado" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Sábado' }}>Sábado</option>
+                    <option value="Domingo" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Domingo' }}>Domingo</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="horario_dia_fin">Día de término</label><br>
+                <select id="horario_dia_fin" name="horario_dia_fin">
+                    <option value="" disabled selected>Selecciona un día</option>
+                    <option value="Lunes" {{ 'selected' if editando and negocio.horario_dia_fin == 'Lunes' }}>Lunes</option>
+                    <option value="Martes" {{ 'selected' if editando and negocio.horario_dia_fin == 'Martes' }}>Martes</option>
+                    <option value="Miércoles" {{ 'selected' if editando and negocio.horario_dia_fin == 'Miércoles' }}>Miércoles</option>
+                    <option value="Jueves" {{ 'selected' if editando and negocio.horario_dia_fin == 'Jueves' }}>Jueves</option>
+                    <option value="Viernes" {{ 'selected' if editando and negocio.horario_dia_fin == 'Viernes' }}>Viernes</option>
+                    <option value="Sábado" {{ 'selected' if editando and negocio.horario_dia_fin == 'Sábado' }}>Sábado</option>
+                    <option value="Domingo" {{ 'selected' if editando and negocio.horario_dia_fin == 'Domingo' }}>Domingo</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="horario_hora_inicio">Hora de apertura</label><br>
+                <input type="time" id="horario_hora_inicio" name="horario_hora_inicio"
+                    value="{{ negocio.horario_hora_inicio if editando and negocio.horario_hora_inicio else '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="horario_hora_fin">Hora de cierre</label><br>
+                <input type="time" id="horario_hora_fin" name="horario_hora_fin"
+                    value="{{ negocio.horario_hora_fin if editando and negocio.horario_hora_fin else '' }}">
+            </div>
+
+            <div class="form-group">
+                <label for="imagen_banner">Imagen de banner</label><br>
+                <input type="file" id="imagen_banner" name="imagen_banner" accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <label for="imagen_perfil">Imagen de perfil</label><br>
+                <input type="file" id="imagen_perfil" name="imagen_perfil" accept="image/*">
+            </div>
+
+            <input type="hidden" name="latitude" id="latitude" value="{{ negocio.lat if editando else '' }}">
+            <input type="hidden" name="longitude" id="longitude" value="{{ negocio.lon if editando else '' }}">
+
+            <button type="submit" class="green-btn" id="saveBtn" {{ '' if editando else 'disabled' }}>
+                {{ 'Guardar cambios' if editando else 'Crear negocio' }}
             </button>
         </form>
-        </section>
-    </main>
-    <footer class="web-footer">
-        <div class="footer-brand">
-            <img src="{{ url_for('static', filename='imgs/logo/Almaceb-HD-Logo.png') }}" alt="Almaceb RED Logo">
-            <p>Conectando negocios de barrio con clientes reales.</p>
-        </div>
-        <div class="footer-column">
-            <h4>Enlaces</h4>
-            <a href="/">Inicio</a>
-        </div>
-        <div class="footer-column">
-            <h4>Proyecto</h4>
-            <p>IntelliRED SpA</p>
-            <p>Feria Técnico Profesional 2026</p>
-            <p>© 2026 Almaceb RED</p>
-        </div>
-    </footer>
-    <script
-        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
-        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
-        crossorigin="anonymous">
-    </script>
-    <script>
-        document.querySelectorAll('.carousel-img').forEach(img => {
-            img.addEventListener('dragstart', event => event.preventDefault());
-        });
-    </script>
-    <script>
-    const saveBtn = document.getElementById('saveBtn');
-    const status = document.getElementById('status');
-    const foundLocation = document.getElementById('foundLocation');
 
-    function fillCoords(lat, lon, display_name, address) {
-        document.getElementById('latitude').value = lat;
-        document.getElementById('longitude').value = lon;
-        document.getElementById('display_name').value = display_name || '';
-        document.getElementById('address').value = JSON.stringify(address || {});
-        foundLocation.textContent = `Ubicación encontrada: ${display_name}`;
-        saveBtn.disabled = false;
-    }
+        <script>
+        const saveBtn = document.getElementById('saveBtn');
+        const status = document.getElementById('status');
+        const foundLocation = document.getElementById('foundLocation');
 
-    // --- Detectar ubicación (reverse geocoding) ---
-    document.getElementById('locateBtn').addEventListener('click', () => {
-        if (!navigator.geolocation) {
-            status.textContent = 'Tu navegador no soporta geolocalización.';
-            return;
+        function fillCoords(lat, lon, display_name) {
+            document.getElementById('latitude').value = lat;
+            document.getElementById('longitude').value = lon;
+            document.getElementById('business-address').value = display_name || document.getElementById('business-address').value;
+            foundLocation.textContent = `Ubicación encontrada: ${display_name}`;
+            saveBtn.disabled = false;
         }
-        status.textContent = 'Detectando ubicación...';
 
-        navigator.geolocation.getCurrentPosition(async (position) => {
-            const { latitude, longitude } = position.coords;
+        document.getElementById('locateBtn').addEventListener('click', () => {
+            if (!navigator.geolocation) {
+                status.textContent = 'Tu navegador no soporta geolocalización.';
+                return;
+            }
+            status.textContent = 'Detectando ubicación...';
+
+            navigator.geolocation.getCurrentPosition(async (position) => {
+                const { latitude, longitude } = position.coords;
+                try {
+                    const res = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+                        { headers: { 'Accept-Language': 'es' } }
+                    );
+                    const data = await res.json();
+                    fillCoords(latitude, longitude, data.display_name);
+                    status.textContent = '';
+                } catch (err) {
+                    status.textContent = 'Error: ' + err.message;
+                }
+            }, (err) => {
+                status.textContent = 'Permiso denegado o error: ' + err.message;
+            });
+        });
+
+        document.getElementById('lookupBtn').addEventListener('click', async () => {
+            const query = document.getElementById('business-address').value.trim();
+            if (!query) {
+                status.textContent = 'Escribe una dirección primero.';
+                return;
+            }
+            status.textContent = 'Buscando...';
+
             try {
                 const res = await fetch(
-                    `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=18&addressdetails=1`,
+                    `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=1`,
                     { headers: { 'Accept-Language': 'es' } }
                 );
-                const data = await res.json();
-                fillCoords(latitude, longitude, data.display_name, data.address);
-                document.getElementById('business-address').value = data.display_name || '';
+                const results = await res.json();
+
+                if (results.length === 0) {
+                    status.textContent = 'No se encontró esa dirección.';
+                    saveBtn.disabled = true;
+                    return;
+                }
+
+                const match = results[0];
+                fillCoords(match.lat, match.lon, match.display_name);
                 status.textContent = '';
             } catch (err) {
                 status.textContent = 'Error: ' + err.message;
             }
-        }, (err) => {
-            status.textContent = 'Permiso denegado o error: ' + err.message;
         });
-    });
-
-    // --- Buscar dirección escrita (forward geocoding) ---
-    document.getElementById('lookupBtn').addEventListener('click', async () => {
-        const query = document.getElementById('business-address').value.trim();
-        if (!query) {
-            status.textContent = 'Escribe una dirección primero.';
-            return;
-        }
-        status.textContent = 'Buscando...';
-
-        try {
-            const res = await fetch(
-                `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&addressdetails=1&limit=1`,
-                { headers: { 'Accept-Language': 'es' } }
-            );
-            const results = await res.json();
-
-            if (results.length === 0) {
-                status.textContent = 'No se encontró esa dirección.';
-                saveBtn.disabled = true;
-                return;
-            }
-
-            const match = results[0];
-            fillCoords(match.lat, match.lon, match.display_name, match.address);
-            status.textContent = '';
-        } catch (err) {
-            status.textContent = 'Error: ' + err.message;
-        }
-    });
-    </script>
+        </script>
 </body>
 </html>

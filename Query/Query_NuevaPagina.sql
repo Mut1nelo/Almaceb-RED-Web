@@ -74,6 +74,22 @@ CREATE TABLE negocios (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
     );
 
+ALTER TABLE usuarios
+ADD COLUMN telefono VARCHAR(20) NULL AFTER account_type,
+ADD COLUMN bio VARCHAR(500) NULL AFTER telefono,
+ADD COLUMN foto_perfil VARCHAR(255) NULL AFTER bio;
+
+ALTER TABLE negocios
+    ADD COLUMN direccion VARCHAR(255) NULL AFTER lon,
+    ADD COLUMN telefono VARCHAR(20) NULL AFTER direccion,
+    ADD COLUMN correo VARCHAR(100) NULL AFTER telefono,
+    ADD COLUMN descripcion TEXT NULL AFTER correo,
+    ADD COLUMN horario_dia_inicio ENUM('Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo') NULL AFTER descripcion,
+    ADD COLUMN horario_dia_fin ENUM('Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo') NULL AFTER horario_dia_inicio,
+    ADD COLUMN horario_hora_inicio TIME NULL AFTER horario_dia_fin,
+    ADD COLUMN horario_hora_fin TIME NULL AFTER horario_hora_inicio,
+    ADD COLUMN imagen_banner VARCHAR(255) NULL AFTER horario_hora_fin,
+    ADD COLUMN imagen_perfil VARCHAR(255) NULL AFTER imagen_banner;
 -- Este tmb
 -- CREATE TABLE IF NOT EXISTS promociones (
 --     id INT AUTO_INCREMENT PRIMARY KEY,
