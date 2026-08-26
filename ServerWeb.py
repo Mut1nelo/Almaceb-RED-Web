@@ -2,8 +2,6 @@
 # Jose, tratemos de usar enrutamientos sin tildes porque nos confunde siempre y da error
 # ======================================================================================
 
-#No  -J
-
 # Desarrollo y enrutamientos lo maneja Javier Faúndez, back-end y base de datos lo maneja Jose Moena
 from flask import Flask, render_template, request, redirect, session, jsonify, flash, url_for
 from difflib import SequenceMatcher
@@ -416,6 +414,10 @@ def editar_negocio(negocio_id):
     except Exception as e:
         return render_template('error.html', error=str(e)), 500
 
+@app.route("/Mis-negocios")
+def my_businesses():
+    return redirect(url_for("future_function"))
+
 @app.route("/Cerrar-sesion")
 def logout():
     session.clear()
@@ -487,13 +489,13 @@ def actualizar_perfil():
     return redirect(url_for("config", seccion="perfil"))
     #muy bien javier
 
-@app.route("/Funciones-futuras")
-def future_function():
-    return render_template("future-function.html")
-
 @app.route("/Ranking")
 def ranking():
     return render_template("ranking.html")
+
+@app.route("/Funciones-futuras")
+def future_function():
+    return render_template("future-function.html")
 
 # Para desarrolladores
 @app.route("/Dev-page")
