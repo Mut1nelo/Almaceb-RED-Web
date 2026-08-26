@@ -121,6 +121,7 @@
                                 id="imagen_banner"
                                 type="file"
                                 name="imagen_banner"
+                                name="imagen_banner"
                                 accept=".png,.jpg,.jpeg,.webp"
                             >
                         </label>
@@ -152,6 +153,20 @@
                     value="{{ negocio.nombre_negocio if editando else '' }}"
                     placeholder="Ingresa el nombre del negocio" required>
             </div>
+
+            {% if editando and negocio.imagen_banner %}
+            <div class="form-group">
+                <label for="imagen_banner">Imagen de banner</label><br>    
+                    <img src="{{ url_for('static', filename=negocio.imagen_banner) }}" alt="Banner actual" style="max-width:200px; display:block; margin-bottom:8px;">
+            </div>
+            {% endif %}
+
+            {% if editando and negocio.imagen_perfil %}
+            <div class="form-group">
+                <label for="imagen_perfil">Imagen de perfil</label><br>
+                    <img src="{{ url_for('static', filename=negocio.imagen_perfil) }}" alt="Perfil actual" style="max-width:100px; display:block; margin-bottom:8px;">
+            </div>
+            {% endif %}
 
             <div class="form-group">
                 <label for="business-type">Tipo de Negocio</label><br>

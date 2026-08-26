@@ -1,4 +1,5 @@
 from mysqlconnection import connectToMySQL
+from datetime import datetime, time as time_type
 
 DB_NAME = 'almaceb_red'
 MAX_BUSINESSES_PER_USER = 4
@@ -16,6 +17,47 @@ BUSINESS_TYPES = [
 
 DIAS_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
 
+def esta_abierto(business):
+    """Devuelve True si el negocio está abierto en este momento, False si no,
+    y None si el negocio no configuró un horario."""
+
+    if not (business.horario_dia_inicio and business.horario_dia_fin
+            and business.horario_hora_inicio and business.horario_hora_fin):
+        return None
+
+    ahora = datetime.now()
+    dia_actual = DIAS_SEMANA[ahora.weekday()]  # weekday(): Lunes=0 ... Domingo=6
+    hora_actual = ahora.time()
+
+    idx_inicio = DIAS_SEMANA.index(business.horario_dia_inicio)
+    idx_fin = DIAS_SEMANA.index(business.horario_dia_fin)
+    idx_actual = DIAS_SEMANA.index(dia_actual)
+
+    # 1. Comprobar si HOY cae dentro del rango de días
+    if idx_inicio <= idx_fin:
+        dia_valido = idx_inicio <= idx_actual <= idx_fin
+    else:
+        # el rango cruza el fin de semana, ej: Viernes a Lunes
+        dia_valido = idx_actual >= idx_inicio or idx_actual <= idx_fin
+
+    if not dia_valido:
+        return False
+
+    # 2. Comprobar si la HORA actual cae dentro del rango horario
+    hora_inicio = business.horario_hora_inicio
+    hora_fin = business.horario_hora_fin
+
+    # Si vienen como timedelta (típico de PyMySQL con columnas TIME), conviértelos a time
+    if not isinstance(hora_inicio, time_type):
+        hora_inicio = (datetime.min + hora_inicio).time()
+    if not isinstance(hora_fin, time_type):
+        hora_fin = (datetime.min + hora_fin).time()
+
+    if hora_inicio <= hora_fin:
+        return hora_inicio <= hora_actual <= hora_fin
+    else:
+        # el horario cruza la medianoche, ej: 22:00 a 02:00
+        return hora_actual >= hora_inicio or hora_actual <= hora_fin
 
 class Business:
     def __init__(self, data):
