@@ -161,6 +161,7 @@ def login():
     
     flash("Usuario o contraseña incorrectos.", "login")
     return redirect(url_for('login_page'))
+    #Por que url for??
 
 # Claude me hizo otra funcion jejej
 
@@ -203,16 +204,45 @@ def negocio(negocio_id):
         username=username,
         account_type=account_type
     )
-#Perate ya dsps lo arreglo q tengo sueño
-
 
 @app.route("/Negocios-destacados")
 def featured_business():
     return render_template("featured-business.html")
 
-@app.route("/Perfil-usuario")
-def user_profile():
-    return render_template("user-profile.html")
+# @app.route("/Perfil-usuario")
+# def user_profile(user_id):
+
+#     usuarios = Usuario.get_all_users()
+#     username = session.get('username', 'invitado')
+#     account_type = session.get('account_type', 'invitado')
+#     if 'user_id' not in session:
+#         redirect("/Login")
+
+#     print(f"DEBUG para user-profile.html: username={username}, account_type={account_type}")
+
+#     user = Usuario.get_by_id(user_id)
+
+#     if user is None:
+#         return "Usuario no Encontrado (no deberia pasar waos)", 404
+
+#     user_json = json.dumps({
+#         'id': user.id,
+#         'nombre': user.username,
+#         '',
+#     })
+
+#     return render_template(
+#         'user-profile.html',
+#         business=business,          # objeto directo, útil para Jinja: {{ business.nombre_negocio }}
+#         business_json=business_json, # JSON para usarlo en JS si hace falta
+#         usuarios=usuarios, # Gracias claude
+#         username=username,
+#         account_type=account_type
+#     )
+#     return render_template("user-profile.html")
+
+#Lo dejo comentado por mientras
+# 👍
 
 # Otra plantilla pero para la busqueda de usuarios
 # @app.route("/Perfil-usuario/<int:usuarios_id>")

@@ -166,7 +166,11 @@
                 <p><i class="fa-solid fa-tags"></i> <span id="businessCardPromotions">Sin promociones activas</span></p>
             </div>
         </div>
-        <a id="businessCardLink" class="blue-btn business-link" href="/Negocio">Ver negocio</a>
+        {% if username == 'invitado' %}
+            <a id="businessCardLink" style="display: none;" href="/Negocio">Ver negocio</a>
+        {% else %}
+            <a id="businessCardLink" class="blue-btn business-link" href="/Negocio">Ver negocio</a>
+        {% endif %}
     </article>
     <div id="bottomPanel" class="bottomPanel border-card">
         <div id="panelHandle" class="panel-handle"></div>
