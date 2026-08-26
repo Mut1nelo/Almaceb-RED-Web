@@ -105,12 +105,29 @@
                 Completa los datos necesarios para crear un negocio
                 {% endif %}
             </h2>
-        <form id="businessForm" method="POST" action="{{ url_for('editar_negocio', negocio_id=negocio.id) if editando else url_for('crear_negocio') }}">
+        <form id="businessForm" method="POST" enctype="multipart/form-data"
+        action="{{ url_for('editar_negocio', negocio_id=negocio.id) if editando else url_for('crear_negocio') }}">
             <div class="form-group">
                 <label for="business-name">Nombre del negocio</label><br>
                 <input type="text" id="business-name" name="business-name"
                     value="{{ negocio.nombre_negocio if editando else '' }}"
                     placeholder="Ingresa el nombre del negocio" required>
+            </div>
+
+            <div class="form-group">
+                <label for="imagen_banner">Imagen de banner</label><br>
+                {% if editando and negocio.imagen_banner %}
+                    <img src="{{ url_for('static', filename=negocio.imagen_banner) }}" alt="Banner actual" style="max-width:200px; display:block; margin-bottom:8px;">
+                {% endif %}
+                <input type="file" id="imagen_banner" name="imagen_banner" accept="image/png, image/jpeg, image/webp">
+            </div>
+
+            <div class="form-group">
+                <label for="imagen_perfil">Imagen de perfil</label><br>
+                {% if editando and negocio.imagen_perfil %}
+                    <img src="{{ url_for('static', filename=negocio.imagen_perfil) }}" alt="Perfil actual" style="max-width:100px; display:block; margin-bottom:8px;">
+                {% endif %}
+                <input type="file" id="imagen_perfil" name="imagen_perfil" accept="image/png, image/jpeg, image/webp">
             </div>
 
             <div class="form-group">
@@ -198,16 +215,6 @@
                 <label for="horario_hora_fin">Hora de cierre</label><br>
                 <input type="time" id="horario_hora_fin" name="horario_hora_fin"
                     value="{{ negocio.horario_hora_fin if editando and negocio.horario_hora_fin else '' }}">
-            </div>
-
-            <div class="form-group">
-                <label for="imagen_banner">Imagen de banner</label><br>
-                <input type="file" id="imagen_banner" name="imagen_banner" accept="image/*">
-            </div>
-
-            <div class="form-group">
-                <label for="imagen_perfil">Imagen de perfil</label><br>
-                <input type="file" id="imagen_perfil" name="imagen_perfil" accept="image/*">
             </div>
 
             <input type="hidden" name="latitude" id="latitude" value="{{ negocio.lat if editando else '' }}">
