@@ -68,3 +68,15 @@ class Usuario:
          'lon': lon
       }
       return connectToMySQL(DB_NAME).query_db(query, data)
+
+   @classmethod
+   def delete(cls, usuario_id):
+      query = "DELETE FROM usuarios WHERE id = %(id)s"
+      data = {"id": usuario_id}
+
+      resultado = connectToMySQL(DB_NAME).query_db(query, data)
+
+      if resultado is False:
+         raise RuntimeError("Failed to delete usuario")
+
+      return resultado

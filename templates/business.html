@@ -100,13 +100,13 @@
         <header class="business-header border-card">
             <div class="business-visual">
                 <img 
-                    src="{{ url_for ('static', filename='imgs/img-proto.png') }}"
+                    src="{{ url_for('static', filename=business.imagen_banner) if business.imagen_banner else url_for('static', filename='imgs/img-proto.png') }}"
                     alt="Banner del Negocio"
                     id="business-banner"
                     class="business-banner"
-                    >
+                >
                 <img
-                    src="{{ url_for('static', filename='imgs/default.jpg') }}"
+                    src="{{ url_for('static', filename=business.imagen_perfil) if business.imagen_perfil else url_for('static', filename='imgs/default.jpg') }}"
                     alt="Perfil negocio"
                     id="business-profile"
                     class="business-profile"
@@ -115,33 +115,67 @@
             <div class="business-main-info">
                 <h1>{{ business.nombre_negocio }}</h1>
                 <div class="business-meta">
-                    <div class="meta-item">
-                        <i class="bi bi-geo-alt-fill"></i>
-                        <span>
-                            {{ business.direccion }}
-                        </span>
-                    </div>
+                    {% if username == 'invitado' %}
+                        <div class="meta-item">
+                            <span style="color: rgb(163, 160, 160);">
+                                Bloqueado, Inicia sesion para ver <i class="bi bi-lock-fill"></i>
+                            </span>
+                        </div>        
+                    {% else %}
+                        <div class="meta-item">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <span>
+                                {{ business.direccion }}
+                            </span>
+                        </div>
+                    {% endif %}
                     <div class="meta-item">
                         <!-- Abierto -->
-                        <span class="business-open-dot"></span>
-                        <span class="business-open">
-                            Abierto
-                        </span>
+                        {% if username == 'invitado' %}
+                            <span class="business-open-dot" style="display: none;"></span>
+                            <span class="business-open" style="display: none;">
+                                Abierto
+                            </span>
+                        {% else %}
+                            <span class="business-open-dot"></span>
+                            <span class="business-open">
+                                Abierto
+                            </span>
+                        {% endif %}
+
                         <!-- Cerrado
                         <span class="business-close-dot"></span>
                         <span class="business-close">
                             Cerrado
                         </span>
                         -->
-                        <span>
-                            · {{ business.horario_hora_fin }}
-                        </span>
+                        {% if username == 'invitado' %}
+                            <span style="color: rgb(163, 160, 160);">
+                                Bloqueado, Inicia sesion para ver <i class="bi bi-lock-fill"></i>
+                            </span>
+                        {% else %}
+                            <span>
+                                · {{ business.horario_hora_fin }}
+                            </span>
+                        {% endif %}
                     </div>
                 </div>
                 <p class="business-description">
                     {{ business.descripcion }}
                 </p>
                 <div class="business-actions">
+                {% if username == 'invitado' %}
+                    <!-- Botón especial porque necesita los bordes más redondeados -->
+                    <button class="icon-btn" style="color: rgb(163, 160, 160);"> 
+                        <i class="bi bi-lock-fill"></i>
+                    </button>
+                    <button class="icon-btn">
+                        <i class="bi bi-share"></i>
+                    </button>
+                    <a class="icon-btn" style="color: rgb(163, 160, 160);">
+                        <i class="bi bi-lock-fill"></i>
+                    </a>
+                {% else %}
                     <!-- Botón especial porque necesita los bordes más redondeados -->
                     <button class="btn-business btn-i" style="border-radius:2em;"> 
                         <i class="bi bi-heart-fill"></i>
@@ -153,12 +187,29 @@
                     <a class="icon-btn" href="/Reportes">
                         <i class="bi bi-flag-fill"></i>
                     </a>
+                {% endif %}
                 </div>
             </div>
         </header>
 
         <!-- Información + Promociones -->
         <section id="info-promotions">
+        {% if username == 'invitado' %}
+                <div class="guest-access-notice" role="status" aria-live="polite">
+                    <div class="guest-access-icon" aria-hidden="true">
+                        <i class="bi bi-person-lock"></i>
+                    </div>
+                    <h1>Inicia sesión para continuar</h1>
+                    <p>
+                        Como invitado puedes consultar los términos y las preguntas frecuentes,
+                        pero necesitas una cuenta para ver tus datos o editar tu perfil.
+                    </p>
+                    <div class="guest-access-actions">
+                        <a class="green-btn-alt" href="{{ url_for('login_page') }}">Iniciar sesión</a>
+                        <a class="green-btn" href="{{ url_for('register') }}">Crear una cuenta</a>
+                    </div>
+                </div>
+        {% else %}
             <article class="business-info border-card">
                 <div class="section-heading">
                     <i class="bi bi-info-circle-fill"></i>
@@ -203,7 +254,10 @@
                     </div>
                 </div>
             </article>
-
+        {% endif %}
+            {% if username == 'invitado' %}
+                
+            {% else %}
             <article class="business-promotions border-card">
                 <div class="promotions-header">
                     <div class="section-heading">
@@ -290,6 +344,7 @@
                     </div>
                 </div>
             </article>
+            {% endif %}
         </section>
         <section class="middle-grid">
             <!-- GALERÍA -->

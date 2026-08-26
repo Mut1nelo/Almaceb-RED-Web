@@ -1,6 +1,7 @@
 # ======================================================================================
 # Jose, tratemos de usar enrutamientos sin tildes porque nos confunde siempre y da error
 # ======================================================================================
+#Bueno
 
 # Desarrollo y enrutamientos lo maneja Javier Faúndez, back-end y base de datos lo maneja Jose Moena
 from flask import Flask, render_template, request, redirect, session, jsonify, flash, url_for
@@ -12,13 +13,60 @@ from mysqlconnection import connectToMySQL
 import requests
 from local import Business, BUSINESS_TYPES
 import json
+import os
+from werkzeug.utils import secure_filename
+from uuid import uuid4
+from PIL import Image
 
 app = Flask(__name__)
 
 app.secret_key = "clavehipermegasupersecretayiaaaa" # Cambiala hijo de tu mamita
 
+# Límite global de tamaño de subida (aplica a TODO el request, no solo imágenes)
+app.config['MAX_CONTENT_LENGTH'] = 5 * 1024 * 1024  # 5 MB
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'}
+UPLOAD_SUBFOLDER = 'imgs/negocios' #adentro de static
+
+# Tamaños máximos por tipo de imagen (ancho, alto) en píxeles
+MAX_DIMENSIONS = {
+    'banner': (1600, 900),
+    'perfil': (500, 500)
+}
 
 # Aqui van todas las funciones q tengamos q declarar fuera d una ruta
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+def guardar_imagen(file_storage, tipo):
+    """tipo debe ser 'banner' o 'perfil', para saber a qué tamaño redimensionar."""
+    if not file_storage or file_storage.filename == '':
+        return None
+
+    if not allowed_file(file_storage.filename):
+        raise ValueError(f"Tipo de archivo no permitido: {file_storage.filename}")
+
+    ext = file_storage.filename.rsplit('.', 1)[1].lower()
+    nombre_seguro = f"{uuid4().hex}.{ext}"
+
+    carpeta_destino = os.path.join(app.root_path, 'static', UPLOAD_SUBFOLDER)
+    os.makedirs(carpeta_destino, exist_ok=True)
+    ruta_completa = os.path.join(carpeta_destino, nombre_seguro)
+
+    try:
+        imagen = Image.open(file_storage.stream)
+        imagen = imagen.convert('RGB') if ext in ('jpg', 'jpeg') else imagen
+
+        max_ancho, max_alto = MAX_DIMENSIONS.get(tipo, (1600, 900))
+        imagen.thumbnail((max_ancho, max_alto), Image.LANCZOS)  # mantiene proporción, no la deforma
+
+        imagen.save(ruta_completa, optimize=True, quality=85)
+    except Exception as e:
+        raise ValueError(f"No se pudo procesar la imagen: {e}")
+
+    return f"{UPLOAD_SUBFOLDER}/{nombre_seguro}"
 
 def calcular_similitud(query, texto):
     if not texto:
@@ -159,6 +207,7 @@ def login():
     
     flash("Usuario o contraseña incorrectos.", "login")
     return redirect(url_for('login_page'))
+    #Por que url for??
 
 # Claude me hizo otra funcion jejej
 
@@ -201,16 +250,45 @@ def negocio(negocio_id):
         username=username,
         account_type=account_type
     )
-#Perate ya dsps lo arreglo q tengo sueño
-
 
 @app.route("/Negocios-destacados")
 def featured_business():
     return render_template("featured-business.html")
 
-@app.route("/Perfil-usuario")
-def user_profile():
-    return render_template("user-profile.html")
+# @app.route("/Perfil-usuario")
+# def user_profile(user_id):
+
+#     usuarios = Usuario.get_all_users()
+#     username = session.get('username', 'invitado')
+#     account_type = session.get('account_type', 'invitado')
+#     if 'user_id' not in session:
+#         redirect("/Login")
+
+#     print(f"DEBUG para user-profile.html: username={username}, account_type={account_type}")
+
+#     user = Usuario.get_by_id(user_id)
+
+#     if user is None:
+#         return "Usuario no Encontrado (no deberia pasar waos)", 404
+
+#     user_json = json.dumps({
+#         'id': user.id,
+#         'nombre': user.username,
+#         '',
+#     })
+
+#     return render_template(
+#         'user-profile.html',
+#         business=business,          # objeto directo, útil para Jinja: {{ business.nombre_negocio }}
+#         business_json=business_json, # JSON para usarlo en JS si hace falta
+#         usuarios=usuarios, # Gracias claude
+#         username=username,
+#         account_type=account_type
+#     )
+#     return render_template("user-profile.html")
+
+#Lo dejo comentado por mientras
+# 👍
 
 # Otra plantilla pero para la busqueda de usuarios
 # @app.route("/Perfil-usuario/<int:usuarios_id>")
@@ -311,6 +389,9 @@ def crear_negocio():
     horario_hora_fin = request.form.get('horario_hora_fin') or None
 
     try:
+        imagen_banner = guardar_imagen(request.files.get('imagen_banner'), tipo='banner')
+        imagen_perfil = guardar_imagen(request.files.get('imagen_perfil'), tipo='perfil')
+
         Business.save(
             nombre_negocio, business_type, lat, lon,
             direccion=direccion,
@@ -320,7 +401,9 @@ def crear_negocio():
             horario_dia_inicio=horario_dia_inicio,
             horario_dia_fin=horario_dia_fin,
             horario_hora_inicio=horario_hora_inicio,
-            horario_hora_fin=horario_hora_fin
+            horario_hora_fin=horario_hora_fin,
+            imagen_banner=imagen_banner,
+            imagen_perfil=imagen_perfil
         )
         return redirect(url_for('map'))
 
@@ -329,8 +412,10 @@ def crear_negocio():
     except Exception as e:
         return render_template('error.html', error=str(e)), 500
 
+    # Ruta de creacion adaptada para fotos
 # Para renderizar el mismo formulario pero para editar el negocio
 # No mentira 
+
 @app.route('/Negocio/<int:negocio_id>/Editar', methods=['GET', 'POST'])
 def editar_negocio(negocio_id):
 
@@ -363,18 +448,25 @@ def editar_negocio(negocio_id):
     telefono = request.form.get('telefono')
     correo = request.form.get('correo')
     descripcion = request.form.get('descripcion')
+    horario_dia_inicio = request.form.get('horario_dia_inicio') or None
+    horario_dia_fin = request.form.get('horario_dia_fin') or None
+    horario_hora_inicio = request.form.get('horario_hora_inicio') or None
+    horario_hora_fin = request.form.get('horario_hora_fin') or None
+
+    imagen_banner_nueva = guardar_imagen(request.files.get('imagen_banner'))
+    imagen_perfil_nueva = guardar_imagen(request.files.get('imagen_perfil'))
+
+    imagen_banner = imagen_banner_nueva if imagen_banner_nueva else negocio.imagen_banner
+    imagen_perfil = imagen_perfil_nueva if imagen_perfil_nueva else negocio.imagen_perfil
+
 
     try:
         Business.update(
-            negocio_id,
-            nombre_negocio,
-            business_type,
-            lat,
-            lon,
-            direccion=direccion,
-            telefono=telefono,
-            correo=correo,
-            descripcion=descripcion
+        negocio_id, nombre_negocio, business_type, lat, lon,
+        direccion=direccion, telefono=telefono, correo=correo, descripcion=descripcion,
+        horario_dia_inicio=horario_dia_inicio, horario_dia_fin=horario_dia_fin,
+        horario_hora_inicio=horario_hora_inicio, horario_hora_fin=horario_hora_fin,
+        imagen_banner=imagen_banner, imagen_perfil=imagen_perfil
         )
 
         return redirect(url_for('negocio', negocio_id=negocio_id))
@@ -467,6 +559,17 @@ def ranking():
 def future_function():
     return render_template("future-function.html")
 
+@app.route('/Eliminar-cuenta', methods=['POST'])
+def eliminar_cuenta():
+    if 'user_id' not in session:
+        return redirect(url_for('login_page'))
+
+    Usuario.delete(session['user_id'])  # borra la fila de la BD
+    session.clear()                      # limpia la cookie de sesión
+
+    flash("Tu cuenta ha sido eliminada.", "success")
+    return redirect('/')
+
 # Para desarrolladores
 @app.route("/Dev-page")
 def dev_page():
@@ -542,5 +645,12 @@ def dev_page():
 #     flash("Ubicación eliminada", "success")
 #     return redirect('/Mi-negocio')
 
+# Manejadores de error
+
+@app.errorhandler(413)
+def archivo_muy_grande(e):
+    flash("El archivo es demasiado grande. Máximo 5 MB.", "error")
+    return redirect(request.referrer or url_for('map'))
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
