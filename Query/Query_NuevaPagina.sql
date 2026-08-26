@@ -95,6 +95,32 @@ ALTER TABLE negocios
     ADD COLUMN horario_hora_fin TIME NULL AFTER horario_hora_inicio,
     ADD COLUMN imagen_banner VARCHAR(255) NULL AFTER horario_hora_fin,
     ADD COLUMN imagen_perfil VARCHAR(255) NULL AFTER imagen_banner;
+
+CREATE TABLE productos (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    negocio_id INT NOT NULL,
+    nombre_producto VARCHAR(100) NOT NULL,
+    descripcion TEXT NULL,
+    precio DECIMAL(10,2) NOT NULL,
+    imagen VARCHAR(255) NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (negocio_id) REFERENCES negocios(id) ON DELETE CASCADE
+);
+
+CREATE TABLE promociones (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    negocio_id INT NOT NULL,
+    nombre_promocion VARCHAR(100) NOT NULL,
+    precio VARCHAR(50) NULL,
+    descripcion TEXT NULL,
+    imagen VARCHAR(255) NULL,
+    fecha_inicio DATE NULL,
+    fecha_fin DATE NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (negocio_id) REFERENCES negocios(id) ON DELETE CASCADE
+);
 -- Este tmb
 -- CREATE TABLE IF NOT EXISTS promociones (
 --     id INT AUTO_INCREMENT PRIMARY KEY,

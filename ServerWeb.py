@@ -453,8 +453,8 @@ def editar_negocio(negocio_id):
     horario_hora_inicio = request.form.get('horario_hora_inicio') or None
     horario_hora_fin = request.form.get('horario_hora_fin') or None
 
-    imagen_banner_nueva = guardar_imagen(request.files.get('imagen_banner'))
-    imagen_perfil_nueva = guardar_imagen(request.files.get('imagen_perfil'))
+    imagen_banner_nueva = guardar_imagen(request.files.get('imagen_banner'), tipo='banner')
+    imagen_perfil_nueva = guardar_imagen(request.files.get('imagen_perfil'), tipo='perfil')
 
     imagen_banner = imagen_banner_nueva if imagen_banner_nueva else negocio.imagen_banner
     imagen_perfil = imagen_perfil_nueva if imagen_perfil_nueva else negocio.imagen_perfil
@@ -478,7 +478,7 @@ def editar_negocio(negocio_id):
 
 @app.route("/Mis-negocios")
 def my_businesses():
-    return render_template("business-admin.html")
+    return redirect(url_for("future_function"))
 
 @app.route("/Cerrar-sesion")
 def logout():
