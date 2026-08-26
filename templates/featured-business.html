@@ -14,16 +14,10 @@
     <!-- Título -->
     <title>Negocios destacados | Almaceb RED</title>
 </head>
-<body class="bgGrey">
+<body data-account-type="{{ account_type }}" class="bgGrey">
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
     <aside id="sidebarPanel" class="sidebarPanel" aria-hidden="true">
-        <div class="sidebar-topbar">
-            <button id="closeSidebar" class="sidebar-close" type="button" aria-label="Cerrar menú">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
-
-        <!-- Estructura reservada para la futura integración del menú lateral. -->
+        {% include 'partials/sidebar-content.html' %}
     </aside>
 
     <nav class="nav-container">
@@ -42,7 +36,7 @@
         </div>
         <button class="sidebar-toggle" type="button" aria-label="Abrir menú" aria-controls="sidebarPanel" aria-expanded="false">
             <img
-            src="{{ url_for('static', filename='imgs/default.jpg') }}"
+            src="{{ url_for('static', filename=profile_image) }}"
             alt="Abrir menú de usuario"
             class="nav-profile">
         </button>
@@ -53,74 +47,108 @@
             <h1><i class="bi bi-star-fill featured-heading-icon" aria-hidden="true"></i> Negocios destacados</h1>
             <p>Descubre los negocios mejor valorados y más populares de la comunidad.</p>
             <div id="featured-filters" role="group" aria-label="Filtros de categoría">
-                <button class="nav-btn featured-filter is-active" type="button">
+                <a class="nav-btn featured-filter{% if selected_category == 'Todos' %} is-active{% endif %}" href="{{ url_for('featured_business', categoria='Todos', orden=selected_order) }}"{% if selected_category == 'Todos' %} aria-current="page"{% endif %}>
                     <i class="bi bi-list-ul"></i>
                     Todos
-                </button>
-                <button class="nav-btn featured-filter" type="button">
+                </a>
+                <a class="nav-btn featured-filter{% if selected_category == 'Panadería' %} is-active{% endif %}" href="{{ url_for('featured_business', categoria='Panadería', orden=selected_order) }}"{% if selected_category == 'Panadería' %} aria-current="page"{% endif %}>
                     <span class="svg bread-icon"></span>
                     Panadería
-                </button>
-                <button class="nav-btn featured-filter" type="button">
+                </a>
+                <a class="nav-btn featured-filter{% if selected_category == 'Pastelería' %} is-active{% endif %}" href="{{ url_for('featured_business', categoria='Pastelería', orden=selected_order) }}"{% if selected_category == 'Pastelería' %} aria-current="page"{% endif %}>
                     <i class="bi bi-cake2-fill"></i>
                     Pastelería
-                </button>
-                <button class="nav-btn featured-filter" type="button">
+                </a>
+                <a class="nav-btn featured-filter{% if selected_category == 'Almacén' %} is-active{% endif %}" href="{{ url_for('featured_business', categoria='Almacén', orden=selected_order) }}"{% if selected_category == 'Almacén' %} aria-current="page"{% endif %}>
                     <span class="svg almacen-icon"></span>
                     Almacén
-                </button>
-                <button class="nav-btn featured-filter" type="button">
+                </a>
+                <a class="nav-btn featured-filter{% if selected_category == 'Cafetería' %} is-active{% endif %}" href="{{ url_for('featured_business', categoria='Cafetería', orden=selected_order) }}"{% if selected_category == 'Cafetería' %} aria-current="page"{% endif %}>
                     <i class="bi bi-cup-hot-fill"></i>
                     Cafetería
-                </button>
-                <button class="nav-btn featured-filter" type="button">
+                </a>
+                <a class="nav-btn featured-filter{% if selected_category == 'Verdulería' %} is-active{% endif %}" href="{{ url_for('featured_business', categoria='Verdulería', orden=selected_order) }}"{% if selected_category == 'Verdulería' %} aria-current="page"{% endif %}>
                     <span class="svg vegetable-icon"></span>
                     Verdulería
-                </button>
-                <button class="nav-btn featured-filter" type="button">
+                </a>
+                <a class="nav-btn featured-filter{% if selected_category == 'Otras' %} is-active{% endif %}" href="{{ url_for('featured_business', categoria='Otras', orden=selected_order) }}"{% if selected_category == 'Otras' %} aria-current="page"{% endif %}>
                     <i class="bi bi-three-dots"></i>
                     Otras
-                </button>
+                </a>
             </div>
         </header>
         <div class="middle-order">
-            <label class="featured-order-label" for="featured-order">Ordenar por:</label>
-            <div class="featured-order-control">
-                <i class="bi bi-star" aria-hidden="true"></i>
-                <select name="order" id="featured-order" class="featured-order-select">
-                    <option value="rating">Valoración</option>
-                </select>
+            <form class="featured-order-form" method="GET" action="{{ url_for('featured_business') }}">
+                <input type="hidden" name="categoria" value="{{ selected_category }}">
+                <label class="featured-order-label" for="featured-order">Ordenar por:</label>
+                <div class="featured-order-control">
+                    <i class="bi bi-star" aria-hidden="true"></i>
+                    <select name="orden" id="featured-order" class="featured-order-select" onchange="this.form.submit()">
+                        <option value="valoracion"{% if selected_order == 'valoracion' %} selected{% endif %}>Valoración</option>
+                        {#
+                        Activar cuando la base de datos tenga una relación o columna real de seguidores:
+                        <option value="seguidores"{% if selected_order == 'seguidores' %} selected{% endif %}>Seguidores</option>
+                        #}
+                    </select>
+                </div>
+            </form>
+            {% if businesses|length > 3 %}
+            <div class="carousel-buttons featured-carousel-buttons" aria-label="Controles del ranking">
+                <button class="carousel-button featured-prev" type="button" aria-label="Negocios anteriores">
+                    <i class="bi bi-chevron-left"></i>
+                </button>
+                <button class="carousel-button featured-next" type="button" aria-label="Negocios siguientes">
+                    <i class="bi bi-chevron-right"></i>
+                </button>
             </div>
+            {% endif %}
         </div>
-        <section id="featured-card-container" aria-label="Listado de negocios destacados">
+        <div class="featured-carousel-window">
+        <section id="featured-card-container" data-carousel-step="page" aria-label="Ranking de negocios destacados" tabindex="0">
+            {% for business in businesses %}
             <article class="featured-card border-card">
                 <div class="featured-image">
                     <img
-                    src="{{ url_for('static', filename='imgs/img-proto.png') }}"
-                    alt="Imagen provisional del negocio destacado"
+                    src="{{ url_for('static', filename=business.imagen_banner) if business.imagen_banner else url_for('static', filename='imgs/default-business.png') }}"
+                    alt="Banner de {{ business.nombre_negocio }}"
                     class="featured-banner"
                     >
-                    <span class="rank rank-1" aria-label="Puesto provisional 1">1</span>
+                    <span class="rank{% if loop.index <= 3 %} rank-{{ loop.index }}{% endif %}" aria-label="Puesto {{ loop.index }}">{{ loop.index }}</span>
                 </div>
                 <div class="featured-card-content">
                     <img
-                    src="{{ url_for('static', filename='imgs/default.jpg') }}"
-                    alt="Foto de perfil predeterminada"
+                    src="{{ url_for('static', filename=business.imagen_perfil) if business.imagen_perfil else url_for('static', filename='imgs/default-business.png') }}"
+                    alt="Logo de {{ business.nombre_negocio }}"
                     class="featured-profile"
                     >
-                    <h2>(Nombre del negocio)</h2>
-                    <div class="rating" aria-label="Valoración provisional: 4.6 de 5">
-                        <span aria-hidden="true">★★★★★</span>
-                        <strong>4.6</strong>
+                    <h2>{{ business.nombre_negocio }}</h2>
+                    <div class="rating" aria-label="Valoración: {{ '%.1f'|format(business.valoracion) }} de 5">
+                        {% set filled_stars = business.valoracion|round(0, 'common')|int %}
+                        <span class="rating-stars" aria-hidden="true">
+                            {% for star in range(1, 6) %}
+                                <i class="bi {{ 'bi-star-fill' if star <= filled_stars else 'bi-star' }}"></i>
+                            {% endfor %}
+                        </span>
+                        <strong>{{ '%.1f'|format(business.valoracion) }}</strong>
                     </div>
-                    <span class="green-label featured-category">(Tipo)</span>
+                    <span class="green-label featured-category">{{ business.business_type }}</span>
                     <div class="featured-location">
                         <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
-                        <p>(Ubicación)</p>
+                        <p>{{ business.direccion or 'Ubicación no informada' }}</p>
                     </div>
+                    <a class="green-btn featured-card-link" href="{{ url_for('negocio', negocio_id=business.id) }}">Ver negocio</a>
                 </div>
             </article>
+            {% else %}
+                <article class="business-admin-empty border-card">
+                    <div class="business-admin-empty-icon" aria-hidden="true"><i class="bi bi-shop"></i></div>
+                    <h2>No hay negocios en esta categoría</h2>
+                    <p>Prueba con otro filtro para descubrir más negocios.</p>
+                    <a class="green-btn-alt" href="{{ url_for('featured_business') }}">Ver todos</a>
+                </article>
+            {% endfor %}
         </section>
+        </div>
     </main>
     <!-- Footer -->
     <footer class="web-footer">

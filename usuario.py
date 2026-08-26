@@ -11,6 +11,9 @@ class Usuario:
       self.email = data['email']
       self.password = data['password_hash']
       self.account_type = data['account_type']
+      self.telefono = data.get('telefono')
+      self.bio = data.get('bio')
+      self.foto_perfil = data.get('foto_perfil')
       self.created_at = data['created_at']
       self.updated_at = data['updated_at']
 
@@ -57,6 +60,44 @@ class Usuario:
         return None
 
     return cls(resultado[0])
+
+   @classmethod
+   def find_profile_conflict(cls, user_id, username, email):
+      query = """
+         SELECT id, username, email
+         FROM usuarios
+         WHERE id != %(id)s
+           AND (username = %(username)s OR email = %(email)s)
+         LIMIT 1;
+      """
+      resultado = connectToMySQL(DB_NAME).query_db(query, {
+         "id": user_id,
+         "username": username,
+         "email": email
+      })
+
+      if resultado is False:
+         raise RuntimeError("Failed to validate profile data")
+
+      return resultado[0] if resultado else None
+
+   @classmethod
+   def update_profile(cls, data):
+      query = """
+         UPDATE usuarios
+         SET username = %(username)s,
+             email = %(email)s,
+             telefono = %(telefono)s,
+             bio = %(bio)s,
+             foto_perfil = %(foto_perfil)s
+         WHERE id = %(id)s;
+      """
+      resultado = connectToMySQL(DB_NAME).query_db(query, data)
+
+      if resultado is False:
+         raise RuntimeError("Failed to update profile")
+
+      return resultado
 
    @classmethod
    def update_location(cls, user_id, address, lat, lon):

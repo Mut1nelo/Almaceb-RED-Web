@@ -70,29 +70,56 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Carrusel de promociones de la página del negocio.
-    const promotionList = document.querySelector('.promotion-list');
-    const promotionPrev = document.querySelector('.promotion-prev');
-    const promotionNext = document.querySelector('.promotion-next');
+    // Control reutilizable para los carruseles de promociones y del ranking.
+    const setupHorizontalCarousel = (list, previousButton, nextButton, itemSelector) => {
+        if (!list || !previousButton || !nextButton) {
+            return;
+        }
 
-    if (promotionList && promotionPrev && promotionNext) {
-        const movePromotions = (direction) => {
-            const promotionCard = promotionList.querySelector('.promotion-card');
-
-            if (promotionCard) {
-                const cardGap = 24;
-                const distance = promotionCard.offsetWidth + cardGap;
-
-                promotionList.scrollBy({
-                    left: distance * direction,
-                    behavior: 'smooth'
-                });
-            }
+        const updateButtons = () => {
+            const maxScroll = Math.max(0, list.scrollWidth - list.clientWidth);
+            previousButton.disabled = list.scrollLeft <= 2;
+            nextButton.disabled = list.scrollLeft >= maxScroll - 2;
         };
 
-        promotionPrev.addEventListener('click', () => movePromotions(-1));
-        promotionNext.addEventListener('click', () => movePromotions(1));
-    }
+        const moveCarousel = (direction) => {
+            const item = list.querySelector(itemSelector);
+            if (!item) {
+                return;
+            }
+
+            const styles = window.getComputedStyle(list);
+            const gap = Number.parseFloat(styles.columnGap || styles.gap) || 24;
+            const distance = list.dataset.carouselStep === 'page'
+                ? list.clientWidth + gap
+                : item.offsetWidth + gap;
+
+            list.scrollBy({
+                left: distance * direction,
+                behavior: 'smooth'
+            });
+        };
+
+        previousButton.addEventListener('click', () => moveCarousel(-1));
+        nextButton.addEventListener('click', () => moveCarousel(1));
+        list.addEventListener('scroll', updateButtons, { passive: true });
+        window.addEventListener('resize', updateButtons);
+        updateButtons();
+    };
+
+    setupHorizontalCarousel(
+        document.querySelector('.promotion-list'),
+        document.querySelector('.promotion-prev'),
+        document.querySelector('.promotion-next'),
+        '.promotion-card'
+    );
+
+    setupHorizontalCarousel(
+        document.getElementById('featured-card-container'),
+        document.querySelector('.featured-prev'),
+        document.querySelector('.featured-next'),
+        '.featured-card'
+    );
 
     // Abre y cierra la galería completa de productos.
     const galleryOpen = document.querySelector('.gallery-open');

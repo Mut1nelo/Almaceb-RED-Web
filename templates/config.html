@@ -42,7 +42,7 @@
         {% elif account_type == 'client' %}
         <section class="sidebar-state" data-user-state="cliente">
             <div class="sidebar-user">
-                <img src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Foto de perfil" class="profile-sidebar">
+                <img src="{{ url_for('static', filename=profile_image) }}" alt="Foto de perfil de {{ username }}" class="profile-sidebar">
                 <h3>Hola,</h3>
                 <h2>{{ username }}</h2>
                 <span class="blue-label">Cliente</span>
@@ -57,7 +57,7 @@
         {% elif account_type == 'business' %}
         <section class="sidebar-state" data-user-state="vendedor">
             <div class="sidebar-user">
-                <img src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Logo del negocio" class="profile-sidebar">
+                <img src="{{ url_for('static', filename=profile_image) }}" alt="Foto de perfil de {{ username }}" class="profile-sidebar">
                 <h3>Hola,</h3>
                 <h2>{{ username }}</h2>
                 <span class="green-label">Negocio</span>
@@ -88,7 +88,7 @@
         </div>
         <button class="sidebar-toggle" type="button" aria-label="Abrir menú" aria-controls="sidebarPanel" aria-expanded="false">
             <img
-            src="{{ url_for('static', filename='imgs/default.jpg') }}"
+            src="{{ url_for('static', filename=profile_image) }}"
             alt="Abrir menú de usuario"
             class="nav-profile">
         </button>
@@ -128,6 +128,15 @@
             {% endif %}
         </section>
         <section class="config-right border-card">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="config-alerts" aria-live="polite">
+                        {% for category, message in messages %}
+                            <p class="config-alert config-alert-{{ category }}">{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
             {% if section in ("perfil", "editar") and not is_authenticated %}
                 <div class="guest-access-notice" role="status" aria-live="polite">
                     <div class="guest-access-icon" aria-hidden="true">
@@ -145,10 +154,9 @@
                 </div>
             {% elif section == "perfil" %}
                 <img
-                    src="{{ url_for('static', filename='imgs/default.jpg') }}"
-                    alt=""
-                    class=""
-                    width="300"
+                    src="{{ url_for('static', filename=usuario.foto_perfil) if usuario.foto_perfil else url_for('static', filename='imgs/default.jpg') }}"
+                    alt="Foto de perfil de {{ usuario.username }}"
+                    class="config-profile-photo"
                     >
                 <h1>Hola, {{ usuario.username }}</h1>
                 <div class="config-content">
@@ -158,7 +166,7 @@
                         <p>{{ usuario.created_at }}</p>
                     </div>
                     <div class="report-form-group config-group">
-                        <strong>Nombre completo:</strong>
+                        <strong>Nombre de usuario:</strong>
                         <p>{{ usuario.username }}</p>
                     </div>
                     <div class="report-form-group config-group">
@@ -173,7 +181,7 @@
                         <strong>Cuenta vendedor:</strong>
                         {{ "Sí" if usuario.account_type == "business" else "No" }}
                     </p>
-                    <p class="group-p"><strong>Biografía:</strong> {{ usuario.biografia or "-" }}</p>
+                    <p class="group-p"><strong>Biografía:</strong> {{ usuario.bio or "-" }}</p>
                         <div class="form-group">
                         <button type="button" id="openDeleteModal" class="red-btn">Eliminar mi cuenta</button>
                         </div>
@@ -190,10 +198,44 @@
                         </div>
                 </div>
             {% elif section == "editar" %}
-                <form action="{{ url_for('actualizar_perfil') }}" class="config-content" method="POST">
-                    <!-- Campos precargados del usuario -->
+                <form action="{{ url_for('actualizar_perfil') }}" class="config-content config-edit-form" method="POST" enctype="multipart/form-data">
                     <h2 class="green-line">Editar perfil</h2>
-
+                    <div class="config-edit-grid">
+                        <div class="form-group">
+                            <label for="username">Nombre de usuario</label><br>
+                            <input id="username" name="username" type="text" value="{{ usuario.username }}" minlength="2" maxlength="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Correo electrónico</label><br>
+                            <input id="email" name="email" type="email" value="{{ usuario.email }}" maxlength="150" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="telefono">Teléfono</label><br>
+                            <input id="telefono" name="telefono" type="tel" value="{{ usuario.telefono or '' }}" maxlength="20" placeholder="+56 9 1234 5678">
+                        </div>
+                        <div class="form-group config-edit-bio">
+                            <label for="bio">Biografía</label><br>
+                            <textarea id="bio" name="bio" rows="5" maxlength="500" placeholder="Cuéntanos un poco sobre ti">{{ usuario.bio or '' }}</textarea>
+                        </div>
+                        <div class="form-group config-edit-photo">
+                            <label for="foto_perfil">Foto de perfil</label><br>
+                            <div class="config-photo-row">
+                                <img src="{{ url_for('static', filename=usuario.foto_perfil) if usuario.foto_perfil else url_for('static', filename='imgs/default.jpg') }}" alt="Foto actual de {{ usuario.username }}" class="config-photo-preview">
+                                <div class="file-input-wrapper">
+                                    <label class="file-btn green-label">
+                                        <i class="bi bi-image-fill" aria-hidden="true"></i>
+                                        <span class="btn-text">Elegir nueva foto</span>
+                                        <span class="file-name" data-empty-text="Conservar foto actual">Conservar foto actual</span>
+                                        <input id="foto_perfil" name="foto_perfil" type="file" accept=".png,.jpg,.jpeg,.webp">
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="config-edit-actions">
+                        <a class="white-btn" href="{{ url_for('config', seccion='perfil') }}">Cancelar</a>
+                        <button class="green-btn-alt" type="submit">Guardar cambios</button>
+                    </div>
                 </form>
 
             {% elif section == "terminos" %}
@@ -292,13 +334,20 @@
         </div>
     </footer>
     <script>
-    document.getElementById('openDeleteModal').addEventListener('click', () => {
-        document.getElementById('deleteAccountModal').hidden = false;
-    });
-    document.getElementById('cancelDelete').addEventListener('click', () => {
-        document.getElementById('deleteAccountModal').hidden = true;
-    });
+    const openDeleteModal = document.getElementById('openDeleteModal');
+    const cancelDelete = document.getElementById('cancelDelete');
+    const deleteAccountModal = document.getElementById('deleteAccountModal');
+
+    if (openDeleteModal && cancelDelete && deleteAccountModal) {
+        openDeleteModal.addEventListener('click', () => {
+            deleteAccountModal.hidden = false;
+        });
+        cancelDelete.addEventListener('click', () => {
+            deleteAccountModal.hidden = true;
+        });
+    }
     </script>
+    <script src="{{ url_for('static', filename='js/file-input.js') }}"></script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>

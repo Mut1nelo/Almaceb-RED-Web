@@ -1,134 +1,177 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- Compatibilidad -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- Icono -->
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='imgs/favicon.ico') }}">
-    <!-- Estilos -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <!-- Título -->
-    <title>
-        (Nombre completo)
-        | Almaceb RED
-    </title>
+    <title>Perfil de Juan Pérez | Almaceb RED</title>
 </head>
-<body data-account-type="{{ account_type }}">
+<body class="profile-body bgGrey" data-account-type="{{ account_type }}">
     <div id="sidebarOverlay" class="sidebar-overlay"></div>
     <aside id="sidebarPanel" class="sidebarPanel" aria-hidden="true">
-        <div class="sidebar-topbar">
-            <button id="closeSidebar" class="sidebar-close" type="button" aria-label="Cerrar menú">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
-        </div>
-        {% if account_type == 'invitado' %}
-        <section class="sidebar-state" data-user-state="invitado">
-            <div class="sidebar-user">
-                <img src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Foto de perfil predeterminada" class="profile-sidebar">
-                <h3>¡Bienvenido!</h3>
-                <span class="black-label">Invitado</span>
-                <h3>Únete a Almaceb RED</h3>
-                <p>Inicia sesión para seguir negocios, guardar favoritos y administrar tu perfil.</p>
-            </div>
-            <div class="sidebar-actions">
-                <a href="{{ url_for('login_page') }}" class="green-btn-alt">Iniciar sesión</a>
-                <a href="{{ url_for('register') }}" class="green-btn">Crear cuenta</a>
-            </div>
-            <nav class="sidebar-nav" aria-label="Menú de invitado">
-                <a class="nav-btn" href="{{ url_for('config', seccion='terminos') }}"><i class="fa-regular fa-file-lines"></i> <span>Términos y condiciones</span></a>
-                <a class="nav-btn" href="{{ url_for('config', seccion='preguntas') }}"><i class="fa-regular fa-circle-question"></i> <span>Preguntas frecuentes</span></a>
-            </nav>
-        </section>
-        {% elif account_type == 'client' %}
-        <section class="sidebar-state" data-user-state="cliente">
-            <div class="sidebar-user">
-                <img src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Foto de perfil" class="profile-sidebar">
-                <h3>Hola,</h3>
-                <h2>{{ username }}</h2>
-                <span class="blue-label">Cliente</span>
-            </div>
-            <nav class="sidebar-nav" aria-label="Menú de cliente">
-                <a class="nav-btn" href="{{ url_for('config', seccion='perfil') }}"><i class="bi bi-person-fill"></i> <span>Mi perfil</span></a>
-                <a class="nav-btn" href="{{ url_for('featured_business') }}"><i class="bi bi-stars"></i> <span>Negocios destacados</span></a>
-                <a class="nav-btn" href="{{ url_for('config') }}"><i class="bi bi-gear-fill"></i> <span>Configuración</span></a>
-            </nav>
-            <a href="{{ url_for('logout') }}" class="sidebar-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Cerrar sesión</span></a>
-        </section>
-        {% elif account_type == 'business' %}
-        <section class="sidebar-state" data-user-state="vendedor">
-            <div class="sidebar-user">
-                <img src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Logo del negocio" class="profile-sidebar">
-                <h3>Hola,</h3>
-                <h2>{{ username }}</h2>
-                <span class="green-label">Negocio</span>
-            </div>
-            <nav class="sidebar-nav" aria-label="Menú de vendedor">
-                <a class="nav-btn" href="{{ url_for('config', seccion='perfil') }}"><i class="bi bi-person-fill"></i> <span>Mi perfil</span></a>
-                <a class="nav-btn" href="{{ url_for('featured_business') }}"><i class="bi bi-stars"></i> <span>Negocios destacados</span></a>
-                <a class="nav-btn" href="{{ url_for('crear_negocio') }}"><i class="bi bi-shop"></i> <span>Crear un negocio</span></a>
-                <a class="nav-btn" href="{{ url_for('config') }}"><i class="bi bi-gear-fill"></i> <span>Configuración</span></a>
-            </nav>
-            <a href="{{ url_for('logout') }}" class="sidebar-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Cerrar sesión</span></a>
-        </section>
-        {% endif %}
+        {% include 'partials/sidebar-content.html' %}
     </aside>
+
     <nav class="nav-container">
-        <a href="/">
-            <img 
-            src="{{ url_for('static', filename='imgs/logo/Almaceb-Logo-inicio.png') }}"
-            alt="Almaceb RED Logo"
-            class="nav-logo"
+        <a href="{{ url_for('index') }}">
+            <img
+                src="{{ url_for('static', filename='imgs/logo/Almaceb-Logo-inicio.png') }}"
+                alt="Almaceb RED Logo"
+                class="nav-logo"
             >
         </a>
         <div class="nav-back-container">
             <button class="green-btn back-button" type="button">
-                <i class="fa-solid fa-arrow-left"></i>
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
                 Volver
             </button>
         </div>
         <button class="sidebar-toggle" type="button" aria-label="Abrir menú" aria-controls="sidebarPanel" aria-expanded="false">
             <img
-            src="{{ url_for('static', filename='imgs/default.jpg') }}"
-            alt="Abrir menú de usuario"
-            class="nav-profile">
+                src="{{ url_for('static', filename=profile_image) }}"
+                alt="Abrir menú de usuario"
+                class="nav-profile"
+            >
         </button>
     </nav>
-    <main class="bgGrey user-profile-page">
-        <section class="profile-page-header border-card flex-between">
+
+    <main class="profile-page">
+        <section class="profile-header-card" aria-labelledby="profile-name">
             <img
-            src="{{ url_for('static', filename='imgs/default.jpg') }}"
-            alt="Foto de perfil del usuario"
+                class="profile-header-avatar"
+                src="{{ url_for('static', filename='imgs/default.jpg') }}"
+                alt="Foto de perfil de Juan Pérez"
             >
-            <div>
-                <h1>(Nombre Completo)</h1>
-                <label for="">Negocio</label>
-                <!-- O cliente <label for="">Cliente</label> -->
-                <span>
-                    <i class="bi bi-calendar2-fill"></i>
-                    <p>("Miembro desde ####, ####)</p>
-                </span>
-            </div>
-            <button>
-                <i class="bi bi-three-dots"></i>
-            </button>
-        </section>
-        <h2 class="green-line">Sobre (Nombre completo)</h2>
-        <section class="flex">
-            <article>
-                <h3 class="green-line">Biografía</h3>
-                <p>
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                    Ipsam tempore, reprehenderit nihil quasi placeat rerum minus    
-                    expedita cum eum explicabo exercitationem maiores temporibus
-                    esse odio? Magni nulla veritatis similique inventore?
+
+            <div class="profile-header-details">
+                <h1 id="profile-name">Juan Pérez</h1>
+                <span class="green-label profile-account-chip">Vendedor</span>
+                <p class="profile-member-date">
+                    <i class="bi bi-calendar3" aria-hidden="true"></i>
+                    Miembro desde mayo de 2026
                 </p>
-            </article>
+            </div>
+
+            <div class="profile-header-actions">
+                <a class="green-btn profile-edit-button" href="{{ url_for('config', seccion='editar') }}">
+                    <i class="bi bi-pencil" aria-hidden="true"></i>
+                    Editar perfil
+                </a>
+                <button class="profile-more-button" type="button" aria-label="Más opciones del perfil" title="Más opciones">
+                    <i class="bi bi-three-dots" aria-hidden="true"></i>
+                </button>
+            </div>
+        </section>
+
+        <div class="profile-summary-grid">
+            <section class="profile-about-card" aria-labelledby="profile-about-title">
+                <div class="profile-section-heading">
+                    <span class="profile-heading-icon" aria-hidden="true">
+                        <i class="bi bi-person"></i>
+                    </span>
+                    <h2 id="profile-about-title">Sobre mí</h2>
+                </div>
+                <p>Emprendedor local interesado en apoyar a los negocios de mi comunidad y ayudar a que más personas descubran comercios y promociones cercanas.</p>
+            </section>
+
+            <section class="profile-explore-card" aria-labelledby="profile-explore-title">
+                <div class="profile-explore-icon" aria-hidden="true">
+                    <i class="bi bi-geo-alt"></i>
+                </div>
+                <div class="profile-explore-content">
+                    <h2 id="profile-explore-title">Explora Almaceb RED</h2>
+                    <p>Descubre negocios y promociones cerca de ti.</p>
+                    <div class="profile-explore-actions">
+                        <a class="green-btn-alt" href="{{ url_for('map') }}">Explorar mapa</a>
+                        <a class="green-link" href="{{ url_for('featured_business') }}">Negocios destacados <span aria-hidden="true">→</span></a>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- En la etapa funcional, esta sección se mostrará solo a cuentas business con Jinja. -->
+        <section class="profile-businesses-section" aria-labelledby="profile-businesses-title">
+            <div class="profile-businesses-header">
+                <div class="profile-section-heading">
+                    <span class="profile-heading-icon" aria-hidden="true">
+                        <i class="bi bi-shop"></i>
+                    </span>
+                    <h2 id="profile-businesses-title">Mis negocios</h2>
+                </div>
+                <a class="green-btn profile-manage-button" href="{{ url_for('my_businesses') }}">
+                    <i class="bi bi-gear" aria-hidden="true"></i>
+                    Gestionar negocios
+                </a>
+            </div>
+
+            <div class="profile-business-grid">
+                <article class="profile-business-card">
+                    <img src="{{ url_for('static', filename='imgs/products/4.jpg') }}" alt="Productos de Panadería La Juana">
+                    <div class="profile-business-content">
+                        <h3>Panadería La Juana</h3>
+                        <p class="profile-business-category">Panadería</p>
+                        <p class="profile-business-promotions">2 promociones activas</p>
+                        <!-- TODO: reemplazar # por url_for('negocio', negocio_id=...) al conectar los negocios reales. -->
+                        <a class="green-btn-alt profile-business-link" href="#">Ver negocio</a>
+                    </div>
+                </article>
+
+                <article class="profile-business-card">
+                    <img src="{{ url_for('static', filename='imgs/products/2.jpg') }}" alt="Productos de Dulce Hogar">
+                    <div class="profile-business-content">
+                        <h3>Dulce Hogar</h3>
+                        <p class="profile-business-category">Pastelería</p>
+                        <p class="profile-business-promotions">1 promoción activa</p>
+                        <!-- TODO: reemplazar # por url_for('negocio', negocio_id=...) al conectar los negocios reales. -->
+                        <a class="green-btn-alt profile-business-link" href="#">Ver negocio</a>
+                    </div>
+                </article>
+
+                <article class="profile-business-card">
+                    <img src="{{ url_for('static', filename='imgs/products/5.jpg') }}" alt="Productos de Almacén Central">
+                    <div class="profile-business-content">
+                        <h3>Almacén Central</h3>
+                        <p class="profile-business-category">Almacén</p>
+                        <p class="profile-business-promotions">3 promociones activas</p>
+                        <!-- TODO: reemplazar # por url_for('negocio', negocio_id=...) al conectar los negocios reales. -->
+                        <a class="green-btn-alt profile-business-link" href="#">Ver negocio</a>
+                    </div>
+                </article>
+
+                <article class="profile-business-card">
+                    <img src="{{ url_for('static', filename='imgs/products/1.jpg') }}" alt="Productos de Café del Barrio">
+                    <div class="profile-business-content">
+                        <h3>Café del Barrio</h3>
+                        <p class="profile-business-category">Cafetería</p>
+                        <p class="profile-business-promotions">2 promociones activas</p>
+                        <!-- TODO: reemplazar # por url_for('negocio', negocio_id=...) al conectar los negocios reales. -->
+                        <a class="green-btn-alt profile-business-link" href="#">Ver negocio</a>
+                    </div>
+                </article>
+            </div>
         </section>
     </main>
-    <!-- Scripts -->
+
+    <footer class="web-footer">
+        <div class="footer-brand">
+            <img src="{{ url_for('static', filename='imgs/logo/Almaceb-HD-Logo.png') }}" alt="Almaceb RED Logo">
+            <p>Conectando negocios de barrio con clientes reales.</p>
+        </div>
+        <div class="footer-column">
+            <h4>Enlaces</h4>
+            <a href="{{ url_for('index') }}">Inicio</a>
+        </div>
+        <div class="footer-column">
+            <h4>Proyecto</h4>
+            <p>IntelliRED SpA</p>
+            <p>Feria Técnico Profesional 2026</p>
+            <p>© 2026 Almaceb RED</p>
+        </div>
+    </footer>
+
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>

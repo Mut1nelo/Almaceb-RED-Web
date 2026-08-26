@@ -11,7 +11,7 @@ from report import Report
 from werkzeug.security import generate_password_hash, check_password_hash
 from mysqlconnection import connectToMySQL
 import requests
-from local import Business, BUSINESS_TYPES
+from local import Business, BUSINESS_TYPES, MAX_BUSINESSES_PER_USER
 import json
 import os
 from werkzeug.utils import secure_filename
@@ -31,8 +31,40 @@ UPLOAD_SUBFOLDER = 'imgs/negocios' #adentro de static
 # Tamaños máximos por tipo de imagen (ancho, alto) en píxeles
 MAX_DIMENSIONS = {
     'banner': (1600, 900),
-    'perfil': (500, 500)
+    'perfil': (500, 500),
+    'usuario': (500, 500)
 }
+
+
+@app.context_processor
+def inject_session_user():
+    """Mantiene nombre, tipo de cuenta y avatar disponibles en todas las plantillas."""
+    current_user = None
+    user_id = session.get('user_id')
+
+    if user_id:
+        current_user = Usuario.get_by_id(user_id)
+
+        if current_user is None:
+            session.clear()
+        else:
+            session['username'] = current_user.username
+            session['account_type'] = current_user.account_type
+
+    username = current_user.username if current_user else 'invitado'
+    account_type = current_user.account_type if current_user else 'invitado'
+    profile_image = (
+        current_user.foto_perfil
+        if current_user and current_user.foto_perfil
+        else 'imgs/default.jpg'
+    )
+
+    return {
+        'current_user': current_user,
+        'username': username,
+        'account_type': account_type,
+        'profile_image': profile_image
+    }
 
 # Aqui van todas las funciones q tengamos q declarar fuera d una ruta
 
@@ -40,7 +72,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-def guardar_imagen(file_storage, tipo):
+def guardar_imagen(file_storage, tipo, subfolder=UPLOAD_SUBFOLDER):
     """tipo debe ser 'banner' o 'perfil', para saber a qué tamaño redimensionar."""
     if not file_storage or file_storage.filename == '':
         return None
@@ -51,7 +83,7 @@ def guardar_imagen(file_storage, tipo):
     ext = file_storage.filename.rsplit('.', 1)[1].lower()
     nombre_seguro = f"{uuid4().hex}.{ext}"
 
-    carpeta_destino = os.path.join(app.root_path, 'static', UPLOAD_SUBFOLDER)
+    carpeta_destino = os.path.join(app.root_path, 'static', subfolder)
     os.makedirs(carpeta_destino, exist_ok=True)
     ruta_completa = os.path.join(carpeta_destino, nombre_seguro)
 
@@ -66,7 +98,7 @@ def guardar_imagen(file_storage, tipo):
     except Exception as e:
         raise ValueError(f"No se pudo procesar la imagen: {e}")
 
-    return f"{UPLOAD_SUBFOLDER}/{nombre_seguro}"
+    return f"{subfolder}/{nombre_seguro}"
 
 def calcular_similitud(query, texto):
     if not texto:
@@ -116,6 +148,18 @@ def geocode_das_address(address):
     except Exception as e:
         print(f"Error de geolocalizacion", {e} )
         return None
+
+
+def require_business_account():
+    if 'user_id' not in session:
+        flash("Debes iniciar sesión con una cuenta de negocio para acceder.", "login")
+        return redirect(url_for('login_page'))
+
+    if session.get('account_type') != 'business':
+        flash("Esta sección está disponible solo para cuentas de negocio.", "error")
+        return redirect(url_for('map'))
+
+    return None
 
 
 # Enrutamiento de las páginas web
@@ -253,47 +297,34 @@ def negocio(negocio_id):
 
 @app.route("/Negocios-destacados")
 def featured_business():
-    return render_template("featured-business.html")
+    featured_categories = {
+        "Todos", "Panadería", "Pastelería", "Almacén",
+        "Cafetería", "Verdulería", "Otras"
+    }
+    selected_category = request.args.get("categoria", "Todos")
+    if selected_category not in featured_categories:
+        selected_category = "Todos"
 
-# @app.route("/Perfil-usuario")
-# def user_profile(user_id):
+    selected_order = request.args.get("orden", "valoracion")
+    if selected_order != "valoracion":
+        selected_order = "valoracion"
 
-#     usuarios = Usuario.get_all_users()
-#     username = session.get('username', 'invitado')
-#     account_type = session.get('account_type', 'invitado')
-#     if 'user_id' not in session:
-#         redirect("/Login")
+    businesses = Business.get_featured(
+        category=selected_category,
+        order=selected_order
+    )
 
-#     print(f"DEBUG para user-profile.html: username={username}, account_type={account_type}")
+    return render_template(
+        "featured-business.html",
+        businesses=businesses,
+        selected_category=selected_category,
+        selected_order=selected_order
+    )
 
-#     user = Usuario.get_by_id(user_id)
-
-#     if user is None:
-#         return "Usuario no Encontrado (no deberia pasar waos)", 404
-
-#     user_json = json.dumps({
-#         'id': user.id,
-#         'nombre': user.username,
-#         '',
-#     })
-
-#     return render_template(
-#         'user-profile.html',
-#         business=business,          # objeto directo, útil para Jinja: {{ business.nombre_negocio }}
-#         business_json=business_json, # JSON para usarlo en JS si hace falta
-#         usuarios=usuarios, # Gracias claude
-#         username=username,
-#         account_type=account_type
-#     )
-#     return render_template("user-profile.html")
-
-#Lo dejo comentado por mientras
-# 👍
-
-# Otra plantilla pero para la busqueda de usuarios
-# @app.route("/Perfil-usuario/<int:usuarios_id>")
-# def user_profile(usuarios_id):
-#     return redirect(url_for('future_function'))
+@app.route("/Perfil-usuario")
+def user_profile():
+    """Vista temporal para revisar la maqueta frontend del perfil."""
+    return render_template("user-profile.html")
 
 @app.route("/Reportes")
 def report():
@@ -360,12 +391,13 @@ def reportar():
 
 @app.route('/Crear-negocio', methods=['GET', 'POST'])
 def crear_negocio():
-    if 'user_id' not in session:
-        return redirect(url_for('login_page'))
+    access_redirect = require_business_account()
+    if access_redirect:
+        return access_redirect
 
-    if session.get('account_type') != 'business':
-        flash("Solo las cuentas de negocio pueden crear un negocio.", "error")
-        return redirect(url_for('map'))
+    if Business.count_by_user(session['user_id']) >= MAX_BUSINESSES_PER_USER:
+        flash("Has alcanzado el límite de 4 negocios por cuenta.", "error")
+        return redirect(url_for('my_businesses'))
 
     if request.method == 'GET':
         return render_template(
@@ -393,7 +425,7 @@ def crear_negocio():
         imagen_perfil = guardar_imagen(request.files.get('imagen_perfil'), tipo='perfil')
 
         Business.save(
-            nombre_negocio, business_type, lat, lon,
+            session['user_id'], nombre_negocio, business_type, lat, lon,
             direccion=direccion,
             telefono=telefono,
             correo=correo,
@@ -405,7 +437,8 @@ def crear_negocio():
             imagen_banner=imagen_banner,
             imagen_perfil=imagen_perfil
         )
-        return redirect(url_for('map'))
+        flash("Negocio creado correctamente.", "success")
+        return redirect(url_for('my_businesses'))
 
     except ValueError as e:
         return render_template('error.html', error=str(e)), 400
@@ -418,19 +451,15 @@ def crear_negocio():
 
 @app.route('/Negocio/<int:negocio_id>/Editar', methods=['GET', 'POST'])
 def editar_negocio(negocio_id):
+    access_redirect = require_business_account()
+    if access_redirect:
+        return access_redirect
 
-    # Debe haber iniciado sesión
-    if 'user_id' not in session:
-        return redirect(url_for('login_page'))
-
-    if session.get('account_type') != 'business':
-        flash("No tienes permiso para editar negocios.", "error")
-        return redirect(url_for('map'))
-
-    negocio = Business.get_by_id(negocio_id)
+    negocio = Business.get_by_id_for_user(negocio_id, session['user_id'])
 
     if not negocio:
-        return "Negocio no encontrado", 404
+        flash("El negocio no existe o no pertenece a tu cuenta.", "error")
+        return redirect(url_for('my_businesses'))
 
     if request.method == 'GET':
         return render_template(
@@ -462,7 +491,7 @@ def editar_negocio(negocio_id):
 
     try:
         Business.update(
-        negocio_id, nombre_negocio, business_type, lat, lon,
+        negocio_id, session['user_id'], nombre_negocio, business_type, lat, lon,
         direccion=direccion, telefono=telefono, correo=correo, descripcion=descripcion,
         horario_dia_inicio=horario_dia_inicio, horario_dia_fin=horario_dia_fin,
         horario_hora_inicio=horario_hora_inicio, horario_hora_fin=horario_hora_fin,
@@ -478,7 +507,22 @@ def editar_negocio(negocio_id):
 
 @app.route("/Mis-negocios")
 def my_businesses():
-    return redirect(url_for("future_function"))
+    access_redirect = require_business_account()
+    if access_redirect:
+        return access_redirect
+
+    businesses = Business.get_by_user(session['user_id'])
+    business_count = len(businesses)
+
+    return render_template(
+        "business-admin.html",
+        businesses=businesses,
+        business_count=business_count,
+        business_limit=MAX_BUSINESSES_PER_USER,
+        can_create=business_count < MAX_BUSINESSES_PER_USER,
+        username=session.get('username', 'Negocio'),
+        account_type=session.get('account_type', 'business')
+    )
 
 @app.route("/Cerrar-sesion")
 def logout():
@@ -529,7 +573,8 @@ def config():
         usuario=usuario,
         section=section,
         is_authenticated=is_authenticated,
-        account_type=session.get("account_type", "invitado")
+        account_type=session.get("account_type", "invitado"),
+        username=session.get("username", "invitado")
     )
 
 @app.route("/Configuracion/Editar", methods=["POST"])
@@ -538,26 +583,69 @@ def actualizar_perfil():
         flash("Debes iniciar sesión para editar tu perfil.", "login")
         return redirect(url_for("login_page"))
 
-    data = {
-        "id": session["user_id"],
-        "nombre_completo": request.form.get("nombre_completo", "").strip(),
-        "telefono": request.form.get("telefono", "").strip(),
-        "ubicacion": request.form.get("ubicacion", "").strip(),
-        "biografia": request.form.get("biografia", "").strip()
-    }
+    usuario = Usuario.get_by_id(session["user_id"])
+    if usuario is None:
+        session.clear()
+        flash("Tu sesión ya no es válida. Inicia sesión nuevamente.", "login")
+        return redirect(url_for("login_page"))
 
-    Usuario.update_profile(data)
+    username = request.form.get("username", "").strip()
+    email = request.form.get("email", "").strip().lower()
+    telefono = request.form.get("telefono", "").strip() or None
+    bio = request.form.get("bio", "").strip() or None
 
+    if len(username) < 2 or len(username) > 100:
+        flash("El nombre de usuario debe tener entre 2 y 100 caracteres.", "error")
+        return redirect(url_for("config", seccion="editar"))
+
+    if not email or "@" not in email or len(email) > 150:
+        flash("Ingresa un correo electrónico válido.", "error")
+        return redirect(url_for("config", seccion="editar"))
+
+    if telefono and len(telefono) > 20:
+        flash("El teléfono no puede superar los 20 caracteres.", "error")
+        return redirect(url_for("config", seccion="editar"))
+
+    if bio and len(bio) > 500:
+        flash("La biografía no puede superar los 500 caracteres.", "error")
+        return redirect(url_for("config", seccion="editar"))
+
+    conflict = Usuario.find_profile_conflict(session["user_id"], username, email)
+    if conflict:
+        message = (
+            "Ese nombre de usuario ya está en uso."
+            if conflict["username"].lower() == username.lower()
+            else "Ese correo ya está registrado."
+        )
+        flash(message, "error")
+        return redirect(url_for("config", seccion="editar"))
+
+    try:
+        foto_nueva = guardar_imagen(
+            request.files.get("foto_perfil"),
+            tipo="usuario",
+            subfolder="imgs/usuarios"
+        )
+        Usuario.update_profile({
+            "id": session["user_id"],
+            "username": username,
+            "email": email,
+            "telefono": telefono,
+            "bio": bio,
+            "foto_perfil": foto_nueva or usuario.foto_perfil
+        })
+    except (ValueError, RuntimeError) as error:
+        flash(str(error), "error")
+        return redirect(url_for("config", seccion="editar"))
+
+    session["username"] = username
+    flash("Perfil actualizado correctamente.", "success")
     return redirect(url_for("config", seccion="perfil"))
     #muy bien javier
 
 @app.route("/Ranking")
 def ranking():
     return render_template("ranking.html")
-
-@app.route("/Funciones-futuras")
-def future_function():
-    return render_template("future-function.html")
 
 @app.route('/Eliminar-cuenta', methods=['POST'])
 def eliminar_cuenta():
@@ -569,6 +657,10 @@ def eliminar_cuenta():
 
     flash("Tu cuenta ha sido eliminada.", "success")
     return redirect('/')
+
+@app.route("/Funciones-futuras")
+def future_function():
+    return render_template("future-function.html")
 
 # Para desarrolladores
 @app.route("/Dev-page")

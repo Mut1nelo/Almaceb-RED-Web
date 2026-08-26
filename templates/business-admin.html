@@ -43,7 +43,7 @@
         {% elif account_type == 'client' %}
         <section class="sidebar-state" data-user-state="cliente">
             <div class="sidebar-user">
-                <img src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Foto de perfil" class="profile-sidebar">
+                <img src="{{ url_for('static', filename=profile_image) }}" alt="Foto de perfil de {{ username }}" class="profile-sidebar">
                 <h3>Hola,</h3>
                 <h2>{{ username }}</h2>
                 <span class="blue-label">Cliente</span>
@@ -58,13 +58,14 @@
         {% elif account_type == 'business' %}
         <section class="sidebar-state" data-user-state="vendedor">
             <div class="sidebar-user">
-                <img src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Logo del negocio" class="profile-sidebar">
+                <img src="{{ url_for('static', filename=profile_image) }}" alt="Foto de perfil de {{ username }}" class="profile-sidebar">
                 <h3>Hola,</h3>
                 <h2>{{ username }}</h2>
                 <span class="green-label">Negocio</span>
             </div>
             <nav class="sidebar-nav" aria-label="Menú de vendedor">
                 <a class="nav-btn" href="{{ url_for('config', seccion='perfil') }}"><i class="bi bi-person-fill"></i> <span>Mi perfil</span></a>
+                <a class="nav-btn" href="{{ url_for('my_businesses') }}" aria-current="page"><i class="bi bi-house-gear-fill"></i> <span>Mis negocios</span></a>
                 <a class="nav-btn" href="{{ url_for('featured_business') }}"><i class="bi bi-stars"></i> <span>Negocios destacados</span></a>
                 <a class="nav-btn" href="{{ url_for('crear_negocio') }}"><i class="bi bi-shop"></i> <span>Crear un negocio</span></a>
                 <a class="nav-btn" href="{{ url_for('config') }}"><i class="bi bi-gear-fill"></i> <span>Configuración</span></a>
@@ -90,57 +91,99 @@
         </div>
         <button class="sidebar-toggle" type="button" aria-label="Abrir menú" aria-controls="sidebarPanel" aria-expanded="false">
             <img
-            src="{{ url_for('static', filename='imgs/default.jpg') }}"
+            src="{{ url_for('static', filename=profile_image) }}"
             alt="Abrir menú de usuario"
             class="nav-profile">
         </button>
     </nav>
     <main class="business-admin-page">
         <header class="business-admin-header border-card">
-            <h1><i class="bi bi-shop green-label"></i> Mis negocios</h1>
-            <p>Administra los negocios vinculados a tu cuenta.</p>
+            <div class="business-admin-heading">
+                <span class="business-admin-icon" aria-hidden="true"><i class="bi bi-shop"></i></span>
+                <div>
+                    <h1>Mis negocios</h1>
+                    <p>Administra los negocios vinculados a tu cuenta.</p>
+                </div>
+            </div>
+            <div class="business-admin-toolbar">
+                <div class="business-limit" aria-label="{{ business_count }} de {{ business_limit }} negocios creados">
+                    <span><strong>{{ business_count }}</strong>/{{ business_limit }} negocios</span>
+                    <div class="business-limit-meter" aria-hidden="true">
+                        {% for position in range(business_limit) %}
+                        <span class="{{ 'is-filled' if position < business_count else '' }}"></span>
+                        {% endfor %}
+                    </div>
+                </div>
+                {% if can_create %}
+                <a class="green-btn-alt" href="{{ url_for('crear_negocio') }}">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i> Crear negocio
+                </a>
+                {% else %}
+                <span class="business-limit-reached red-label">
+                    <i class="bi bi-lock-fill" aria-hidden="true"></i> Límite alcanzado
+                </span>
+                <span class="green-btn-alt disabled-action" aria-disabled="true">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i> Crear negocio
+                </span>
+                {% endif %}
+            </div>
         </header>
-        <div class="middle-order">
-            <label for="business-limits" class="white-label">
-                Negocios
-                1/4
-            </label>
-            <a class="green-btn-alt" href="/Crear-negocio">Crear negocio</a>
-        </div>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="business-admin-alerts" aria-live="polite">
+                {% for category, message in messages %}
+                <div class="business-admin-alert business-admin-alert-{{ category }}" role="alert">
+                    <i class="bi {{ 'bi-check-circle-fill' if category == 'success' else 'bi-exclamation-circle-fill' }}" aria-hidden="true"></i>
+                    <span>{{ message }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        {% endwith %}
+
         <section id="admin-business-card-container" aria-label="Listado de mis negocios">
+            {% for business in businesses %}
             <article class="ab-card border-card">
                 <div class="ab-image">
                     <img
-                    src="{{ url_for('static', filename='imgs/img-proto.png') }}"
-                    alt="Imagen provisional del negocio destacado"
-                    class="ab-banner"
+                        src="{{ url_for('static', filename=business.imagen_banner) if business.imagen_banner else url_for('static', filename='imgs/default-business.png') }}"
+                        alt="Banner de {{ business.nombre_negocio }}"
+                        class="ab-banner"
                     >
                 </div>
                 <div class="ab-card-content">
                     <img
-                    src="{{ url_for('static', filename='imgs/default.jpg') }}"
-                    alt="Foto de perfil predeterminada"
-                    class="ab-profile"
+                        src="{{ url_for('static', filename=business.imagen_perfil) if business.imagen_perfil else url_for('static', filename='imgs/default-business.png') }}"
+                        alt="Logo de {{ business.nombre_negocio }}"
+                        class="ab-profile"
                     >
-                    <h2>(Nombre del negocio)</h2>
-                    <span class="green-label featured-category">(Tipo)</span>
+                    <h2>{{ business.nombre_negocio }}</h2>
+                    <span class="green-label featured-category">{{ business.business_type }}</span>
                     <div class="featured-location">
                         <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
-                        <p>(Ubicación)</p>
+                        <p>{{ business.direccion or 'Ubicación no informada' }}</p>
                     </div>
                 </div>
                 <div class="ab-footer">
-                    <a href="/Negocio/<int:negocio_id>">
-                        Ver negocio
+                    <a class="green-link" href="{{ url_for('negocio', negocio_id=business.id) }}">
+                        <i class="bi bi-eye" aria-hidden="true"></i> Ver negocio
                     </a>
-                    <a href="/Negocio/<int:negocio_id>/Editar">
-                        Editar
-                    </a>
-                    <a href="">
-                        ...
+                    <a class="green-btn" href="{{ url_for('editar_negocio', negocio_id=business.id) }}">
+                        <i class="bi bi-pencil-square" aria-hidden="true"></i> Editar
                     </a>
                 </div>
             </article>
+            {% else %}
+            <div class="business-admin-empty border-card">
+                <span class="business-admin-empty-icon" aria-hidden="true"><i class="bi bi-shop"></i></span>
+                <h2>Aún no tienes negocios</h2>
+                <p>Crea tu primer negocio para comenzar a mostrarlo en Almaceb RED.</p>
+                <a class="green-btn-alt" href="{{ url_for('crear_negocio') }}">
+                    <i class="bi bi-plus-lg" aria-hidden="true"></i> Crear mi primer negocio
+                </a>
+            </div>
+            {% endfor %}
         </section>
     </main>
     <footer class="web-footer">

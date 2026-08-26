@@ -233,7 +233,7 @@
         <!-- Business user section only -->
         <section class="sidebar-state" data-user-state="vendedor">
             <div class="sidebar-user">
-                <img src="../static/imgs/default.jpg" alt="Logo del negocio" class="profile-sidebar">
+                <img src="{{ url_for('static', filename=profile_image) }}" alt="Foto de perfil de {{ username }}" class="profile-sidebar">
                 <h3>Hola,</h3>
                 <h2>{{ username }}</h2>
                 <span class="green-label">Negocio</span>
@@ -260,7 +260,7 @@
             <!-- Optional: search box or title -->
             <h1>Mis Locales de Negocio</h1>
             <button class="sidebar-toggle" type="button" aria-label="Abrir menú">
-                <img src="../static/imgs/default.jpg" alt="Abrir menú" class="nav-profile">
+                <img src="{{ url_for('static', filename=profile_image) }}" alt="Abrir menú de usuario" class="nav-profile">
             </button>
         </nav>
 

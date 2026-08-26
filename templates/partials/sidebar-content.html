@@ -1,0 +1,57 @@
+<div class="sidebar-topbar">
+    <button id="closeSidebar" class="sidebar-close" type="button" aria-label="Cerrar menú">
+        <i class="fa-solid fa-xmark"></i>
+    </button>
+</div>
+
+{% if account_type == 'invitado' %}
+<section class="sidebar-state" data-user-state="invitado">
+    <div class="sidebar-user">
+        <img src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Foto de perfil predeterminada" class="profile-sidebar">
+        <h3>¡Bienvenido!</h3>
+        <span class="black-label">Invitado</span>
+        <h3>Únete a Almaceb RED</h3>
+        <p>Inicia sesión para seguir negocios, guardar favoritos y administrar tu perfil.</p>
+    </div>
+    <div class="sidebar-actions">
+        <a href="{{ url_for('login_page') }}" class="green-btn-alt">Iniciar sesión</a>
+        <a href="{{ url_for('register') }}" class="green-btn">Crear cuenta</a>
+    </div>
+    <nav class="sidebar-nav" aria-label="Menú de invitado">
+        <a class="nav-btn" href="{{ url_for('config', seccion='terminos') }}"><i class="fa-regular fa-file-lines"></i> <span>Términos y condiciones</span></a>
+        <a class="nav-btn" href="{{ url_for('config', seccion='preguntas') }}"><i class="fa-regular fa-circle-question"></i> <span>Preguntas frecuentes</span></a>
+    </nav>
+</section>
+{% elif account_type == 'client' %}
+<section class="sidebar-state" data-user-state="cliente">
+    <div class="sidebar-user">
+        <img src="{{ url_for('static', filename=profile_image) }}" alt="Foto de perfil de {{ username }}" class="profile-sidebar">
+        <h3>Hola,</h3>
+        <h2>{{ username }}</h2>
+        <span class="blue-label">Cliente</span>
+    </div>
+    <nav class="sidebar-nav" aria-label="Menú de cliente">
+        <a class="nav-btn" href="{{ url_for('config', seccion='perfil') }}"><i class="bi bi-person-fill"></i> <span>Mi perfil</span></a>
+        <a class="nav-btn" href="{{ url_for('featured_business') }}"><i class="bi bi-stars"></i> <span>Negocios destacados</span></a>
+        <a class="nav-btn" href="{{ url_for('config') }}"><i class="bi bi-gear-fill"></i> <span>Configuración</span></a>
+    </nav>
+    <a href="{{ url_for('logout') }}" class="sidebar-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Cerrar sesión</span></a>
+</section>
+{% elif account_type == 'business' %}
+<section class="sidebar-state" data-user-state="vendedor">
+    <div class="sidebar-user">
+        <img src="{{ url_for('static', filename=profile_image) }}" alt="Foto de perfil de {{ username }}" class="profile-sidebar">
+        <h3>Hola,</h3>
+        <h2>{{ username }}</h2>
+        <span class="green-label">Negocio</span>
+    </div>
+    <nav class="sidebar-nav" aria-label="Menú de vendedor">
+        <a class="nav-btn" href="{{ url_for('config', seccion='perfil') }}"><i class="bi bi-person-fill"></i> <span>Mi perfil</span></a>
+        <a class="nav-btn" href="{{ url_for('my_businesses') }}"><i class="bi bi-house-gear-fill"></i> <span>Mis negocios</span></a>
+        <a class="nav-btn" href="{{ url_for('featured_business') }}"><i class="bi bi-stars"></i> <span>Negocios destacados</span></a>
+        <a class="nav-btn" href="{{ url_for('crear_negocio') }}"><i class="bi bi-shop"></i> <span>Crear un negocio</span></a>
+        <a class="nav-btn" href="{{ url_for('config') }}"><i class="bi bi-gear-fill"></i> <span>Configuración</span></a>
+    </nav>
+    <a href="{{ url_for('logout') }}" class="sidebar-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Cerrar sesión</span></a>
+</section>
+{% endif %}

@@ -43,7 +43,7 @@
         {% elif account_type == 'client' %}
         <section class="sidebar-state" data-user-state="cliente">
             <div class="sidebar-user">
-                <img src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Foto de perfil" class="profile-sidebar">
+                <img src="{{ url_for('static', filename=profile_image) }}" alt="Foto de perfil de {{ username }}" class="profile-sidebar">
                 <h3>Hola,</h3>
                 <h2>{{ username }}</h2>
                 <span class="blue-label">Cliente</span>
@@ -58,7 +58,7 @@
         {% elif account_type == 'business' %}
         <section class="sidebar-state" data-user-state="vendedor">
             <div class="sidebar-user">
-                <img src="{{ url_for('static', filename='imgs/default.jpg') }}" alt="Logo del negocio" class="profile-sidebar">
+                <img src="{{ url_for('static', filename=profile_image) }}" alt="Foto de perfil de {{ username }}" class="profile-sidebar">
                 <h3>Hola,</h3>
                 <h2>{{ username }}</h2>
                 <span class="green-label">Negocio</span>
@@ -90,7 +90,7 @@
         </div>
         <button class="sidebar-toggle" type="button" aria-label="Abrir menú" aria-controls="sidebarPanel" aria-expanded="false">
             <img
-            src="{{ url_for('static', filename='imgs/default.jpg') }}"
+            src="{{ url_for('static', filename=profile_image) }}"
             alt="Abrir menú de usuario"
             class="nav-profile">
         </button>
