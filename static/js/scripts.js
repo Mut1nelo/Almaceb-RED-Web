@@ -70,17 +70,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Actualiza el texto del botón personalizado con el nombre del archivo seleccionado
-    const fileInput = document.getElementById('archive-form');
-    const fileNameEl = document.getElementById('file-name');
-
-    if (fileInput && fileNameEl) {
-        fileInput.addEventListener('change', () => {
-            const files = fileInput.files;
-            fileNameEl.textContent = (files && files.length) ? files[0].name : 'Ningún archivo seleccionado';
-        });
-    }
-
     // Carrusel de promociones de la página del negocio.
     const promotionList = document.querySelector('.promotion-list');
     const promotionPrev = document.querySelector('.promotion-prev');

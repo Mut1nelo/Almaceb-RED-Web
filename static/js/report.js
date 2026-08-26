@@ -2,9 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
     const elementSelect = document.getElementById("report-element");
     const reasonSelect = document.getElementById("report-reason");
 
-    const fileInput = document.getElementById("archive-form");
-    const fileName = document.getElementById("file-name");
-
     const reasons = {
         negocio: [
             ["informacion_incorrecta", "Información incorrecta"],
@@ -90,18 +87,6 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function updateFileName() {
-        if (!fileInput || !fileName) {
-            return;
-        }
-
-        if (fileInput.files.length > 0) {
-            fileName.textContent = fileInput.files[0].name;
-        } else {
-            fileName.textContent = "Ningún archivo seleccionado";
-        }
-    }
-
     if (elementSelect) {
         elementSelect.addEventListener("change", updateReasons);
 
@@ -110,7 +95,4 @@ document.addEventListener("DOMContentLoaded", () => {
         updateReasons();
     }
 
-    if (fileInput) {
-        fileInput.addEventListener("change", updateFileName);
-    }
 });

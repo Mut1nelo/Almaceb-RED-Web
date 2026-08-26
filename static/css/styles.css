@@ -846,6 +846,12 @@
 
 /* Clases reutilizables */
 
+.flex-around {
+    display: flex;
+    justify-content: space-around;
+    align-content: center;
+}
+
 .flex-between {
     display: flex;
     justify-content: space-between;
@@ -1151,6 +1157,16 @@ form label {
     font-size: 16px;
 }
 
+.form-select {
+    text-decoration: none;
+    max-width: 70%;
+}
+
+.half-select {
+    max-width: 100%;
+    justify-content: space-around;
+}
+
 .account-type-options {
     display: flex;
     justify-content: space-between;
@@ -1177,6 +1193,15 @@ form label {
 
 #loginForm {
     gap: 70px;
+}
+
+#horario_hora_inicio,
+#horario_hora_fin {
+    width: 100px;
+}
+
+.file-business-form {
+    width: auto;
 }
 
 /* ------------------------------------------------ */
@@ -1420,21 +1445,30 @@ form label {
 .file-input-wrapper {
     position: relative;
     display: inline-block;
+    width: min(100%, 500px);
     flex: 0 0 auto;
 }
 
 .file-input-wrapper input[type="file"] {
     position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     opacity: 0;
     cursor: pointer;
     z-index: 3;
+}
+
+.file-input-wrapper:focus-within .file-btn {
+    outline: 2px solid var(--vivid-green);
+    outline-offset: 2px;
 }
 
 .file-btn {
     display: flex;
     flex-direction: column;
     align-items: center;
-    width: 500px;
+    width: 100%;
     gap: 10px;
     border-radius: 8px;
     border-style: dotted;
@@ -2029,7 +2063,7 @@ body.gallery-modal-open {
     background-color: var(--vivid-green);
 }
 
-#middle-order {
+.middle-order {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2074,28 +2108,28 @@ body.gallery-modal-open {
     width: 100%;
 }
 
-.featured-business-page .featured-card {
+.featured-card {
     min-width: 0;
     padding: 12px 12px 14px;
     border-radius: 2em;
     box-shadow: 0 4px 9px rgba(0, 0, 0, 0.18);
 }
 
-.featured-business-page .featured-image {
+.featured-image {
     height: clamp(220px, 24vw, 300px);
     position: relative;
     overflow: hidden;
     border-radius: 20px;
 }
 
-.featured-business-page .featured-banner {
+.featured-banner {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
 
-.featured-business-page .rank {
+.rank {
     position: absolute;
     top: 9px;
     left: 9px;
@@ -2109,11 +2143,11 @@ body.gallery-modal-open {
     font-weight: 800;
 }
 
-.featured-business-page .rank-1 { background-color: #ffd500; }
-.featured-business-page .rank-2 { background-color: #aeb5bf; }
-.featured-business-page .rank-3 { background-color: #b36c3d; }
+.rank-1 { background-color: #ffd500; }
+.rank-2 { background-color: #aeb5bf; }
+.rank-3 { background-color: #b36c3d; }
 
-.featured-business-page .featured-profile {
+.featured-profile {
     width: 130px;
     height: 130px;
     position: absolute;
@@ -2126,39 +2160,39 @@ body.gallery-modal-open {
     object-fit: cover;
 }
 
-.featured-business-page .featured-card-content {
+.featured-card-content {
     padding: 76px 10px 10px;
     position: relative;
 }
 
-.featured-business-page .featured-card-content h2 {
+.featured-card-content h2 {
     font-size: 25px;
     margin-bottom: 5px;
 }
 
-.featured-business-page .rating {
+.rating {
     display: flex;
     align-items: center;
     gap: 9px;
 }
 
-.featured-business-page .rating span {
+.rating span {
     color: #ffab00;
     font-size: 18px;
     letter-spacing: -2px;
 }
 
-.featured-business-page .rating strong {
+.rating strong {
     color: var(--vivid-green);
     font-size: 13px;
 }
 
-.featured-business-page .featured-category {
+.featured-category {
     display: inline-block;
     margin-top: 12px;
 }
 
-.featured-business-page .featured-location {
+.featured-location {
     display: flex;
     align-items: center;
     gap: 7px;
@@ -2166,11 +2200,11 @@ body.gallery-modal-open {
     color: var(--grey);
 }
 
-.featured-business-page .featured-location p {
+.featured-location p {
     margin: 0;
 }
 
-.featured-business-page .featured-location i {
+.featured-location i {
     color: var(--vivid-green);
 }
 
@@ -2190,7 +2224,7 @@ body.gallery-modal-open {
         justify-content: center;
     }
 
-    #middle-order {
+    .middle-order {
         flex-wrap: wrap;
     }
 
@@ -2324,4 +2358,68 @@ body.gallery-modal-open {
     .guest-access-actions {
         flex-direction: column;
     }
+}
+
+/* ================================================ */
+/*                   Mis negocios                   */
+/* ================================================ */
+
+.business-admin-page {
+    width: min(1450px, 94%);
+    margin: 30px auto 60px;
+}
+
+.business-admin-header {
+    padding: 25px;
+}
+
+#admin-business-card-container {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+    width: 100%;
+}
+
+.ab-card {
+    min-width: 0;
+    padding: 12px 12px 14px;
+    border-radius: 2em;
+    box-shadow: 0 4px 9px rgba(0, 0, 0, 0.18);
+}
+
+.ab-image {
+    height: clamp(220px, 24vw, 300px);
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+}
+
+.ab-banner {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.ab-profile {
+    width: 130px;
+    height: 130px;
+    position: absolute;
+    top: -65px;
+    left: 18px;
+    border: 4px solid #ffffff;
+    border-radius: 50%;
+    background-color: #ffffff;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+    object-fit: cover;
+}
+
+.ab-card-content {
+    padding: 76px 10px 10px;
+    position: relative;
+}
+
+.ab-card-content h2 {
+    font-size: 25px;
+    margin-bottom: 5px;
 }

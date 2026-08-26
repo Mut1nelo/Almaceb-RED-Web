@@ -106,6 +106,45 @@
                 {% endif %}
             </h2>
         <form id="businessForm" method="POST" action="{{ url_for('editar_negocio', negocio_id=negocio.id) if editando else url_for('crear_negocio') }}">
+            <div class="flex-around halft-select">
+                <div class="form-group">
+                    <label for="imagen_del_banner">Imagen del banner</label><br>
+                    <div class="file-input-wrapper file-business-form">
+                        <label class="file-btn green-label">
+                            <i class="bi bi-image-fill"></i>
+                            <span class="btn-text">Imagen del banner</span>
+                            <span class="file-name" data-empty-text="Ningún archivo seleccionado">
+                                Ningún archivo seleccionado
+                            </span>
+                            <input
+                                id="imagen_banner"
+                                type="file"
+                                name="archive"
+                                accept=".png,.jpg,.jpeg,.webp"
+                            >
+                        </label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="imagen_perfil">Logo del negocio</label><br>
+                    <div class="file-input-wrapper file-business-form">
+                        <label class="file-btn green-label">
+                            <i class="bi bi-image-fill"></i>
+                            <span class="btn-text">Logo del negocio</span>
+                            <span class="file-name" data-empty-text="Ningún archivo seleccionado">
+                                Ningún archivo seleccionado
+                            </span>
+                            <input
+                                id="imagen_perfil"
+                                type="file"
+                                name="archive"
+                                accept=".png,.jpg,.jpeg,.webp"
+                            >
+                        </label>
+                    </div>
+                </div>
+            </div>
+
             <div class="form-group">
                 <label for="business-name">Nombre del negocio</label><br>
                 <input type="text" id="business-name" name="business-name"
@@ -115,7 +154,7 @@
 
             <div class="form-group">
                 <label for="business-type">Tipo de Negocio</label><br>
-                <select id="business-type" name="business-type" required>
+                <select id="business-type" class="form-select" name="business-type" required>
                     <option value="" disabled {{ 'selected' if not editando else '' }}>Elige tu tipo de Negocio</option>
                     {% for tipo in business_types %}
                         <option value="{{ tipo }}" {{ 'selected' if editando and negocio.business_type == tipo else '' }}>
@@ -126,16 +165,21 @@
             </div>
 
             <div class="form-group">
-                <label for="business-address">Dirección de tu Negocio</label><br>
-                <input type="text" id="business-address" name="business-address"
-                    value="{{ negocio.direccion if editando else '' }}"
-                    placeholder="Ingresa la dirección de tu negocio">
-                <button type="button" id="lookupBtn">🔍 Buscar dirección</button>
+                <label for="business-address">Dirección de tu negocio</label><br>
+                <div class="flex-between">
+                    <input type="text" id="business-address" name="business-address"
+                        value="{{ negocio.direccion if editando else '' }}"
+                        placeholder="Ingresa la dirección de tu negocio">
+                    <button type="button" id="lookupBtn" class="white-btn">
+                        <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                        Buscar
+                    </button>
+                </div>
             </div>
 
             <div class="form-group">
-                <label for="business-address-detect">o Detecta tu Ubicación Actual (Más Preciso)</label>
-                <input type="button" id="locateBtn" value="Detectar Ubicación">
+                <label for="business-address-detect">o detecta tu ubicación actual (Más preciso)</label>
+                <input type="button" id="locateBtn" value="Detectar ubicación" class="green-btn-alt">
             </div>
 
             <p id="foundLocation"></p>
@@ -152,72 +196,66 @@
                 <label for="correo">Correo</label><br>
                 <input type="email" id="correo" name="correo"
                     value="{{ negocio.correo if editando and negocio.correo else '' }}"
-                    placeholder="tunegocio@correo.com">
+                    placeholder="tunegocio@gmail.com">
             </div>
 
             <div class="form-group">
                 <label for="descripcion">Descripción</label><br>
-                <textarea id="descripcion" name="descripcion" rows="4"
-                        placeholder="Cuéntale a tus clientes sobre tu negocio">{{ negocio.descripcion if editando and negocio.descripcion else '' }}</textarea>
+                <textarea
+                    id="descripcion"
+                    name="descripcion"
+                    class="no-resize"
+                    rows="4"
+                    placeholder="Cuéntale a tus clientes sobre tu negocio">
+                    {{ negocio.descripcion if editando and negocio.descripcion else '' }}
+                </textarea>
             </div>
-            <div class="form-group">
-            <label for="horario_dia_inicio">Día de inicio</label><br>
-                <select id="horario_dia_inicio" name="horario_dia_inicio">
-                    <option value="" disabled selected>Selecciona un día</option>
-                    <option value="Lunes" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Lunes' }}>Lunes</option>
-                    <option value="Martes" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Martes' }}>Martes</option>
-                    <option value="Miércoles" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Miércoles' }}>Miércoles</option>
-                    <option value="Jueves" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Jueves' }}>Jueves</option>
-                    <option value="Viernes" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Viernes' }}>Viernes</option>
-                    <option value="Sábado" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Sábado' }}>Sábado</option>
-                    <option value="Domingo" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Domingo' }}>Domingo</option>
-                </select>
+            <div class="flex-between halft-select">
+                <div class="form-group">
+                <label for="horario_dia_inicio">Día de inicio</label><br>
+                    <select id="horario_dia_inicio" class="form-select half-select" name="horario_dia_inicio">
+                        <option value="" disabled selected>Selecciona un día</option>
+                        <option value="Lunes" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Lunes' }}>Lunes</option>
+                        <option value="Martes" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Martes' }}>Martes</option>
+                        <option value="Miércoles" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Miércoles' }}>Miércoles</option>
+                        <option value="Jueves" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Jueves' }}>Jueves</option>
+                        <option value="Viernes" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Viernes' }}>Viernes</option>
+                        <option value="Sábado" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Sábado' }}>Sábado</option>
+                        <option value="Domingo" {{ 'selected' if editando and negocio.horario_dia_inicio == 'Domingo' }}>Domingo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="horario_dia_fin">Día de término</label><br>
+                    <select id="horario_dia_fin" class="form-select half-select" name="horario_dia_fin">
+                        <option value="" disabled selected>Selecciona un día</option>
+                        <option value="Lunes" {{ 'selected' if editando and negocio.horario_dia_fin == 'Lunes' }}>Lunes</option>
+                        <option value="Martes" {{ 'selected' if editando and negocio.horario_dia_fin == 'Martes' }}>Martes</option>
+                        <option value="Miércoles" {{ 'selected' if editando and negocio.horario_dia_fin == 'Miércoles' }}>Miércoles</option>
+                        <option value="Jueves" {{ 'selected' if editando and negocio.horario_dia_fin == 'Jueves' }}>Jueves</option>
+                        <option value="Viernes" {{ 'selected' if editando and negocio.horario_dia_fin == 'Viernes' }}>Viernes</option>
+                        <option value="Sábado" {{ 'selected' if editando and negocio.horario_dia_fin == 'Sábado' }}>Sábado</option>
+                        <option value="Domingo" {{ 'selected' if editando and negocio.horario_dia_fin == 'Domingo' }}>Domingo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="horario_hora_inicio">Hora de inicio</label><br>
+                    <input type="time" id="horario_hora_inicio" name="horario_hora_inicio"
+                        value="{{ negocio.horario_hora_inicio if editando and negocio.horario_hora_inicio else '' }}">
+                </div>
+                <div class="form-group">
+                    <label for="horario_hora_fin">Hora de cierre</label><br>
+                    <input type="time" id="horario_hora_fin" name="horario_hora_fin"
+                        value="{{ negocio.horario_hora_fin if editando and negocio.horario_hora_fin else '' }}">
+                </div>
             </div>
-
-            <div class="form-group">
-                <label for="horario_dia_fin">Día de término</label><br>
-                <select id="horario_dia_fin" name="horario_dia_fin">
-                    <option value="" disabled selected>Selecciona un día</option>
-                    <option value="Lunes" {{ 'selected' if editando and negocio.horario_dia_fin == 'Lunes' }}>Lunes</option>
-                    <option value="Martes" {{ 'selected' if editando and negocio.horario_dia_fin == 'Martes' }}>Martes</option>
-                    <option value="Miércoles" {{ 'selected' if editando and negocio.horario_dia_fin == 'Miércoles' }}>Miércoles</option>
-                    <option value="Jueves" {{ 'selected' if editando and negocio.horario_dia_fin == 'Jueves' }}>Jueves</option>
-                    <option value="Viernes" {{ 'selected' if editando and negocio.horario_dia_fin == 'Viernes' }}>Viernes</option>
-                    <option value="Sábado" {{ 'selected' if editando and negocio.horario_dia_fin == 'Sábado' }}>Sábado</option>
-                    <option value="Domingo" {{ 'selected' if editando and negocio.horario_dia_fin == 'Domingo' }}>Domingo</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="horario_hora_inicio">Hora de apertura</label><br>
-                <input type="time" id="horario_hora_inicio" name="horario_hora_inicio"
-                    value="{{ negocio.horario_hora_inicio if editando and negocio.horario_hora_inicio else '' }}">
-            </div>
-
-            <div class="form-group">
-                <label for="horario_hora_fin">Hora de cierre</label><br>
-                <input type="time" id="horario_hora_fin" name="horario_hora_fin"
-                    value="{{ negocio.horario_hora_fin if editando and negocio.horario_hora_fin else '' }}">
-            </div>
-
-            <div class="form-group">
-                <label for="imagen_banner">Imagen de banner</label><br>
-                <input type="file" id="imagen_banner" name="imagen_banner" accept="image/*">
-            </div>
-
-            <div class="form-group">
-                <label for="imagen_perfil">Imagen de perfil</label><br>
-                <input type="file" id="imagen_perfil" name="imagen_perfil" accept="image/*">
-            </div>
-
             <input type="hidden" name="latitude" id="latitude" value="{{ negocio.lat if editando else '' }}">
             <input type="hidden" name="longitude" id="longitude" value="{{ negocio.lon if editando else '' }}">
-
             <button type="submit" class="green-btn" id="saveBtn" {{ '' if editando else 'disabled' }}>
                 {{ 'Guardar cambios' if editando else 'Crear negocio' }}
             </button>
         </form>
 
+        <script src="{{ url_for('static', filename='js/file-input.js') }}"></script>
         <script>
         const saveBtn = document.getElementById('saveBtn');
         const status = document.getElementById('status');

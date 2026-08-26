@@ -218,34 +218,32 @@
                         Descripción:
                     </label>
                     <textarea
-                        name="descripcion"
-                        id="report-desc"
-                        class="no-resize"
-                        placeholder="Describe el problema con el mayor detalle posible"
-                        minlength="10"
-                        maxlength="500"
-                        required
+                    name="descripcion"
+                    id="report-desc"
+                    class="no-resize"
+                    placeholder="Describe el problema con el mayor detalle posible"
+                    minlength="10"
+                    maxlength="500"
+                    required
                     ></textarea>
                 </div>
                 <!-- Evidencia opcional -->
                 <div class="report-form-group">
-                    <label class="file-label" for="archive-form">
+                    <div class="file-label">
                         <i class="bi bi-file-earmark-image-fill"></i>
                         Adjuntar evidencia:
-                    </label>
+                    </div>
                     <div class="file-input-wrapper">
-                        <label for="archive-form" class="file-btn green-label" id="file-btn">
+                        <label class="file-btn green-label">
                             <i class="bi bi-cloud-arrow-up-fill"></i>
                             <span class="btn-text">Adjuntar archivo</span>
-                            <span class="file-name" id="file-name">
+                            <span class="file-name" data-empty-text="Ningún archivo seleccionado">
                                 Ningún archivo seleccionado
                             </span>
-
                             <input
-                                type="file"
-                                name="archive"
-                                id="archive-form"
-                                accept=".png,.jpg,.jpeg,.webp,.pdf"
+                            type="file"
+                            name="archive"
+                            accept=".png,.jpg,.jpeg,.webp,.pdf"
                             >
                         </label>
                     </div>
@@ -306,6 +304,7 @@
     </footer>
     <!-- Scripts -->
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/file-input.js') }}"></script>
     <script src="{{ url_for('static', filename='js/report.js') }}"></script>
 </body>
 </html>

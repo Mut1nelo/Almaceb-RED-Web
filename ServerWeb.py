@@ -386,7 +386,7 @@ def editar_negocio(negocio_id):
 
 @app.route("/Mis-negocios")
 def my_businesses():
-    return redirect(url_for("future_function"))
+    return render_template("business-admin.html")
 
 @app.route("/Cerrar-sesion")
 def logout():
