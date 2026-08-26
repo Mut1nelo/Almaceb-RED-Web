@@ -559,6 +559,17 @@ def ranking():
 def future_function():
     return render_template("future-function.html")
 
+@app.route('/Eliminar-cuenta', methods=['POST'])
+def eliminar_cuenta():
+    if 'user_id' not in session:
+        return redirect(url_for('login_page'))
+
+    Usuario.delete(session['user_id'])  # borra la fila de la BD
+    session.clear()                      # limpia la cookie de sesión
+
+    flash("Tu cuenta ha sido eliminada.", "success")
+    return redirect('/')
+
 # Para desarrolladores
 @app.route("/Dev-page")
 def dev_page():
@@ -642,4 +653,4 @@ def archivo_muy_grande(e):
     return redirect(request.referrer or url_for('map'))
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=5000, debug=True)
