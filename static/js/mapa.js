@@ -582,5 +582,8 @@ document.addEventListener('DOMContentLoaded', () => {
             searchInput.focus();
         }
     });
-}); // Movemos todo dentro del DOM content
+})
+
+
+// Movemos todo dentro del DOM content
 // Bailamos un poquito
