@@ -1,7 +1,7 @@
 # ======================================================================================
 # Jose, tratemos de usar enrutamientos sin tildes porque nos confunde siempre y da error
 # ======================================================================================
-#Bueno
+# Bueno -J
 
 # Desarrollo y enrutamientos lo maneja Javier Faúndez, back-end y base de datos lo maneja Jose Moena
 from flask import Flask, render_template, request, redirect, session, jsonify, flash, url_for
@@ -11,12 +11,14 @@ from report import Report
 from werkzeug.security import generate_password_hash, check_password_hash
 from mysqlconnection import connectToMySQL
 import requests
-from local import Business, BUSINESS_TYPES
+from local import Business, BUSINESS_TYPES, esta_abierto
 import json
 import os
 from werkzeug.utils import secure_filename
 from uuid import uuid4
 from PIL import Image
+from producto import Producto
+from promocion import Promocion
 
 app = Flask(__name__)
 
@@ -72,7 +74,6 @@ def calcular_similitud(query, texto):
     if not texto:
         return 0
     return SequenceMatcher(None, query.lower(), str(texto).lower()).ratio()
-
 
 def buscar_en_lista(query, lista, campos_busqueda):
     if not query or len(query.strip()) < 2:
@@ -214,7 +215,6 @@ def login():
 
 @app.route("/Negocio")
 def business():
-
     return render_template('business.html')
 
 # Te deje la plantilla
@@ -234,6 +234,10 @@ def negocio(negocio_id):
     if business is None:
         return "Negocio no encontrado", 404
 
+    abierto = esta_abierto(business)
+    productos = Producto.get_by_negocio(negocio_id)
+    promociones = Promocion.get_by_negocio(negocio_id)
+
     business_json = json.dumps({
         'id': business.id,
         'nombre_negocio': business.nombre_negocio,
@@ -246,6 +250,9 @@ def negocio(negocio_id):
         'business.html',
         business=business,          # objeto directo, útil para Jinja: {{ business.nombre_negocio }}
         business_json=business_json, # JSON para usarlo en JS si hace falta
+        abierto=abierto,
+        productos=productos,
+        promociones=promociones,
         usuarios=usuarios, # Gracias claude
         username=username,
         account_type=account_type
@@ -254,6 +261,72 @@ def negocio(negocio_id):
 @app.route("/Negocios-destacados")
 def featured_business():
     return render_template("featured-business.html")
+
+# Rutas para crear promociones y productos
+
+@app.route('/Negocio/<int:negocio_id>/Agregar-producto', methods=['GET', 'POST'])
+def agregar_producto(negocio_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login_page'))
+
+    negocio = Business.get_by_id(negocio_id)
+    if not negocio:
+        return "Negocio no encontrado", 404
+
+    if request.method == 'GET':
+        return render_template('form-producto.html', negocio=negocio)
+
+    nombre_producto = request.form.get('nombre_producto')
+    descripcion = request.form.get('descripcion')
+    precio = request.form.get('precio')
+
+    try:
+        imagen = guardar_imagen(request.files.get('imagen'), tipo='perfil')
+
+        Producto.save(
+            negocio_id, nombre_producto, precio,
+            descripcion=descripcion, imagen=imagen
+        )
+        return redirect(url_for('negocio', negocio_id=negocio_id))
+
+    except ValueError as e:
+        return render_template('error.html', error=str(e)), 400
+    except Exception as e:
+        return render_template('error.html', error=str(e)), 500
+
+
+@app.route('/Negocio/<int:negocio_id>/Agregar-promocion', methods=['GET', 'POST'])
+def agregar_promocion(negocio_id):
+    if 'user_id' not in session:
+        return redirect(url_for('login_page'))
+
+    negocio = Business.get_by_id(negocio_id)
+    if not negocio:
+        return "Negocio no encontrado", 404
+
+    if request.method == 'GET':
+        return render_template('form-promocion.html', negocio=negocio)
+
+    nombre_promocion = request.form.get('nombre_promocion')
+    precio = request.form.get('precio')
+    descripcion = request.form.get('descripcion')
+    fecha_inicio = request.form.get('fecha_inicio') or None
+    fecha_fin = request.form.get('fecha_fin') or None
+
+    try:
+        imagen = guardar_imagen(request.files.get('imagen'), tipo='perfil')
+
+        Promocion.save(
+            negocio_id, nombre_promocion,
+            precio=precio, descripcion=descripcion, imagen=imagen,
+            fecha_inicio=fecha_inicio, fecha_fin=fecha_fin
+        )
+        return redirect(url_for('negocio', negocio_id=negocio_id))
+
+    except ValueError as e:
+        return render_template('error.html', error=str(e)), 400
+    except Exception as e:
+        return render_template('error.html', error=str(e)), 500
 
 # @app.route("/Perfil-usuario")
 # def user_profile(user_id):

@@ -120,7 +120,7 @@
                             <input
                                 id="imagen_banner"
                                 type="file"
-                                name="archive"
+                                name="imagen_banner"
                                 accept=".png,.jpg,.jpeg,.webp"
                             >
                         </label>
@@ -138,7 +138,7 @@
                             <input
                                 id="imagen_perfil"
                                 type="file"
-                                name="archive"
+                                name="imagen_perfil"
                                 accept=".png,.jpg,.jpeg,.webp"
                             >
                         </label>
@@ -153,21 +153,19 @@
                     placeholder="Ingresa el nombre del negocio" required>
             </div>
 
+            {% if editando and negocio.imagen_banner %}
             <div class="form-group">
-                <label for="imagen_banner">Imagen de banner</label><br>
-                {% if editando and negocio.imagen_banner %}
+                <label for="imagen_banner">Imagen de banner</label><br>    
                     <img src="{{ url_for('static', filename=negocio.imagen_banner) }}" alt="Banner actual" style="max-width:200px; display:block; margin-bottom:8px;">
-                {% endif %}
-                <input type="file" id="imagen_banner" name="imagen_banner" accept="image/png, image/jpeg, image/webp">
             </div>
+            {% endif %}
 
+            {% if editando and negocio.imagen_perfil %}
             <div class="form-group">
                 <label for="imagen_perfil">Imagen de perfil</label><br>
-                {% if editando and negocio.imagen_perfil %}
                     <img src="{{ url_for('static', filename=negocio.imagen_perfil) }}" alt="Perfil actual" style="max-width:100px; display:block; margin-bottom:8px;">
-                {% endif %}
-                <input type="file" id="imagen_perfil" name="imagen_perfil" accept="image/png, image/jpeg, image/webp">
             </div>
+            {% endif %}
 
             <div class="form-group">
                 <label for="business-type">Tipo de Negocio</label><br>

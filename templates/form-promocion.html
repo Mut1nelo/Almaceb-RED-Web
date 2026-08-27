@@ -1,0 +1,28 @@
+<h1>Agregar promoción a {{ negocio.nombre_negocio }}</h1>
+<form method="POST" enctype="multipart/form-data">
+    <div class="form-group">
+        <label for="nombre_promocion">Nombre de la promoción</label><br>
+        <input type="text" id="nombre_promocion" name="nombre_promocion" required>
+    </div>
+    <div class="form-group">
+        <label for="precio">Precio / condición</label><br>
+        <input type="text" id="precio" name="precio" placeholder="$6.990 o '10% de descuento'">
+    </div>
+    <div class="form-group">
+        <label for="descripcion">Descripción</label><br>
+        <textarea id="descripcion" name="descripcion" rows="3"></textarea>
+    </div>
+    <div class="form-group">
+        <label for="fecha_inicio">Fecha de inicio</label><br>
+        <input type="date" id="fecha_inicio" name="fecha_inicio">
+    </div>
+    <div class="form-group">
+        <label for="fecha_fin">Fecha de término</label><br>
+        <input type="date" id="fecha_fin" name="fecha_fin">
+    </div>
+    <div class="form-group">
+        <label for="imagen">Imagen de la promoción</label><br>
+        <input type="file" id="imagen" name="imagen" accept="image/png, image/jpeg, image/webp">
+    </div>
+    <button type="submit" class="green-btn">Agregar promoción</button>
+</form>
