@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     fileInputWrappers.forEach(wrapper => {
         const fileInput = wrapper.querySelector('input[type="file"]');
         const fileName = wrapper.querySelector('.file-name');
+        const imagePreview = wrapper.querySelector('.file-input-preview');
 
         if (!fileInput || !fileName) {
             return;
@@ -24,7 +25,27 @@ document.addEventListener('DOMContentLoaded', () => {
                 : `${selectedFiles.length} archivos seleccionados`;
         };
 
-        fileInput.addEventListener('change', updateFileName);
+        const updateImagePreview = () => {
+            const [selectedFile] = fileInput.files || [];
+
+            if (!imagePreview || !selectedFile || !selectedFile.type.startsWith('image/')) {
+                return;
+            }
+
+            const objectUrl = URL.createObjectURL(selectedFile);
+            imagePreview.src = objectUrl;
+            imagePreview.hidden = false;
+
+            const releaseObjectUrl = () => URL.revokeObjectURL(objectUrl);
+            imagePreview.addEventListener('load', releaseObjectUrl, { once: true });
+            imagePreview.addEventListener('error', releaseObjectUrl, { once: true });
+        };
+
+        fileInput.addEventListener('change', () => {
+            updateFileName();
+            updateImagePreview();
+        });
+
         updateFileName();
     });
 });

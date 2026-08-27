@@ -1243,7 +1243,29 @@ form label {
 }
 
 .file-business-form {
-    width: auto;
+    width: min(100%, 240px);
+}
+
+.file-input-preview {
+    display: block;
+    max-width: 100%;
+    object-fit: cover;
+}
+
+.file-input-preview[hidden] {
+    display: none;
+}
+
+.file-input-preview-banner {
+    width: 210px;
+    aspect-ratio: 16 / 9;
+    border-radius: 10px;
+}
+
+.file-input-preview-logo {
+    width: 140px;
+    aspect-ratio: 1;
+    border-radius: 50%;
 }
 
 /* ------------------------------------------------ */

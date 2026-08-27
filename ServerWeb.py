@@ -188,7 +188,17 @@ def require_business_account():
         flash("Debes iniciar sesión con una cuenta de negocio para acceder.", "login")
         return redirect(url_for('login_page'))
 
-    if session.get('account_type') != 'business':
+    current_user = Usuario.get_by_id(session['user_id'])
+
+    if current_user is None:
+        session.clear()
+        flash("Tu sesión ya no es válida. Inicia sesión nuevamente.", "login")
+        return redirect(url_for('login_page'))
+
+    session['username'] = current_user.username
+    session['account_type'] = current_user.account_type
+
+    if current_user.account_type != 'business':
         flash("Esta sección está disponible solo para cuentas de negocio.", "error")
         return redirect(url_for('map'))
 

@@ -108,12 +108,16 @@
         <form id="businessForm" method="POST" enctype="multipart/form-data"
         action="{{ url_for('editar_negocio', negocio_id=negocio.id) if editando else url_for('crear_negocio') }}">
             <div class="flex-around halft-select">
-                {% if editando and negocio.imagen_banner %}
                 <div class="form-group">
                     <label for="imagen_banner">Imagen del banner</label><br>
                     <div class="file-input-wrapper file-business-form">
                         <label class="file-btn green-label">
-                            <img src="{{ url_for('static', filename=negocio.imagen_banner) }}" alt="Banner actual" style="max-width:200px; display:block; margin-bottom:8px;">
+                            <img
+                                class="file-input-preview file-input-preview-banner"
+                                src="{{ url_for('static', filename=negocio.imagen_banner) if editando and negocio.imagen_banner else '' }}"
+                                alt="Vista previa del banner"
+                                {% if not (editando and negocio.imagen_banner) %}hidden{% endif %}
+                            >
                             <span class="btn-text">Imagen del banner</span>
                             <span class="file-name" data-empty-text="{{ 'Conservar imagen actual' if editando and negocio.imagen_banner else 'Ningún archivo seleccionado' }}">
                                 {{ 'Conservar imagen actual' if editando and negocio.imagen_banner else 'Ningún archivo seleccionado' }}
@@ -122,19 +126,21 @@
                                 id="imagen_banner"
                                 type="file"
                                 name="imagen_banner"
-                                name="imagen_banner"
                                 accept=".png,.jpg,.jpeg,.webp"
                             >
                         </label>
                     </div>
                 </div>
-                {% endif %}
-                {% if editando and negocio.imagen_perfil %}
                 <div class="form-group">
                     <label for="imagen_perfil">Logo del negocio</label><br>
                     <div class="file-input-wrapper file-business-form">
                         <label class="file-btn green-label">
-                            <img src="{{ url_for('static', filename=negocio.imagen_perfil) }}" alt="Perfil actual" style="max-width:150px; display:block; margin-bottom:8px;">
+                            <img
+                                class="file-input-preview file-input-preview-logo"
+                                src="{{ url_for('static', filename=negocio.imagen_perfil) if editando and negocio.imagen_perfil else '' }}"
+                                alt="Vista previa del logo"
+                                {% if not (editando and negocio.imagen_perfil) %}hidden{% endif %}
+                            >
                             <span class="btn-text">Logo del negocio</span>
                             <span class="file-name" data-empty-text="{{ 'Conservar logo actual' if editando and negocio.imagen_perfil else 'Ningún archivo seleccionado' }}">
                                 {{ 'Conservar logo actual' if editando and negocio.imagen_perfil else 'Ningún archivo seleccionado' }}
@@ -148,7 +154,6 @@
                         </label>
                     </div>
                 </div>
-                {% endif %}
             </div>
 
             <div class="form-group">
