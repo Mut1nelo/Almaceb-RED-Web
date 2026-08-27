@@ -87,19 +87,34 @@
             <h1 class="green-line">Crear una cuenta</h1>
             <h2>Completa tus datos necesarios para comenzar</h2>
             <form action="/Registro" method="POST" enctype="multipart/form-data">
+            <div class="profile-photo-upload">
+                <img
+                    id="foto-perfil-preview"
+                    class="profile-photo-preview"
+                    src="{{ url_for('static', filename='imgs/usuarios/default-avatar.png') }}"
+                    alt="Vista previa de foto de perfil"
+                >
+
                 <div class="file-input-wrapper file-business-form">
-                        <label class="file-btn green-label">
+                    <label class="file-btn green-label" for="foto_perfil">
+                        <i class="bi bi-camera"></i>
                         <span class="btn-text">Foto de perfil</span>
-                        <span class="file-name" data-empty-text="Ningún archivo seleccionado"></span>
-                        </span>
-                        <input
-                            id="imagen_banner"
-                            type="file"
-                            name="foto_perfil"
-                            accept=".png,.jpg,.jpeg,.webp"
+                        <span
+                            id="foto-perfil-name"
+                            class="file-name"
                         >
+                            Ningún archivo seleccionado
+                        </span>
                     </label>
+
+                    <input
+                        id="foto_perfil"
+                        type="file"
+                        name="foto_perfil"
+                        accept=".png,.jpg,.jpeg,.webp"
+                    >
                 </div>
+            </div>
                 <div class="form-group">
                     <label for="username">Nombre de completo:</label><br>
                     <input type="text" id="username" name="username" placeholder="Ingresa tu nombre completo" required>
@@ -175,6 +190,28 @@
     <script>
         document.querySelectorAll('.carousel-img').forEach(img => {
             img.addEventListener('dragstart', event => event.preventDefault());
+        });
+        const fotoInput = document.getElementById('foto_perfil');
+        const fotoPreview = document.getElementById('foto-perfil-preview');
+        const fotoNombre = document.getElementById('foto-perfil-name');
+
+        fotoInput.addEventListener('change', () => {
+            const archivo = fotoInput.files[0];
+
+            if (!archivo) {
+                fotoNombre.textContent = 'Ningún archivo seleccionado';
+                return;
+            }
+
+            fotoNombre.textContent = archivo.name;
+
+            const lector = new FileReader();
+
+            lector.onload = (event) => {
+                fotoPreview.src = event.target.result;
+            };
+
+            lector.readAsDataURL(archivo);
         });
     </script>
 </body>

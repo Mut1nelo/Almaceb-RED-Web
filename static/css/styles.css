@@ -4184,6 +4184,27 @@ body.gallery-modal-open {
     text-decoration: underline;
 }
 
+.profile-photo-upload {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.profile-photo-preview {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--light-green);
+    background-color: #f3f3f3;
+    flex-shrink: 0;
+}
+
+.profile-photo-upload .file-business-form {
+    width: 240px;
+}
+
 @media (max-width: 720px) {
     .gallery-header-actions {
         align-items: flex-end;

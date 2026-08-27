@@ -1085,76 +1085,6 @@ def future_function():
 def dev_page():
     return render_template("dev-pages.html")
 
-# Dejo esto aca por mientras
-# @app.route("/Mi-negocio", methods=["GET", "POST"])
-# def mi_negocio():
-#     if 'user_id' not in session:
-#         return redirect('/Iniciar-sesion')
-    
-#     user_id = session['user_id']
-#     account_type = session.get('account_type')
-#     if account_type != 'business':
-#         flash("Solo usuarios de tipo negocio pueden acceder aquí", "error")
-#         return redirect('/Mapa')
-    
-#     if request.method == "POST":
-#         nombre_local = request.form.get('nombre_local')
-#         direccion = request.form.get('direccion')
-        
-#         if nombre_local and direccion:
-#             geocode_result = geocode_das_address(direccion)
-            
-#             if geocode_result:
-#                 data = {
-#                     'usuario_id': user_id,
-#                     'nombre_local': nombre_local,
-#                     'direccion': direccion,
-#                     'lat': float(geocode_result['lat']),
-#                     'lon': float(geocode_result['lon'])
-#                 }
-#                 LocalNegocio.save(data)
-#                 flash("Ubicación guardada correctamente", "success")
-#                 return redirect('/Mi-negocio')
-#             else:
-#                 flash("No se encontraron coordenadas para esa dirección", "error")
-#         else:
-#             flash("Por favor completa todos los campos", "error")
-    
-#     locales = LocalNegocio.get_by_usuario(user_id)
-#     username = session.get('username', 'Negocio')
-    
-#     map_data = {
-#         'center_lat': locales[0].lat if locales else -33.8688,  # Default Santiago
-#         'center_lon': locales[0].lon if locales else -51.2093,
-#         'locales': [
-#             {
-#                 'id': locale.id,
-#                 'nombre': locale.nombre_local,
-#                 'lat': locale.lat,
-#                 'lon': locale.lon,
-#                 'direccion': locale.direccion
-#             }
-#             for locale in locales
-#         ]
-#     }
-    
-#     return render_template(
-#         "mi-negocio.html",
-#         username=username,
-#         locales=locales,
-#         map_data=map_data,
-#         account_type=account_type
-#     )
-
-# @app.route("/Mi-negocio/eliminar/<int:locale_id>", methods=["POST"])
-# def eliminar_locale(locale_id):
-#     if 'user_id' not in session or session.get('account_type') != 'business':
-#         return redirect('/Iniciar-sesion')
-    
-#     LocalNegocio.delete(locale_id)
-#     flash("Ubicación eliminada", "success")
-#     return redirect('/Mi-negocio')
-
 # Manejadores de error
 
 @app.errorhandler(413)
@@ -1170,5 +1100,5 @@ if __name__ == "__main__":
     ),
     host="0.0.0.0",
     port=5000,
-    debug=True)
-    #Cambiar debug a false en   la feria
+    debug=False)
+    #Cambiar debug a false en la feria
