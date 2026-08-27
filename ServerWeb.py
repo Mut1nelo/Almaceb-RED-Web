@@ -294,7 +294,10 @@ def registrar_usuario():
         "username": request.form['username'],
         "email": request.form['email'],
         "password": password_hash,
-        "account_type": request.form['account_type']
+        "account_type": request.form['account_type'],
+        "telefono": request.form['telefono'],
+        "bio": request.form['bio'],
+        "foto_perfil": request.form['foto_perfil']
     }
 
     user_id = Usuario.save(data_usuario)
@@ -302,7 +305,10 @@ def registrar_usuario():
     session['user_id'] = user_id
     session['username'] = request.form['username']
     session['account_type'] = request.form['account_type']
-
+    session['telefono'] = request.form['telefono']
+    session['bio'] = request.form['bio']
+    session['foto_perfil'] = request.form['perfil']
+    
     return redirect('/Mapa')
 
 @app.route("/Login")
@@ -1049,7 +1055,7 @@ def actualizar_perfil():
     session["username"] = username
     flash("Perfil actualizado correctamente.", "success")
     return redirect(url_for("config", seccion="perfil"))
-    #muy bien javier
+    # Muy bien javier
 
 @app.route("/Ranking")
 def ranking():

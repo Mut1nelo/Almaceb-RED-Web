@@ -35,7 +35,7 @@ class Usuario:
 
    @classmethod
    def save(cls, data):
-    query = "INSERT INTO usuarios (username, email, password_hash, account_type) VALUES (%(username)s,%(email)s,%(password)s, %(account_type)s)"
+    query = "INSERT INTO usuarios (username, email, telefono, bio, foto_perfil, password_hash, account_type) VALUES (%(username)s,%(email)s,%(telefono)s,%(bio)s, %(foto_perfil)s, %(password)s, %(account_type)s)"
     return connectToMySQL(DB_NAME).query_db(query, data)
 
    @classmethod
