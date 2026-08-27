@@ -87,6 +87,19 @@
             <h1 class="green-line">Crear una cuenta</h1>
             <h2>Completa tus datos necesarios para comenzar</h2>
             <form action="/Registro" method="POST" enctype="multipart/form-data">
+                <div class="file-input-wrapper file-business-form">
+                        <label class="file-btn green-label">
+                        <span class="btn-text">Foto de perfil</span>
+                        <span class="file-name" data-empty-text="Ningún archivo seleccionado"></span>
+                        </span>
+                        <input
+                            id="imagen_banner"
+                            type="file"
+                            name="foto_perfil"
+                            accept=".png,.jpg,.jpeg,.webp"
+                        >
+                    </label>
+                </div>
                 <div class="form-group">
                     <label for="username">Nombre de completo:</label><br>
                     <input type="text" id="username" name="username" placeholder="Ingresa tu nombre completo" required>
@@ -104,8 +117,12 @@
                     <input type="password" id="confirm_password" name="confirm_password" placeholder="Confirma tu contraseña" required>
                 </div>
                 <div class="form-group">
-                    <label for="telefono"></label>
-                    <input type="text">
+                    <label for="telefono">Teléfono</label>
+                    <input type="text" name="telefono" type="tel" placeholder="+56 9 1234 5678">
+                </div>
+                <div class="form-group">
+                    <label for="biografía">Biografía:</label>
+                    <textarea id="bio" name="bio" rows="5" maxlength="500" placeholder="Cuéntanos un poco sobre ti"></textarea>
                 </div>
                 <div class="account-type">
                     <label for="account_type">Tipo de cuenta:</label><br>

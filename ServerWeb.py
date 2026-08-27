@@ -297,7 +297,11 @@ def registrar_usuario():
         "account_type": request.form['account_type'],
         "telefono": request.form['telefono'],
         "bio": request.form['bio'],
-        "foto_perfil": request.form['foto_perfil']
+        "foto_perfil": guardar_imagen(
+            request.files.get("foto_perfil"),
+            tipo="usuario",
+            subfolder="imgs/usuarios"
+        )
     }
 
     user_id = Usuario.save(data_usuario)
@@ -307,8 +311,8 @@ def registrar_usuario():
     session['account_type'] = request.form['account_type']
     session['telefono'] = request.form['telefono']
     session['bio'] = request.form['bio']
-    session['foto_perfil'] = request.form['perfil']
-    
+    session['foto_perfil'] = data_usuario['foto_perfil']   # ← usa el valor ya procesado
+
     return redirect('/Mapa')
 
 @app.route("/Login")
@@ -1159,5 +1163,12 @@ def archivo_muy_grande(e):
     return redirect(request.referrer or url_for('map'))
 
 if __name__ == "__main__":
-    app.run(ssl_context='adhoc', host="0.0.0.0", port=5000, debug=True)
-    #pipenv install pyopenssl
+    app.run(
+        ssl_context=(
+        "almaceb-cert.pem",
+        "almaceb-key.pem"
+    ),
+    host="0.0.0.0",
+    port=5000,
+    debug=True)
+    #Cambiar debug a false en la feria
