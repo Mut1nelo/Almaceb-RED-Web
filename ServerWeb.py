@@ -1150,4 +1150,5 @@ def archivo_muy_grande(e):
     return redirect(request.referrer or url_for('map'))
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    app.run(ssl_context='adhoc', host="0.0.0.0", port=5000, debug=True)
+    #pipenv install pyopenssl
