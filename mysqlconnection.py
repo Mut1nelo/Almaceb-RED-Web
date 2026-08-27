@@ -13,8 +13,7 @@ class MySQLConnection: #Clase que permite generar instancia de conexión con BD
    def query_db(self, query, data=None):
        with self.connection.cursor() as cursor:
            try:
-               query = cursor.mogrify(query, data)
-               print("Running Query:", query)
+               print("Running Query:", cursor.mogrify(query, data))
                executable = cursor.execute(query, data)
                if query.lower().find("insert") >= 0:
                    # La consulta INSERT regresan el id del nuevo registro

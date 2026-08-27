@@ -498,6 +498,9 @@ def validate_promotion_form():
     if not nombre_promocion:
         raise ValueError("Escribe el nombre de la promoción")
 
+    if len(nombre_promocion) > 100:
+        raise ValueError("El nombre de la promoción no puede superar los 100 caracteres")
+
     if fecha_inicio and fecha_fin and fecha_inicio > fecha_fin:
         raise ValueError("La fecha de término no puede ser anterior a la fecha de inicio")
 

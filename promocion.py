@@ -27,6 +27,9 @@ class Promocion:
         if not nombre_promocion:
             raise ValueError("Missing required fields")
 
+        if len(nombre_promocion) > 100:
+            raise ValueError("El nombre de la promoción no puede superar los 100 caracteres")
+
         query = """
             INSERT INTO promociones
                 (negocio_id, nombre_promocion, precio, descripcion, imagen, fecha_inicio, fecha_fin)
@@ -79,6 +82,9 @@ class Promocion:
                descripcion=None, imagen=None, fecha_inicio=None, fecha_fin=None):
         if not nombre_promocion:
             raise ValueError("El nombre de la promoción es obligatorio")
+
+        if len(nombre_promocion) > 100:
+            raise ValueError("El nombre de la promoción no puede superar los 100 caracteres")
 
         query = """
             UPDATE promociones
