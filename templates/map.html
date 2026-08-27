@@ -168,83 +168,15 @@
         </div>
         <a id="businessCardLink" class="blue-btn business-link" href="/Negocio">Ver negocio</a>
     </article>
-    <div id="bottomPanel" class="bottomPanel border-card">
-        <div id="panelHandle" class="panel-handle"></div>
-        <div class="bottomPanel-content">
-            <h2>Promociones cerca de ti</h2>
-            <p>Ofertas activas en tu zona</p>
-            <!-- Aquí irá tu contenido -->
-            <div class="bottomPanel-business">
-                <!-- Imagen de la promoción -->
-                <img
-                src="{{ url_for('static', filename='imgs/img-proto.png') }}"
-                alt="{{ url_for('static', filename='imgs/default.jpg') }}"
-                class="promo-img"
-                >
-                <!-- Logo del negocio -->
-                <img
-                src="{{ url_for('static', filename='imgs/img-proto.png') }}"
-                alt="{{ url_for('static', filename='imgs/default.jpg') }}"
-                class="business-logo"
-                >
-                <!-- Nombre del negocio / Nombre de la promoción / Descripción de la promoción -->
-                <div class="business-text">
-                    <p>Burguer House</p>
-                    <h3>Combo Clasico a precio especial</h3>
-                    <p>Hamburguesa + Papas + Bebidas</p>
+            <div id="bottomPanel" class="bottomPanel border-card">
+                <div id="panelHandle" class="panel-handle"></div>
+                <div class="bottomPanel-content">
+                    <h2>Promociones cerca de ti</h2>
+                    <p>Ofertas activas en tu zona</p>
+                    <div class="promotions-container">
+                        <!-- Las tarjetas de promociones se insertan aquí dinámicamente vía JS -->
+                    </div>
                 </div>
-                <!-- Fecha de termino de la promoción -->
-                <label class="map-label red-label">Vence hoy</label>
-                <!-- Link para ir al negocio de la promoción -->
-                <a href="" class="red-btn">Ver negocio</a>
-            </div>
-            <div class="bottomPanel-business">
-                <!-- Imagen de la promoción -->
-                <img
-                src="{{ url_for('static', filename='imgs/img-proto.png') }}"
-                alt="{{ url_for('static', filename='imgs/default.jpg') }}"
-                class="promo-img"
-                >
-                <!-- Logo del negocio -->
-                <img
-                src="{{ url_for('static', filename='imgs/img-proto.png') }}"
-                alt="{{ url_for('static', filename='imgs/default.jpg') }}"
-                class="business-logo"
-                >
-                <!-- Nombre del negocio / Nombre de la promoción / Descripción de la promoción -->
-                <div class="business-text">
-                    <p>Café Aurora</p>
-                    <h3>20% de descuento en bebidas</h3>
-                    <p>Aplica en café, té y bebidas frías</p>
-                </div>
-                <!-- Fecha de termino de la promoción -->
-                <label class="map-label yellow-label">Hasta el viernes</label>
-                <!-- Link para ir al negocio de la promoción -->
-                <a href="" class="yellow-btn">Ver negocio</a>
-            </div>
-            <div class="bottomPanel-business">
-                <!-- Imagen de la promoción -->
-                <img
-                src="{{ url_for('static', filename='imgs/img-proto.png') }}"
-                alt="{{ url_for('static', filename='imgs/default.jpg') }}"
-                class="promo-img"
-                >
-                <!-- Logo del negocio -->
-                <img
-                src="{{ url_for('static', filename='imgs/img-proto.png') }}"
-                alt="{{ url_for('static', filename='imgs/default.jpg') }}"
-                class="business-logo"
-                >
-                <!-- Nombre del negocio / Nombre de la promoción / Descripción de la promoción -->
-                <div class="business-text">
-                    <p>Pizza Rápida</p>
-                    <h3>2x1 en Pizzas medianas</h3>
-                    <p>En todas las pizzas tradicionales</p>
-                </div>
-                <!-- Fecha de termino de la promoción -->
-                <label class="map-label green-label">Hasta mañana</label>
-                <!-- Link para ir al negocio de la promoción -->
-                <a href="" class="green-btn">Ver negocio</a>
             </div>
             <!-- Negocios con Jinja, por mientras que no puedo usar entornos virtuales
             <div class="bottomPanel-business">

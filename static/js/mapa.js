@@ -4,8 +4,80 @@ document.addEventListener('DOMContentLoaded', () => {
     const panelHandle = document.getElementById('panelHandle');
 
     if (bottomPanel && panelHandle) {
-        panelHandle.addEventListener('click', () => {
+        panelHandle.addEventListener('click', async () => {
             bottomPanel.classList.toggle('active');
+
+            if (bottomPanel.classList.contains('active') && userCoords) {
+                try {
+                    const res = await fetch(`/Promociones-cercanas?lat=${userCoords[0]}&lon=${userCoords[1]}`);
+                    const promos = await res.json();
+                    renderNearbyPromotions(promos);
+                } catch (err) {
+                    console.error('Error cargando promociones cercanas:', err);
+                }
+            }
+        });
+    }
+
+function calcularEtiquetaVencimiento(fechaFin) {
+    if (!fechaFin) {
+        return { texto: 'Promoción activa', clase: 'green' };
+    }
+
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const fin = new Date(fechaFin);
+    fin.setHours(0, 0, 0, 0);
+
+    const diffDias = Math.round((fin - hoy) / (1000 * 60 * 60 * 24));
+
+    if (diffDias <= 0) {
+        return { texto: 'Vence hoy', clase: 'red' };
+    } else if (diffDias <= 3) {
+        const opciones = { weekday: 'long' };
+        const dia = fin.toLocaleDateString('es-ES', opciones);
+        return { texto: `Hasta el ${dia}`, clase: 'yellow' };
+    } else {
+        return { texto: `Hasta mañana`, clase: 'green' };
+    }
+}
+
+    function renderNearbyPromotions(promos) {
+        const container = document.querySelector('.promotions-container');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        if (promos.length === 0) {
+            container.innerHTML = '<p>No hay promociones cercanas por ahora.</p>';
+            return;
+        }
+
+        promos.forEach(promo => {
+            const etiqueta = calcularEtiquetaVencimiento(promo.fecha_fin);
+
+            const div = document.createElement('div');
+            div.className = 'bottomPanel-business';
+            div.innerHTML = `
+                <img
+                    src="${promo.imagen ? '/static/' + promo.imagen : '/static/imgs/img-proto.png'}"
+                    alt="${promo.nombre_promocion}"
+                    class="promo-img"
+                >
+                <img
+                    src="${promo.negocio_logo ? '/static/' + promo.negocio_logo : '/static/imgs/default.jpg'}"
+                    alt="${promo.nombre_negocio}"
+                    class="business-logo"
+                >
+                <div class="business-text">
+                    <p>${promo.nombre_negocio}</p>
+                    <h3>${promo.nombre_promocion}</h3>
+                    <p>${promo.descripcion || ''}</p>
+                </div>
+                <label class="map-label ${etiqueta.clase}-label">${etiqueta.texto}</label>
+                <a href="/Negocio/${promo.negocio_id}" class="${etiqueta.clase}-btn">Ver negocio</a>
+            `;
+            container.appendChild(div);
         });
     }
 
@@ -397,5 +469,8 @@ document.addEventListener('DOMContentLoaded', () => {
             searchInput.focus();
         }
     });
-}); // Movemos todo dentro del DOM content
+})
+
+
+// Movemos todo dentro del DOM content
 // Bailamos un poquito

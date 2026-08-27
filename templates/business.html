@@ -87,6 +87,9 @@
                 <i class="fa-solid fa-arrow-left"></i>
                 Volver
             </button>
+            <a class="green-btn back-button" type="button" href="/Mapa">
+                Volver al Mapa
+            </a>
         </div>
         <button class="sidebar-toggle" type="button" aria-label="Abrir menú" aria-controls="sidebarPanel" aria-expanded="false">
             <img
@@ -418,6 +421,21 @@
                 </div>
             </article>
         </section> -->
+        <article class="business-categories border-card">
+        <div class="section-heading">
+            <i class="bi bi-list-ul"></i>
+            <h2 class="green-line">Categoría</h2>
+        </div>
+        <div class="categories-list">
+            <div class="category-item">
+                <i class="bi bi-circle-fill"></i>
+                <span>{{ business.business_type }}</span>
+            </div>
+        </div>
+        </article>
+        <!-- Arreglalo con flexbox despues javier -->
+
+
     </main>
     <footer class="web-footer">
         <div class="footer-brand">
@@ -470,6 +488,8 @@
             </div>
         </div>
     </div>
+
+
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>

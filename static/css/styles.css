@@ -1362,14 +1362,22 @@ form label {
     align-items: center;
 }
 
+/* Voy a reemplazarlos para que se vean mas circulares -J*/
+
 .promo-img {
     width: 200px;
     height: 130px;
+    border-radius: 12px;
+    border-color: #00964e;
+    object-fit: cover;
 }
 
 .business-logo {
     width: 100px;
     height: 100px;
+    border-radius: 50%;
+    border-color: #00964e;
+    object-fit: cover;
 }
 
 .business-text {

@@ -11,7 +11,7 @@ from report import Report
 from werkzeug.security import generate_password_hash, check_password_hash
 from mysqlconnection import connectToMySQL
 import requests
-from local import Business, BUSINESS_TYPES, MAX_BUSINESSES_PER_USER
+from local import Business, BUSINESS_TYPES, MAX_BUSINESSES_PER_USER, esta_abierto
 import json
 import os
 from werkzeug.utils import secure_filename
@@ -197,6 +197,20 @@ def map():
         account_type=account_type,
         businesses_json=businesses_json)
 
+@app.route('/Promociones-cercanas')
+def promociones_cercanas():
+    lat = request.args.get('lat', type=float)
+    lon = request.args.get('lon', type=float)
+
+    if lat is None or lon is None:
+        return jsonify([])
+
+    try:
+        promociones = Promocion.get_nearby(lat, lon)
+        return jsonify(promociones)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route("/Registrarse")
 def register():
     return render_template("form-register.html")
@@ -332,7 +346,6 @@ def featured_business():
 def user_profile():
     """Vista temporal para revisar la maqueta frontend del perfil."""
     return render_template("user-profile.html")
-    return render_template("featured-business.html")
 
 # Rutas para crear promociones y productos
 

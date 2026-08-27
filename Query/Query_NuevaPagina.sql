@@ -48,17 +48,6 @@ CREATE TABLE IF NOT EXISTS reportes (
         ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS locales_negocio (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    usuario_id INT NOT NULL,
-    nombre_local VARCHAR(255) NOT NULL,
-    direccion VARCHAR(255) NOT NULL,
-    lat FLOAT NOT NULL,
-    lon FLOAT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
-);
 
 CREATE TABLE IF NOT EXISTS negocios (
 	id INT PRIMARY KEY AUTO_INCREMENT,
@@ -118,16 +107,3 @@ CREATE TABLE promociones (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (negocio_id) REFERENCES negocios(id) ON DELETE CASCADE
 );
--- Este tmb
--- CREATE TABLE IF NOT EXISTS promociones (
---     id INT AUTO_INCREMENT PRIMARY KEY,
---     negocio_id INT NOT NULL,
---     titulo VARCHAR(200) NOT NULL,
---     descripcion TEXT,
---     descuento_porcentaje DECIMAL(5, 2),
---     fecha_inicio DATE,
---     fecha_fin DATE,
---     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
---     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
---     FOREIGN KEY (negocio_id) REFERENCES negocios(id) ON DELETE CASCADE
--- );
