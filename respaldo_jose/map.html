@@ -75,7 +75,7 @@
                 <span class="blue-label">Cliente</span>
             </div>
             <nav class="sidebar-nav" aria-label="Menú de cliente">
-                <a class="nav-btn" href="{{ url_for('user_profile', usuarios_id=current_user.id) }}"><i class="bi bi-person-fill"></i> <span>Perfil público</span></a>
+                <a class="nav-btn" href="#"><i class="bi bi-person-fill"></i> <span>Mi perfil</span></a>
                 <a class="nav-btn" href="/Negocios-destacados"><i class="bi bi-stars"></i> <span>Negocios destacados</span></a>
                 <a class="nav-btn" href="/Configuracion"><i class="bi bi-gear-fill"></i> <span>Configuración</span></a>
             </nav>
@@ -90,9 +90,10 @@
                 <span class="green-label">Negocio</span>
             </div>
             <nav class="sidebar-nav" aria-label="Menú de vendedor">
-                <a class="nav-btn" href="{{ url_for('user_profile', usuarios_id=current_user.id) }}"><i class="bi bi-person-fill"></i> <span>Perfil público</span></a>
+                <a class="nav-btn" href="#"><i class="bi bi-person-fill"></i> <span>Mi perfil</span></a>
                 <a class="nav-btn" href="{{ url_for('my_businesses') }}"><i class="bi bi-house-gear-fill"></i> <span>Mis negocios</span></a>
                 <a class="nav-btn" href="/Negocios-destacados"><i class="bi bi-stars"></i> <span>Negocios destacados</span></a>
+                <a class="nav-btn" href="/Crear-negocio"><i class="bi bi-shop"></i> <span>Crea un Negocio</span></a>
                 <a class="nav-btn" href="/Configuracion"><i class="bi bi-gear-fill"></i> <span>Configuración</span></a>
             </nav>
             <a href="/Cerrar-sesion" class="sidebar-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Cerrar sesión</span></a>
@@ -110,13 +111,13 @@
             </a>
 
             <div id="searchArea" class="search-area">
-                <form id="searchForm" class="search-box" role="search" aria-label="Buscar negocios, usuarios o promociones">
+                <form id="searchForm" class="search-box" role="search" aria-label="Buscar negocios">
                     <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
                     <input
                         type="search"
                         id="searchInput"
                         name="q"
-                        placeholder="Buscar negocios, usuarios o promociones..."
+                        placeholder="Buscar negocios..."
                         autocomplete="off"
                         aria-controls="searchResultsPanel"
                         aria-expanded="false"
@@ -132,7 +133,7 @@
                 >
                     <header class="search-results-header">
                         <h2>Resultados</h2>
-                        <p id="searchResultsSummary">Coincidencias encontradas</p>
+                        <p id="searchResultsSummary">Negocios encontrados</p>
                     </header>
                     <ul id="searchResults" class="search-results" aria-live="polite"></ul>
                 </section>
@@ -167,32 +168,51 @@
         </div>
         <a id="businessCardLink" class="blue-btn business-link" href="/Negocio">Ver negocio</a>
     </article>
-    <section id="bottomPanel" class="bottomPanel border-card" aria-label="Promociones cerca de ti">
-        <button
-            id="panelHandle"
-            class="panel-handle"
-            type="button"
-            aria-expanded="false"
-            aria-controls="nearbyPromotionsList"
-            aria-label="Mostrar promociones cerca de ti"
-        ></button>
-        <div class="bottomPanel-content">
-            <h2>Promociones cerca de ti</h2>
-            <p id="nearbyPromotionsSummary">Calculando distancias...</p>
-            <div id="nearbyPromotionsList" class="nearby-promotions-list" aria-live="polite">
-                <div class="nearby-promotions-state">
-                    <i class="fa-solid fa-tags" aria-hidden="true"></i>
-                    <p>Preparando las promociones activas de tu zona.</p>
+            <div id="bottomPanel" class="bottomPanel border-card">
+                <div id="panelHandle" class="panel-handle"></div>
+                <div class="bottomPanel-content">
+                    <h2>Promociones cerca de ti</h2>
+                    <p>Ofertas activas en tu zona</p>
+                    <div class="promotions-container">
+                        <!-- Las tarjetas de promociones se insertan aquí dinámicamente vía JS -->
+                    </div>
                 </div>
             </div>
+            <!-- Negocios con Jinja, por mientras que no puedo usar entornos virtuales
+            <div class="bottomPanel-business">
+                Imagen de la promoción
+                <img
+                src=""
+                alt="{{ url_for('static', filename='imgs/default.jpg') }}"
+                class="promo-img"
+                >
+                Logo del negocio
+                <img
+                src=""
+                alt="{{ url_for('static', filename='imgs/default.jpg') }}"
+                class="business-logo"
+                >
+                Nombre del negocio / Nombre de la promoción / Descripción de la promoción
+                <div class="business-text">
+                    <p></p>
+                    <h3></h3>
+                    <p></p>
+                </div>
+                Fecha de termino de la promoción
+                <label class="map-label"></label>
+                Link para ir al negocio de la promoción
+                <a href="">Ver negocio</a>
+            </div> -->
+            <a
+            href="#" 
+            class="green-link"
+            style="left:43%;"
+            >Ver negocios destacados</a>
         </div>
-    </section>
+    </div>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script>
-        const negociosData = {{ businesses_json | safe }};
-        const promocionesData = {{ promotions_json | safe }};
-    </script>
+    <script>  const negociosData = {{ businesses_json | safe }}; </script>
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
     <script src="{{ url_for('static', filename='js/mapa.js') }}"></script>
     <!-- Voy a usar 'mapa.js' para testear por mientras, lo cambias si quieres, es para no borrarte todo -->

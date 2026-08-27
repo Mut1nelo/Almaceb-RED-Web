@@ -19,7 +19,6 @@ from uuid import uuid4
 from PIL import Image
 from producto import Producto
 from promocion import Promocion
-from decimal import Decimal, InvalidOperation
 
 app = Flask(__name__)
 
@@ -106,24 +105,7 @@ def guardar_imagen(file_storage, tipo, subfolder=UPLOAD_SUBFOLDER):
 def calcular_similitud(query, texto):
     if not texto:
         return 0
-
-    normalized_query = query.strip().casefold()
-    normalized_text = str(texto).strip().casefold()
-
-    if normalized_query == normalized_text:
-        return 1
-    if normalized_query in normalized_text:
-        return 0.95
-
-    whole_text_score = SequenceMatcher(None, normalized_query, normalized_text).ratio()
-    word_score = max(
-        (
-            SequenceMatcher(None, normalized_query, word).ratio()
-            for word in normalized_text.split()
-        ),
-        default=0
-    )
-    return max(whole_text_score, word_score * 0.9)
+    return SequenceMatcher(None, query.lower(), str(texto).lower()).ratio()
 
 def buscar_en_lista(query, lista, campos_busqueda):
     if not query or len(query.strip()) < 2:
@@ -140,25 +122,11 @@ def buscar_en_lista(query, lista, campos_busqueda):
                 similitud = calcular_similitud(query, valor_campo)
                 max_similitud = max(max_similitud, similitud)
 
-        if max_similitud >= 0.45:
+        if max_similitud >= 0.3:
             resultados.append({"item": item, "relevancia": max_similitud})
 
     resultados.sort(key=lambda x: x["relevancia"], reverse=True)
     return [r["item"] for r in resultados]
-
-
-def media_url(path, fallback):
-    """Convierte una ruta guardada en la BD en una URL pública de /static."""
-    normalized_path = str(path or fallback).replace('\\', '/').strip()
-
-    if normalized_path.startswith(('http://', 'https://')):
-        return normalized_path
-    if normalized_path.startswith('/static/'):
-        return normalized_path
-    if normalized_path.startswith('static/'):
-        normalized_path = normalized_path[len('static/'):]
-
-    return url_for('static', filename=normalized_path.lstrip('/'))
 
 def geocode_das_address(address):
     try:
@@ -211,56 +179,15 @@ def map():
     print(f"DEBUG: username={username}, account_type={account_type}")
 
     businesses = Business.get_all()
-    active_promotion_counts = Promocion.get_active_counts([business.id for business in businesses])
     businesses_json = json.dumps([
         {
             'id': b.id,
             'nombre_negocio': b.nombre_negocio,
             'business_type': b.business_type,
-            'direccion': b.direccion,
             'lat': float(b.lat),
-            'lon': float(b.lon),
-            'image_url': media_url(b.imagen_perfil, 'imgs/default-business.png'),
-            'card_image_url': media_url(
-                b.imagen_banner or b.imagen_perfil,
-                'imgs/default-business.png'
-            ),
-            'active_promotions': active_promotion_counts.get(b.id, 0),
-            'featured': b.valoracion > 0,
-            'url': url_for('negocio', negocio_id=b.id)
+            'lon': float(b.lon)
         }
         for b in businesses
-    ])
-
-    # La consulta viene ordenada por actualización: conservamos solo la promoción
-    # activa más reciente de cada negocio para evitar que uno monopolice el panel.
-    promotions_by_business = {}
-    for promotion in Promocion.get_active_searchable():
-        promotions_by_business.setdefault(promotion.negocio_id, promotion)
-
-    promotions_json = json.dumps([
-        {
-            'id': promotion.id,
-            'business_id': promotion.negocio_id,
-            'business_name': promotion.nombre_negocio,
-            'business_type': promotion.business_type,
-            'promotion_name': promotion.nombre_promocion,
-            'description': promotion.descripcion,
-            'price': str(promotion.precio).strip() if promotion.precio is not None else None,
-            'banner_url': media_url(
-                promotion.banner_negocio,
-                'imgs/default-business.png'
-            ),
-            'logo_url': media_url(
-                promotion.imagen_negocio,
-                'imgs/default-business.png'
-            ),
-            'lat': float(promotion.lat),
-            'lon': float(promotion.lon),
-            'end_date': promotion.fecha_fin.isoformat() if promotion.fecha_fin else None,
-            'url': f"{url_for('negocio', negocio_id=promotion.negocio_id)}#promociones"
-        }
-        for promotion in promotions_by_business.values()
     ])
 
     return render_template(
@@ -268,8 +195,21 @@ def map():
         usuarios=usuarios,
         username=username,
         account_type=account_type,
-        businesses_json=businesses_json,
-        promotions_json=promotions_json)
+        businesses_json=businesses_json)
+
+@app.route('/Promociones-cercanas')
+def promociones_cercanas():
+    lat = request.args.get('lat', type=float)
+    lon = request.args.get('lon', type=float)
+
+    if lat is None or lon is None:
+        return jsonify([])
+
+    try:
+        promociones = Promocion.get_nearby(lat, lon)
+        return jsonify(promociones)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route("/Registrarse")
 def register():
@@ -373,8 +313,7 @@ def negocio(negocio_id):
         promociones=promociones,
         usuarios=usuarios, # Gracias claude
         username=username,
-        account_type=account_type,
-        is_business_owner=session.get('user_id') == business.usuario_id
+        account_type=account_type
     )
 
 @app.route("/Negocios-destacados")
@@ -404,246 +343,115 @@ def featured_business():
     )
 
 @app.route("/Perfil-usuario")
-@app.route("/Perfil-usuario/<int:usuarios_id>")
-def user_profile(usuarios_id=None):
-    """Muestra el perfil público solicitado o el del usuario autenticado."""
-    if usuarios_id is None:
-        if 'user_id' not in session:
-            flash("Inicia sesión para ver tu perfil público.", "login")
-            return redirect(url_for('login_page'))
-        usuarios_id = session['user_id']
+def user_profile():
+    """Vista temporal para revisar la maqueta frontend del perfil."""
+    return render_template("user-profile.html")
 
-    usuario = Usuario.get_by_id(usuarios_id)
-    if usuario is None:
-        return render_template('error.html', error="Usuario no encontrado"), 404
-
-    is_owner = session.get('user_id') == usuario.id
-    businesses = []
-
-    if usuario.account_type == 'business':
-        businesses = Business.get_by_user(usuario.id)
-        promotion_counts = Promocion.get_active_counts([business.id for business in businesses])
-        for business in businesses:
-            business.active_promotions = promotion_counts.get(business.id, 0)
-
-    meses = (
-        'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
-        'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'
-    )
-    member_since = (
-        f"{meses[usuario.created_at.month - 1]} de {usuario.created_at.year}"
-        if usuario.created_at else "fecha no disponible"
-    )
-
-    return render_template(
-        "user-profile.html",
-        usuario=usuario,
-        businesses=businesses,
-        is_owner=is_owner,
-        member_since=member_since
-    )
-
-# Rutas para crear y editar promociones y productos
-
-def owned_business_or_redirect(negocio_id):
-    """Restringe la administración de contenido al propietario del negocio."""
-    access_redirect = require_business_account()
-    if access_redirect:
-        return None, access_redirect
-
-    negocio = Business.get_by_id_for_user(negocio_id, session['user_id'])
-    if not negocio:
-        flash("El negocio no existe o no pertenece a tu cuenta.", "error")
-        return None, redirect(url_for('my_businesses'))
-
-    return negocio, None
-
-
-def validate_product_form():
-    nombre_producto = (request.form.get('nombre_producto') or '').strip()
-    descripcion = (request.form.get('descripcion') or '').strip() or None
-    precio_text = (request.form.get('precio') or '').strip()
-
-    if not nombre_producto:
-        raise ValueError("Escribe el nombre del producto")
-
-    try:
-        precio = Decimal(precio_text)
-    except (InvalidOperation, ValueError):
-        raise ValueError("Ingresa un precio válido")
-
-    if precio < 0:
-        raise ValueError("El precio no puede ser negativo")
-
-    return nombre_producto, descripcion, precio
-
-
-def validate_promotion_form():
-    nombre_promocion = (request.form.get('nombre_promocion') or '').strip()
-    precio = (request.form.get('precio') or '').strip() or None
-    descripcion = (request.form.get('descripcion') or '').strip() or None
-    fecha_inicio = request.form.get('fecha_inicio') or None
-    fecha_fin = request.form.get('fecha_fin') or None
-
-    if not nombre_promocion:
-        raise ValueError("Escribe el nombre de la promoción")
-
-    if fecha_inicio and fecha_fin and fecha_inicio > fecha_fin:
-        raise ValueError("La fecha de término no puede ser anterior a la fecha de inicio")
-
-    return nombre_promocion, precio, descripcion, fecha_inicio, fecha_fin
-
+# Rutas para crear promociones y productos
 
 @app.route('/Negocio/<int:negocio_id>/Agregar-producto', methods=['GET', 'POST'])
 def agregar_producto(negocio_id):
-    negocio, access_redirect = owned_business_or_redirect(negocio_id)
-    if access_redirect:
-        return access_redirect
+    if 'user_id' not in session:
+        return redirect(url_for('login_page'))
+
+    negocio = Business.get_by_id(negocio_id)
+    if not negocio:
+        return "Negocio no encontrado", 404
 
     if request.method == 'GET':
-        return render_template('form-producto.html', negocio=negocio, editando=False)
+        return render_template('form-producto.html', negocio=negocio)
+
+    nombre_producto = request.form.get('nombre_producto')
+    descripcion = request.form.get('descripcion')
+    precio = request.form.get('precio')
 
     try:
-        nombre_producto, descripcion, precio = validate_product_form()
-        imagen = guardar_imagen(
-            request.files.get('imagen'),
-            tipo='perfil',
-            subfolder='imgs/productos'
-        )
+        imagen = guardar_imagen(request.files.get('imagen'), tipo='perfil')
+
         Producto.save(
             negocio_id, nombre_producto, precio,
             descripcion=descripcion, imagen=imagen
         )
-        flash("Producto publicado correctamente.", "success")
         return redirect(url_for('negocio', negocio_id=negocio_id))
 
-    except ValueError as error:
-        return render_template(
-            'form-producto.html', negocio=negocio, editando=False,
-            form_error=str(error)
-        ), 400
-    except Exception:
-        app.logger.exception("No se pudo crear el producto")
-        return render_template('error.html', error="No se pudo guardar el producto."), 500
-
-
-@app.route('/Negocio/<int:negocio_id>/Producto/<int:producto_id>/Editar', methods=['GET', 'POST'])
-def editar_producto(negocio_id, producto_id):
-    negocio, access_redirect = owned_business_or_redirect(negocio_id)
-    if access_redirect:
-        return access_redirect
-
-    producto = Producto.get_by_id_for_business(producto_id, negocio_id)
-    if not producto:
-        flash("El producto no existe en este negocio.", "error")
-        return redirect(url_for('negocio', negocio_id=negocio_id))
-
-    if request.method == 'GET':
-        return render_template(
-            'form-producto.html', negocio=negocio,
-            producto=producto, editando=True
-        )
-
-    try:
-        nombre_producto, descripcion, precio = validate_product_form()
-        imagen_nueva = guardar_imagen(
-            request.files.get('imagen'),
-            tipo='perfil',
-            subfolder='imgs/productos'
-        )
-        Producto.update(
-            producto_id, negocio_id, nombre_producto, precio,
-            descripcion=descripcion,
-            imagen=imagen_nueva or producto.imagen
-        )
-        flash("Producto actualizado correctamente.", "success")
-        return redirect(url_for('negocio', negocio_id=negocio_id))
-
-    except ValueError as error:
-        return render_template(
-            'form-producto.html', negocio=negocio,
-            producto=producto, editando=True, form_error=str(error)
-        ), 400
-    except Exception:
-        app.logger.exception("No se pudo actualizar el producto")
-        return render_template('error.html', error="No se pudo actualizar el producto."), 500
+    except ValueError as e:
+        return render_template('error.html', error=str(e)), 400
+    except Exception as e:
+        return render_template('error.html', error=str(e)), 500
 
 
 @app.route('/Negocio/<int:negocio_id>/Agregar-promocion', methods=['GET', 'POST'])
 def agregar_promocion(negocio_id):
-    negocio, access_redirect = owned_business_or_redirect(negocio_id)
-    if access_redirect:
-        return access_redirect
+    if 'user_id' not in session:
+        return redirect(url_for('login_page'))
+
+    negocio = Business.get_by_id(negocio_id)
+    if not negocio:
+        return "Negocio no encontrado", 404
 
     if request.method == 'GET':
-        return render_template('form-promocion.html', negocio=negocio, editando=False)
+        return render_template('form-promocion.html', negocio=negocio)
+
+    nombre_promocion = request.form.get('nombre_promocion')
+    precio = request.form.get('precio')
+    descripcion = request.form.get('descripcion')
+    fecha_inicio = request.form.get('fecha_inicio') or None
+    fecha_fin = request.form.get('fecha_fin') or None
 
     try:
-        nombre_promocion, precio, descripcion, fecha_inicio, fecha_fin = validate_promotion_form()
-        imagen = guardar_imagen(
-            request.files.get('imagen'),
-            tipo='perfil',
-            subfolder='imgs/promociones'
-        )
+        imagen = guardar_imagen(request.files.get('imagen'), tipo='perfil')
+
         Promocion.save(
             negocio_id, nombre_promocion,
             precio=precio, descripcion=descripcion, imagen=imagen,
             fecha_inicio=fecha_inicio, fecha_fin=fecha_fin
         )
-        flash("Promoción publicada correctamente.", "success")
         return redirect(url_for('negocio', negocio_id=negocio_id))
 
-    except ValueError as error:
-        return render_template(
-            'form-promocion.html', negocio=negocio, editando=False,
-            form_error=str(error)
-        ), 400
-    except Exception:
-        app.logger.exception("No se pudo crear la promoción")
-        return render_template('error.html', error="No se pudo guardar la promoción."), 500
+    except ValueError as e:
+        return render_template('error.html', error=str(e)), 400
+    except Exception as e:
+        return render_template('error.html', error=str(e)), 500
 
+# @app.route("/Perfil-usuario")
+# def user_profile(user_id):
 
-@app.route('/Negocio/<int:negocio_id>/Promocion/<int:promocion_id>/Editar', methods=['GET', 'POST'])
-def editar_promocion(negocio_id, promocion_id):
-    negocio, access_redirect = owned_business_or_redirect(negocio_id)
-    if access_redirect:
-        return access_redirect
+#     usuarios = Usuario.get_all_users()
+#     username = session.get('username', 'invitado')
+#     account_type = session.get('account_type', 'invitado')
+#     if 'user_id' not in session:
+#         redirect("/Login")
 
-    promocion = Promocion.get_by_id_for_business(promocion_id, negocio_id)
-    if not promocion:
-        flash("La promoción no existe en este negocio.", "error")
-        return redirect(url_for('negocio', negocio_id=negocio_id))
+#     print(f"DEBUG para user-profile.html: username={username}, account_type={account_type}")
 
-    if request.method == 'GET':
-        return render_template(
-            'form-promocion.html', negocio=negocio,
-            promocion=promocion, editando=True
-        )
+#     user = Usuario.get_by_id(user_id)
 
-    try:
-        nombre_promocion, precio, descripcion, fecha_inicio, fecha_fin = validate_promotion_form()
-        imagen_nueva = guardar_imagen(
-            request.files.get('imagen'),
-            tipo='perfil',
-            subfolder='imgs/promociones'
-        )
-        Promocion.update(
-            promocion_id, negocio_id, nombre_promocion,
-            precio=precio, descripcion=descripcion,
-            imagen=imagen_nueva or promocion.imagen,
-            fecha_inicio=fecha_inicio, fecha_fin=fecha_fin
-        )
-        flash("Promoción actualizada correctamente.", "success")
-        return redirect(url_for('negocio', negocio_id=negocio_id))
+#     if user is None:
+#         return "Usuario no Encontrado (no deberia pasar waos)", 404
 
-    except ValueError as error:
-        return render_template(
-            'form-promocion.html', negocio=negocio,
-            promocion=promocion, editando=True, form_error=str(error)
-        ), 400
-    except Exception:
-        app.logger.exception("No se pudo actualizar la promoción")
-        return render_template('error.html', error="No se pudo actualizar la promoción."), 500
+#     user_json = json.dumps({
+#         'id': user.id,
+#         'nombre': user.username,
+#         '',
+#     })
+
+#     return render_template(
+#         'user-profile.html',
+#         business=business,          # objeto directo, útil para Jinja: {{ business.nombre_negocio }}
+#         business_json=business_json, # JSON para usarlo en JS si hace falta
+#         usuarios=usuarios, # Gracias claude
+#         username=username,
+#         account_type=account_type
+#     )
+#     return render_template("user-profile.html")
+
+#Lo dejo comentado por mientras
+# 👍
+
+# Otra plantilla pero para la busqueda de usuarios
+# @app.route("/Perfil-usuario/<int:usuarios_id>")
+# def user_profile(usuarios_id):
+#     return redirect(url_for('future_function'))
 
 @app.route("/Reportes")
 def report():
@@ -660,10 +468,6 @@ def reportar():
         elemento_tipo = request.args.get('elemento_tipo')
         elemento_id = request.args.get('elemento_id')
 
-        if elemento_tipo == 'usuario' and str(elemento_id) == str(session['user_id']):
-            flash("No puedes reportar tu propio usuario.", "error")
-            return redirect(url_for('user_profile', usuarios_id=session['user_id']))
-
         return render_template(
             'report.html',
             elemento_tipo=elemento_tipo,
@@ -678,10 +482,6 @@ def reportar():
         elemento_id = int(elemento_id)
     else:
         elemento_id = None
-
-    if elemento_tipo == 'usuario' and elemento_id == session['user_id']:
-        flash("No puedes reportar tu propio usuario.", "error")
-        return redirect(url_for('user_profile', usuarios_id=session['user_id']))
 
     motivo = request.form.get('motivo')
     descripcion = request.form.get('descripcion')
@@ -851,97 +651,29 @@ def my_businesses():
         account_type=session.get('account_type', 'business')
     )
 
-
-@app.route('/Negocio/<int:negocio_id>/Borrar', methods=['POST'])
-def borrar_negocio(negocio_id):
-    access_redirect = require_business_account()
-    if access_redirect:
-        return access_redirect
-
-    negocio = Business.get_by_id_for_user(negocio_id, session['user_id'])
-    if not negocio:
-        flash("El negocio no existe o no pertenece a tu cuenta.", "error")
-        return redirect(url_for('my_businesses'))
-
-    try:
-        Business.delete_for_user(negocio_id, session['user_id'])
-        flash(f'“{negocio.nombre_negocio}” fue eliminado correctamente.', 'success')
-    except RuntimeError:
-        flash("No pudimos eliminar el negocio. Inténtalo nuevamente.", "error")
-
-    return redirect(url_for('my_businesses'))
-
 @app.route("/Cerrar-sesion")
 def logout():
     session.clear()
     return redirect("/")
 
+#Esto lo voy a rehacer, ya lo rehice -J
 @app.route("/search")
 def search():
-    query = request.args.get('q', '').strip()
-    if len(query) < 2:
-        return jsonify([])
+    query = request.args.get('q', '')
 
-    businesses = buscar_en_lista(
-        query,
-        Business.get_all(),
-        ['nombre_negocio', 'business_type', 'direccion']
-    )[:8]
-    users = buscar_en_lista(query, Usuario.get_all_users(), ['username'])[:8]
-    promotions = buscar_en_lista(
-        query,
-        Promocion.get_active_searchable(),
-        ['nombre_promocion', 'descripcion', 'nombre_negocio', 'business_type']
-    )[:8]
-    active_promotion_counts = Promocion.get_active_counts([business.id for business in businesses])
+    all_businesses = Business.get_all()
+    resultados = buscar_en_lista(query, all_businesses, ['nombre_negocio', 'business_type'])
 
-    results = []
-
-    for business in businesses:
-        results.append({
-            'result_type': 'business',
-            'id': business.id,
-            'title': business.nombre_negocio,
-            'business_type': business.business_type,
-            'location': business.direccion,
-            'active_promotions': active_promotion_counts.get(business.id, 0),
-            'image_url': media_url(business.imagen_perfil, 'imgs/default-business.png'),
-            'marker_business_id': business.id,
-            'lat': float(business.lat),
-            'lon': float(business.lon),
-            'url': url_for('negocio', negocio_id=business.id)
-        })
-
-    for user in users:
-        results.append({
-            'result_type': 'user',
-            'id': user.id,
-            'title': user.username,
-            'account_label': 'Vendedor' if user.account_type == 'business' else 'Cliente',
-            'image_url': media_url(user.foto_perfil, 'imgs/default.jpg'),
-            'url': url_for('user_profile', usuarios_id=user.id)
-        })
-
-    for promotion in promotions:
-        results.append({
-            'result_type': 'promotion',
-            'id': promotion.id,
-            'title': promotion.nombre_promocion,
-            'business_name': promotion.nombre_negocio,
-            'business_type': promotion.business_type,
-            'location': promotion.direccion_negocio,
-            'price': str(promotion.precio).strip() if promotion.precio is not None else None,
-            'image_url': media_url(
-                promotion.imagen or promotion.imagen_negocio,
-                'imgs/default-business.png'
-            ),
-            'marker_business_id': promotion.negocio_id,
-            'lat': float(promotion.lat),
-            'lon': float(promotion.lon),
-            'url': f"{url_for('negocio', negocio_id=promotion.negocio_id)}#promociones"
-        })
-
-    return jsonify(results)
+    return jsonify([
+        {
+            'id': b.id,
+            'nombre_negocio': b.nombre_negocio,
+            'business_type': b.business_type,
+            'lat': float(b.lat),
+            'lon': float(b.lon)
+        }
+        for b in resultados
+    ])
 
 @app.route("/Configuracion")
 def config():

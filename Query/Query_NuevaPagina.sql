@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS negocios (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
     );
 
-CREATE TABLE productos (
+CREATE TABLE IF NOT EXISTS productos (
     id INT PRIMARY KEY AUTO_INCREMENT,
     negocio_id INT NOT NULL,
     nombre_producto VARCHAR(100) NOT NULL,
@@ -105,7 +105,7 @@ CREATE TABLE productos (
     FOREIGN KEY (negocio_id) REFERENCES negocios(id) ON DELETE CASCADE
 );
 
-CREATE TABLE promociones (
+CREATE TABLE IF NOT EXISTS promociones (
     id INT PRIMARY KEY AUTO_INCREMENT,
     negocio_id INT NOT NULL,
     nombre_promocion VARCHAR(100) NOT NULL,

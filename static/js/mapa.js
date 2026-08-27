@@ -1,11 +1,16 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Panel inferior de promociones
+    // Panel inferior de promociones cercanas
     const bottomPanel = document.getElementById('bottomPanel');
     const panelHandle = document.getElementById('panelHandle');
 
     if (bottomPanel && panelHandle) {
         panelHandle.addEventListener('click', () => {
-            bottomPanel.classList.toggle('active');
+            const isOpen = bottomPanel.classList.toggle('active');
+            panelHandle.setAttribute('aria-expanded', String(isOpen));
+            panelHandle.setAttribute(
+                'aria-label',
+                isOpen ? 'Ocultar promociones cerca de ti' : 'Mostrar promociones cerca de ti'
+            );
         });
     }
 
@@ -31,17 +36,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // 4. Datos reales desde Flask
-    const defaultIcon = "../static/imgs/default-business.png";
+    const defaultIcon = '/static/imgs/default-business.png';
     const locations = (typeof negociosData !== 'undefined' ? negociosData : []).map(n => ({
         id: n.id,
-        coords: [n.lat, n.lon],
+        coords: [Number(n.lat), Number(n.lon)],
         name: n.nombre_negocio,
-        image: defaultIcon,
-        cardImage: '../static/imgs/img-proto.png',
+        image: n.image_url || defaultIcon,
+        cardImage: n.card_image_url || n.image_url || defaultIcon,
         category: n.business_type,
-        promotions: 0,
-        featured: false,
-        url: `/Negocio/${n.id || ''}`
+        address: n.direccion,
+        promotions: Number(n.active_promotions) || 0,
+        featured: Boolean(n.featured),
+        url: n.url || `/Negocio/${n.id || ''}`
+    }));
+
+    const nearbyPromotions = (typeof promocionesData !== 'undefined' ? promocionesData : []).map(p => ({
+        id: p.id,
+        businessId: p.business_id,
+        businessName: p.business_name,
+        businessType: p.business_type,
+        name: p.promotion_name,
+        description: p.description,
+        price: p.price,
+        banner: p.banner_url || defaultIcon,
+        logo: p.logo_url || defaultIcon,
+        coords: [Number(p.lat), Number(p.lon)],
+        endDate: p.end_date,
+        url: p.url || `/Negocio/${p.business_id || ''}#promociones`
     }));
 
     // 5. Mini tarjeta de negocio
@@ -54,6 +75,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const businessCardDistance = document.getElementById('businessCardDistance');
     const businessCardPromotions = document.getElementById('businessCardPromotions');
     const businessCardLink = document.getElementById('businessCardLink');
+    const nearbyPromotionsList = document.getElementById('nearbyPromotionsList');
+    const nearbyPromotionsSummary = document.getElementById('nearbyPromotionsSummary');
     let userCoords = null;
     let selectedBusiness = null;
 
@@ -70,6 +93,107 @@ document.addEventListener('DOMContentLoaded', () => {
             * Math.sin(lngDifference / 2) ** 2;
 
         return earthRadius * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    };
+
+    const formatDistance = distance => distance < 1
+        ? `${Math.round(distance * 1000)} m`
+        : `${distance.toFixed(1)} km`;
+
+    const renderNearbyPromotions = (origin, fromUserLocation = false) => {
+        if (!nearbyPromotionsList || !nearbyPromotionsSummary) return;
+
+        nearbyPromotionsList.replaceChildren();
+
+        if (nearbyPromotions.length === 0) {
+            nearbyPromotionsSummary.textContent = 'No hay promociones activas cerca por ahora.';
+            const emptyState = document.createElement('div');
+            emptyState.className = 'nearby-promotions-state';
+            const icon = document.createElement('i');
+            icon.className = 'fa-solid fa-tags';
+            icon.setAttribute('aria-hidden', 'true');
+            const message = document.createElement('p');
+            message.textContent = 'Cuando los negocios publiquen promociones, aparecerán aquí.';
+            emptyState.append(icon, message);
+            nearbyPromotionsList.appendChild(emptyState);
+            return;
+        }
+
+        const seenBusinesses = new Set();
+        const promotions = nearbyPromotions
+            .map(promotion => ({
+                ...promotion,
+                distance: calculateDistance(origin, promotion.coords)
+            }))
+            .sort((a, b) => a.distance - b.distance)
+            .filter(promotion => {
+                if (seenBusinesses.has(promotion.businessId)) return false;
+                seenBusinesses.add(promotion.businessId);
+                return true;
+            })
+            .slice(0, 3);
+
+        nearbyPromotionsSummary.textContent = fromUserLocation
+            ? 'Ofertas activas ordenadas desde tu ubicación.'
+            : 'Ofertas activas en la zona visible del mapa.';
+
+        const colorClasses = [
+            { label: 'red-label', button: 'red-btn' },
+            { label: 'yellow-label', button: 'yellow-btn' },
+            { label: 'green-label', button: 'green-btn' }
+        ];
+
+        promotions.forEach((promotion, index) => {
+            const colors = colorClasses[index % colorClasses.length];
+            const card = document.createElement('article');
+            card.className = 'bottomPanel-business';
+
+            const banner = document.createElement('img');
+            banner.className = 'promo-img';
+            banner.src = promotion.banner;
+            banner.alt = `Banner de ${promotion.businessName}`;
+
+            const logo = document.createElement('img');
+            logo.className = 'business-logo';
+            logo.src = promotion.logo;
+            logo.alt = `Logo de ${promotion.businessName}`;
+
+            const content = document.createElement('div');
+            content.className = 'business-text';
+            const businessName = document.createElement('p');
+            businessName.textContent = promotion.businessName;
+            const title = document.createElement('h3');
+            title.textContent = promotion.name;
+            const description = document.createElement('p');
+            description.textContent = promotion.description || promotion.price || 'Promoción activa';
+            const distance = document.createElement('p');
+            distance.className = 'promotion-distance';
+            distance.textContent = `A ${formatDistance(promotion.distance)}`;
+            content.append(businessName, title, description, distance);
+
+            const endLabel = document.createElement('span');
+            endLabel.className = `map-label ${colors.label}`;
+            if (!promotion.endDate) {
+                endLabel.textContent = 'Promoción activa';
+            } else {
+                const endDate = new Date(`${promotion.endDate}T00:00:00`);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const daysLeft = Math.round((endDate - today) / 86400000);
+                endLabel.textContent = daysLeft === 0
+                    ? 'Vence hoy'
+                    : daysLeft === 1
+                        ? 'Hasta mañana'
+                        : `Hasta ${endDate.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit' })}`;
+            }
+
+            const businessLink = document.createElement('a');
+            businessLink.className = colors.button;
+            businessLink.href = promotion.url;
+            businessLink.textContent = 'Ver negocio';
+
+            card.append(banner, logo, content, endLabel, businessLink);
+            nearbyPromotionsList.appendChild(card);
+        });
     };
 
     const showDistance = (location) => {
@@ -90,7 +214,9 @@ document.addEventListener('DOMContentLoaded', () => {
         businessCardName.textContent = location.name;
         businessCardCategory.textContent = location.category;
         showDistance(location);
-        businessCardPromotions.textContent = `${location.promotions} promociones activas`;
+        businessCardPromotions.textContent = location.promotions === 1
+            ? '1 promoción activa'
+            : `${location.promotions} promociones activas`;
         businessCardLink.href = location.url;
         businessFeatured.hidden = !location.featured;
         businessCard.classList.add('active');
@@ -122,7 +248,15 @@ document.addEventListener('DOMContentLoaded', () => {
         map.fitBounds(markerGroup.getBounds(), { padding: [50, 50] });
     }
 
+    const mapCenter = map.getCenter();
+    renderNearbyPromotions([mapCenter.lat, mapCenter.lng]);
+
     map.on('click', hideBusinessCard);
+    map.on('moveend', () => {
+        if (userCoords) return;
+        const center = map.getCenter();
+        renderNearbyPromotions([center.lat, center.lng]);
+    });
 
     // Ubicación en tiempo real del usuario
     let userMarker = null;
@@ -132,6 +266,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lat = pos.coords.latitude;
                 const lng = pos.coords.longitude;
                 userCoords = [lat, lng];
+                renderNearbyPromotions(userCoords, true);
 
                 if (selectedBusiness) {
                     showDistance(selectedBusiness);
@@ -162,7 +297,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn('Geolocalización no soportada por este navegador.');
     }
 
-    // 7. Búsqueda de negocios y panel flotante de resultados
+    // 7. Búsqueda unificada y panel flotante de resultados
     const searchArea = document.getElementById('searchArea');
     const searchForm = document.getElementById('searchForm');
     const searchInput = document.getElementById('searchInput');
@@ -221,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 summary: 'Búsqueda vacía',
                 icon: 'fa-solid fa-magnifying-glass',
                 title: 'Escribe qué quieres encontrar.',
-                description: 'Busca un negocio por su nombre o categoría.'
+                description: 'Busca negocios, usuarios o promociones.'
             });
             return;
         }
@@ -244,10 +379,10 @@ document.addEventListener('DOMContentLoaded', () => {
         searchController = currentController;
 
         renderSearchState({
-            summary: 'Buscando negocios',
+            summary: 'Buscando en Almaceb RED',
             icon: 'fa-solid fa-spinner fa-spin',
             title: 'Buscando...',
-            description: 'Estamos revisando los negocios de Almaceb RED.'
+            description: 'Estamos revisando negocios, usuarios y promociones.'
         });
 
         try {
@@ -284,26 +419,28 @@ document.addEventListener('DOMContentLoaded', () => {
         if (results.length === 0) {
             renderSearchState({
                 summary: 'Sin resultados',
-                icon: 'fa-solid fa-store-slash',
+                icon: 'fa-solid fa-magnifying-glass',
                 title: `No encontramos resultados para “${query}”.`,
-                description: 'Prueba con otro nombre o categoría.'
+                description: 'Prueba con otro nombre, categoría o promoción.'
             });
             return;
         }
 
         searchResultsSummary.textContent = results.length === 1
-            ? '1 negocio encontrado'
-            : `${results.length} negocios encontrados`;
+            ? '1 resultado encontrado'
+            : `${results.length} resultados encontrados`;
 
         results.forEach(r => {
+            const resultType = r.result_type || 'business';
+            const titleText = r.title || r.nombre_negocio || 'Resultado';
             const li = document.createElement('li');
             li.className = 'search-result-item';
 
             const button = document.createElement('button');
             button.type = 'button';
             button.className = 'search-result-button';
-            button.dataset.resultType = r.result_type || 'business';
-            button.setAttribute('aria-label', `Seleccionar ${r.nombre_negocio}`);
+            button.dataset.resultType = resultType;
+            button.setAttribute('aria-label', `Seleccionar ${titleText}`);
 
             const imageSource = r.image_url || r.image || r.logo;
             let visual;
@@ -312,25 +449,48 @@ document.addEventListener('DOMContentLoaded', () => {
                 visual = document.createElement('img');
                 visual.className = 'search-result-image';
                 visual.src = imageSource;
-                visual.alt = `Logo de ${r.nombre_negocio}`;
+                visual.alt = `Imagen de ${titleText}`;
             } else {
                 visual = document.createElement('span');
-                visual.className = 'search-result-image-placeholder';
+                visual.className = `search-result-image-placeholder search-result-image-placeholder--${resultType}`;
                 visual.setAttribute('aria-hidden', 'true');
-                const storeIcon = document.createElement('i');
-                storeIcon.className = 'fa-solid fa-store';
-                visual.appendChild(storeIcon);
+                const placeholderIcon = document.createElement('i');
+                placeholderIcon.className = resultType === 'user'
+                    ? 'fa-solid fa-user'
+                    : resultType === 'promotion'
+                        ? 'fa-solid fa-tag'
+                        : 'fa-solid fa-store';
+                visual.appendChild(placeholderIcon);
             }
 
             const content = document.createElement('span');
             content.className = 'search-result-content';
 
             const name = document.createElement('h3');
-            name.textContent = r.nombre_negocio;
+            name.textContent = titleText;
             content.appendChild(name);
 
-            const locationText = r.comuna || r.ubicacion || r.direccion;
-            const metadata = [r.business_type, locationText].filter(Boolean);
+            const typeLabels = {
+                business: 'Negocio',
+                user: 'Usuario',
+                promotion: 'Promoción'
+            };
+            const typeBadge = document.createElement('span');
+            typeBadge.className = `search-result-type search-result-type--${resultType}`;
+            typeBadge.textContent = typeLabels[resultType] || 'Resultado';
+            content.appendChild(typeBadge);
+
+            const locationText = r.location || r.comuna || r.ubicacion || r.direccion;
+            let metadata = [];
+
+            if (resultType === 'user') {
+                metadata = [r.account_label];
+            } else if (resultType === 'promotion') {
+                metadata = [r.business_name && `De ${r.business_name}`, r.business_type, locationText];
+            } else {
+                metadata = [r.business_type, locationText];
+            }
+            metadata = metadata.filter(Boolean);
 
             if (metadata.length) {
                 const meta = document.createElement('p');
@@ -339,14 +499,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 content.appendChild(meta);
             }
 
-            const promotionCount = r.active_promotions ?? r.promociones_activas ?? r.promotions;
-            if (Number(promotionCount) > 0) {
-                const promotions = document.createElement('span');
-                promotions.className = 'search-result-promotions green-label';
-                promotions.textContent = Number(promotionCount) === 1
-                    ? '1 promoción activa'
-                    : `${promotionCount} promociones activas`;
-                content.appendChild(promotions);
+            if (resultType === 'promotion') {
+                const promotionLabel = document.createElement('span');
+                promotionLabel.className = 'search-result-promotions crimson-label';
+                const promotionPrice = r.price === null || r.price === undefined
+                    ? ''
+                    : String(r.price).trim();
+                promotionLabel.textContent = /^\d+$/.test(promotionPrice)
+                    ? new Intl.NumberFormat('es-CL', {
+                        style: 'currency',
+                        currency: 'CLP',
+                        maximumFractionDigits: 0
+                    }).format(Number(promotionPrice))
+                    : promotionPrice || 'Promoción activa';
+                content.appendChild(promotionLabel);
+            } else if (resultType === 'business') {
+                const promotionCount = r.active_promotions ?? r.promociones_activas ?? r.promotions;
+                if (Number(promotionCount) > 0) {
+                    const promotions = document.createElement('span');
+                    promotions.className = 'search-result-promotions green-label';
+                    promotions.textContent = Number(promotionCount) === 1
+                        ? '1 promoción activa'
+                        : `${promotionCount} promociones activas`;
+                    content.appendChild(promotions);
+                }
             }
 
             const arrow = document.createElement('i');
@@ -363,13 +539,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function selectResult(result) {
-        const entry = markersById[result.id];
-        if (!entry) return;
+        if (result.result_type === 'user') {
+            if (result.url) window.location.assign(result.url);
+            return;
+        }
+
+        const businessId = result.marker_business_id || result.id;
+        const entry = markersById[businessId];
+        if (!entry) {
+            if (result.url) window.location.assign(result.url);
+            return;
+        }
 
         map.setView(entry.location.coords, 18);
         showBusinessCard(entry.location);
 
-        searchInput.value = result.nombre_negocio;
+        searchInput.value = result.title || result.nombre_negocio || '';
         closeSearchResults();
     }
 

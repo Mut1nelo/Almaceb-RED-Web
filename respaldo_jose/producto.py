@@ -54,48 +54,6 @@ class Producto:
         return cls(results[0])
 
     @classmethod
-    def get_by_id_for_business(cls, producto_id, negocio_id):
-        query = """
-            SELECT * FROM productos
-            WHERE id = %(id)s AND negocio_id = %(negocio_id)s
-        """
-        results = connectToMySQL(DB_NAME).query_db(query, {
-            'id': producto_id,
-            'negocio_id': negocio_id
-        })
-
-        if not results:
-            return None
-        return cls(results[0])
-
-    @classmethod
-    def update(cls, producto_id, negocio_id, nombre_producto, precio,
-               descripcion=None, imagen=None):
-        if not nombre_producto or precio is None:
-            raise ValueError("El nombre y el precio del producto son obligatorios")
-
-        query = """
-            UPDATE productos
-            SET nombre_producto = %(nombre_producto)s,
-                descripcion = %(descripcion)s,
-                precio = %(precio)s,
-                imagen = %(imagen)s
-            WHERE id = %(id)s AND negocio_id = %(negocio_id)s
-        """
-        result = connectToMySQL(DB_NAME).query_db(query, {
-            'id': producto_id,
-            'negocio_id': negocio_id,
-            'nombre_producto': nombre_producto,
-            'descripcion': descripcion,
-            'precio': precio,
-            'imagen': imagen
-        })
-
-        if result is False:
-            raise RuntimeError("Failed to update producto")
-        return result
-
-    @classmethod
     def delete(cls, producto_id):
         query = "DELETE FROM productos WHERE id = %(id)s"
         return connectToMySQL(DB_NAME).query_db(query, {'id': producto_id})

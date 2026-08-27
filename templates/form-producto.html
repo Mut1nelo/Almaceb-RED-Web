@@ -1,20 +1,111 @@
-<h1>Agregar producto a {{ negocio.nombre_negocio }}</h1>
-<form method="POST" enctype="multipart/form-data">
-    <div class="form-group">
-        <label for="nombre_producto">Nombre del producto</label><br>
-        <input type="text" id="nombre_producto" name="nombre_producto" required>
-    </div>
-    <div class="form-group">
-        <label for="precio">Precio</label><br>
-        <input type="number" id="precio" name="precio" step="0.01" min="0" required>
-    </div>
-    <div class="form-group">
-        <label for="descripcion">Descripción</label><br>
-        <textarea id="descripcion" name="descripcion" rows="3"></textarea>
-    </div>
-    <div class="form-group">
-        <label for="imagen">Imagen del producto</label><br>
-        <input type="file" id="imagen" name="imagen" accept="image/png, image/jpeg, image/webp">
-    </div>
-    <button type="submit" class="green-btn">Agregar producto</button>
-</form>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='imgs/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <title>{{ 'Editar producto' if editando else 'Agregar producto' }} | Almaceb RED</title>
+</head>
+<body class="content-editor-body bgGrey">
+    <nav class="nav-container content-editor-nav">
+        <a href="{{ url_for('index') }}">
+            <img src="{{ url_for('static', filename='imgs/logo/Almaceb-Logo-inicio.png') }}" alt="Almaceb RED" class="nav-logo">
+        </a>
+        <div class="nav-back-container">
+            <a class="white-btn content-back-button" href="{{ url_for('negocio', negocio_id=negocio.id) }}">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Volver
+            </a>
+        </div>
+        <img src="{{ url_for('static', filename=profile_image) }}" alt="Foto de perfil" class="nav-profile">
+    </nav>
+
+    <main class="content-editor-page">
+        <header class="content-editor-heading">
+            <p class="content-editor-eyebrow">{{ negocio.nombre_negocio }}</p>
+            <h1>{{ 'Editar producto' if editando else 'Crear contenido del negocio' }}</h1>
+            <p>{{ 'Actualiza la información que verán tus clientes.' if editando else 'Agrega un producto al catálogo de tu negocio.' }}</p>
+        </header>
+
+        <nav class="content-type-tabs" aria-label="Tipo de contenido">
+            <a href="{{ url_for('agregar_promocion', negocio_id=negocio.id) }}">
+                <i class="bi bi-tag-fill" aria-hidden="true"></i> Nueva promoción
+            </a>
+            <a class="is-active" href="{{ url_for('agregar_producto', negocio_id=negocio.id) }}" aria-current="page">
+                <i class="bi bi-bag-fill" aria-hidden="true"></i> {{ 'Editar producto' if editando else 'Agregar producto' }}
+            </a>
+        </nav>
+
+        <div class="content-editor-layout">
+            <section class="content-editor-card border-card" aria-labelledby="product-form-title">
+                <form method="POST" enctype="multipart/form-data" class="content-editor-form">
+                    <div class="content-form-title">
+                        <i class="bi bi-bag-heart" aria-hidden="true"></i>
+                        <h2 id="product-form-title">Información del producto</h2>
+                    </div>
+
+                    {% if form_error %}
+                    <p class="content-form-error" role="alert"><i class="bi bi-exclamation-circle" aria-hidden="true"></i> {{ form_error }}</p>
+                    {% endif %}
+
+                    <div class="content-form-grid">
+                        <div class="content-form-fields">
+                            <div class="form-group content-field-full">
+                                <label for="nombre_producto">Nombre del producto</label>
+                                <input type="text" id="nombre_producto" name="nombre_producto" maxlength="150" placeholder="Ej. Pan amasado" value="{{ request.form.get('nombre_producto', producto.nombre_producto if editando else '') }}" required>
+                            </div>
+
+                            <div class="form-group content-field-price">
+                                <label for="precio">Precio</label>
+                                <div class="price-input-wrap">
+                                    <span aria-hidden="true">$</span>
+                                    <input type="number" id="precio" name="precio" step="1" min="0" placeholder="1990" value="{{ request.form.get('precio', producto.precio if editando else '') }}" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group content-field-full">
+                                <label for="descripcion">Descripción</label>
+                                <textarea id="descripcion" name="descripcion" maxlength="1000" rows="6" placeholder="Describe el producto, sus características o presentación.">{{ request.form.get('descripcion', producto.descripcion if editando and producto.descripcion else '') }}</textarea>
+                            </div>
+                        </div>
+
+                        <div class="form-group content-image-field">
+                            <label>Imagen del producto</label>
+                            <label class="content-image-upload" for="imagen">
+                                <img class="content-image-preview" src="{{ url_for('static', filename=producto.imagen) if editando and producto.imagen else '' }}" alt="Vista previa de la imagen" {% if not (editando and producto.imagen) %}hidden{% endif %}>
+                                <span class="content-upload-placeholder" {% if editando and producto.imagen %}hidden{% endif %}>
+                                    <i class="bi bi-image" aria-hidden="true"></i>
+                                    <strong>Sube una imagen clara</strong>
+                                    <small>del producto</small>
+                                </span>
+                                <span class="white-btn content-file-button">Seleccionar imagen</span>
+                                <small>JPG, PNG o WEBP. Máx. 5 MB</small>
+                            </label>
+                            <input class="content-file-input" type="file" id="imagen" name="imagen" accept="image/png,image/jpeg,image/webp">
+                            {% if editando and producto.imagen %}<small class="content-keep-image">Si no eliges otra imagen, se conservará la actual.</small>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="content-form-actions">
+                        <a class="white-btn" href="{{ url_for('negocio', negocio_id=negocio.id) }}">Cancelar</a>
+                        <button type="submit" class="green-btn">
+                            {{ 'Guardar cambios' if editando else 'Publicar producto' }} <i class="bi bi-send" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <aside class="content-editor-tips border-card" aria-labelledby="product-tips-title">
+                <div class="content-form-title"><i class="bi bi-lightbulb" aria-hidden="true"></i><h2 id="product-tips-title">Consejos</h2></div>
+                <div class="content-tip"><i class="bi bi-type" aria-hidden="true"></i><div><strong>Usa un nombre reconocible</strong><p>Ayuda a tus clientes a encontrarlo rápido.</p></div></div>
+                <div class="content-tip"><i class="bi bi-currency-dollar" aria-hidden="true"></i><div><strong>Indica el precio real</strong><p>El valor aparecerá junto al producto.</p></div></div>
+                <div class="content-tip"><i class="bi bi-image" aria-hidden="true"></i><div><strong>Elige una buena foto</strong><p>Una imagen nítida muestra mejor lo que ofreces.</p></div></div>
+            </aside>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/content-editor.js') }}"></script>
+</body>
+</html>

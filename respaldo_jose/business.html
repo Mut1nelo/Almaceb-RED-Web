@@ -49,7 +49,7 @@
                 <span class="blue-label">Cliente</span>
             </div>
             <nav class="sidebar-nav" aria-label="Menú de cliente">
-                <a class="nav-btn" href="{{ url_for('user_profile', usuarios_id=current_user.id) }}"><i class="bi bi-person-fill"></i> <span>Perfil público</span></a>
+                <a class="nav-btn" href="{{ url_for('config', seccion='perfil') }}"><i class="bi bi-person-fill"></i> <span>Mi perfil</span></a>
                 <a class="nav-btn" href="{{ url_for('featured_business') }}"><i class="bi bi-stars"></i> <span>Negocios destacados</span></a>
                 <a class="nav-btn" href="{{ url_for('config') }}"><i class="bi bi-gear-fill"></i> <span>Configuración</span></a>
             </nav>
@@ -64,9 +64,9 @@
                 <span class="green-label">Negocio</span>
             </div>
             <nav class="sidebar-nav" aria-label="Menú de vendedor">
-                <a class="nav-btn" href="{{ url_for('user_profile', usuarios_id=current_user.id) }}"><i class="bi bi-person-fill"></i> <span>Perfil público</span></a>
-                <a class="nav-btn" href="{{ url_for('my_businesses') }}"><i class="bi bi-house-gear-fill"></i> <span>Mis negocios</span></a>
+                <a class="nav-btn" href="{{ url_for('config', seccion='perfil') }}"><i class="bi bi-person-fill"></i> <span>Mi perfil</span></a>
                 <a class="nav-btn" href="{{ url_for('featured_business') }}"><i class="bi bi-stars"></i> <span>Negocios destacados</span></a>
+                <a class="nav-btn" href="{{ url_for('crear_negocio') }}"><i class="bi bi-shop"></i> <span>Crear un negocio</span></a>
                 <a class="nav-btn" href="{{ url_for('config') }}"><i class="bi bi-gear-fill"></i> <span>Configuración</span></a>
             </nav>
             <a href="{{ url_for('logout') }}" class="sidebar-logout"><i class="fa-solid fa-arrow-right-from-bracket"></i><span>Cerrar sesión</span></a>
@@ -87,6 +87,9 @@
                 <i class="fa-solid fa-arrow-left"></i>
                 Volver
             </button>
+            <a class="green-btn back-button" type="button" href="/Mapa">
+                Volver al Mapa
+            </a>
         </div>
         <button class="sidebar-toggle" type="button" aria-label="Abrir menú" aria-controls="sidebarPanel" aria-expanded="false">
             <img
@@ -269,7 +272,7 @@
                         <i class="bi bi-tag-fill"></i>
                         <h2 class="green-line">Promociones</h2>
                     </div>
-                    {% if is_business_owner %}
+                    {% if account_type == 'business' %}
                     <a href="{{ url_for('agregar_promocion', negocio_id=business.id) }}" class="green-link">
                         <i class="bi bi-plus-circle"></i> Agregar
                     </a>
@@ -286,17 +289,11 @@
                             <div class="promotion-info">
                                 <h3>{{ promo.nombre_promocion }}</h3>
                                 <p class="promotion-price">{{ promo.precio if promo.precio else '' }}</p>
-                                {% if promo.descripcion %}<p class="promotion-description">{{ promo.descripcion }}</p>{% endif %}
                                 <small>
                                     {% if promo.fecha_fin %}
                                         Válido hasta el {{ promo.fecha_fin }}
                                     {% endif %}
                                 </small>
-                                {% if is_business_owner %}
-                                <a class="promotion-edit-link" href="{{ url_for('editar_promocion', negocio_id=business.id, promocion_id=promo.id) }}">
-                                    <i class="bi bi-pencil" aria-hidden="true"></i> Editar promoción
-                                </a>
-                                {% endif %}
                             </div>
                         </div>
                         {% endfor %}
@@ -320,37 +317,19 @@
                         <i class="bi bi-image-fill"></i>
                         <h2 class="green-line">Productos del negocio</h2>
                     </div>
-                    <div class="gallery-header-actions">
-                        {% if productos %}
-                        <button class="green-link gallery-open" type="button">
-                            <i class="bi bi-grid-3x3-gap" aria-hidden="true"></i> Ver todos
-                        </button>
-                        {% endif %}
-                        {% if is_business_owner %}
-                        <a href="{{ url_for('agregar_producto', negocio_id=business.id) }}" class="green-link">
-                            <i class="bi bi-plus-circle"></i> Agregar
-                        </a>
-                        {% endif %}
-                    </div>
+                    {% if account_type == 'business' %}
+                    <a href="{{ url_for('agregar_producto', negocio_id=business.id) }}" class="green-link">
+                        <i class="bi bi-plus-circle"></i> Agregar
+                    </a>
+                    {% endif %}
                 </div>
                 <div class="products-images">
                     {% if productos %}
                         {% for producto in productos[:4] %}
-                            <button
-                                class="product-card-trigger product-preview-card"
-                                type="button"
-                                data-product-name="{{ producto.nombre_producto|e }}"
-                                data-product-price="{{ ('$ ' ~ '{:,.0f}'.format(producto.precio).replace(',', '.')) if producto.precio is not none else 'Precio no informado' }}"
-                                data-product-description="{{ (producto.descripcion or 'Sin descripción disponible.')|e }}"
-                                data-product-image="{{ url_for('static', filename=producto.imagen) if producto.imagen else url_for('static', filename='imgs/img-proto.png') }}"
-                                {% if is_business_owner %}data-product-edit-url="{{ url_for('editar_producto', negocio_id=business.id, producto_id=producto.id) }}"{% endif %}
+                            <img
+                                src="{{ url_for('static', filename=producto.imagen) if producto.imagen else url_for('static', filename='imgs/img-proto.png') }}"
+                                alt="{{ producto.nombre_producto }}"
                             >
-                                <img src="{{ url_for('static', filename=producto.imagen) if producto.imagen else url_for('static', filename='imgs/img-proto.png') }}" alt="{{ producto.nombre_producto }}">
-                                <span class="product-preview-info">
-                                    <strong>{{ producto.nombre_producto }}</strong>
-                                    {% if producto.precio is not none %}<span>$ {{ '{:,.0f}'.format(producto.precio).replace(',', '.') }}</span>{% endif %}
-                                </span>
-                            </button>
                         {% endfor %}
                     {% else %}
                         <p>Este negocio aún no tiene productos publicados.</p>
@@ -442,6 +421,21 @@
                 </div>
             </article>
         </section> -->
+        <article class="business-categories border-card">
+        <div class="section-heading">
+            <i class="bi bi-list-ul"></i>
+            <h2 class="green-line">Categoría</h2>
+        </div>
+        <div class="categories-list">
+            <div class="category-item">
+                <i class="bi bi-circle-fill"></i>
+                <span>{{ business.business_type }}</span>
+            </div>
+        </div>
+        </article>
+        <!-- Arreglalo con flexbox despues javier -->
+
+
     </main>
     <footer class="web-footer">
         <div class="footer-brand">
@@ -475,26 +469,18 @@
             <div class="gallery-modal-grid">
                 {% if productos %}
                     {% for producto in productos %}
-                    <button
-                        class="gallery-modal-item product-card-trigger"
-                        type="button"
-                        data-product-name="{{ producto.nombre_producto|e }}"
-                        data-product-price="{{ ('$ ' ~ '{:,.0f}'.format(producto.precio).replace(',', '.')) if producto.precio is not none else 'Precio no informado' }}"
-                        data-product-description="{{ (producto.descripcion or 'Sin descripción disponible.')|e }}"
-                        data-product-image="{{ url_for('static', filename=producto.imagen) if producto.imagen else url_for('static', filename='imgs/img-proto.png') }}"
-                        {% if is_business_owner %}data-product-edit-url="{{ url_for('editar_producto', negocio_id=business.id, producto_id=producto.id) }}"{% endif %}
-                    >
+                    <div class="gallery-modal-item">
                         <img
                             src="{{ url_for('static', filename=producto.imagen) if producto.imagen else url_for('static', filename='imgs/img-proto.png') }}"
                             alt="{{ producto.nombre_producto }}"
                         >
                         <div class="gallery-modal-caption">
                             <strong>{{ producto.nombre_producto }}</strong>
-                            {% if producto.precio is not none %}<span>$ {{ '{:,.0f}'.format(producto.precio).replace(',', '.') }}</span>{% endif %}
-                            <p>{{ producto.descripcion or 'Sin descripción disponible.' }}</p>
+                            {% if producto.precio %}
+                                <span>${{ '{:,.0f}'.format(producto.precio) }}</span>
+                            {% endif %}
                         </div>
-                        <span class="gallery-product-action">Ver información <i class="bi bi-chevron-right" aria-hidden="true"></i></span>
-                    </button>
+                    </div>
                     {% endfor %}
                 {% else %}
                     <p>Este negocio aún no tiene productos publicados.</p>
@@ -503,24 +489,7 @@
         </div>
     </div>
 
-    <!-- Información del producto seleccionado -->
-    <div class="product-detail-modal" role="dialog" aria-modal="true" aria-labelledby="product-detail-title" hidden>
-        <article class="product-detail-card border-card">
-            <button class="product-detail-close" type="button" aria-label="Cerrar información del producto">
-                <i class="bi bi-x-lg" aria-hidden="true"></i>
-            </button>
-            <img class="product-detail-image" src="" alt="">
-            <div class="product-detail-content">
-                <p class="product-detail-kicker">Producto de {{ business.nombre_negocio }}</p>
-                <h2 id="product-detail-title"></h2>
-                <strong class="product-detail-price"></strong>
-                <p class="product-detail-description"></p>
-                <a class="green-btn product-detail-edit" href="" hidden>
-                    <i class="bi bi-pencil" aria-hidden="true"></i> Editar producto
-                </a>
-            </div>
-        </article>
-    </div>
+
     <script src="{{ url_for('static', filename='js/scripts.js') }}"></script>
 </body>
 </html>

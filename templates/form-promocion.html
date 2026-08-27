@@ -1,28 +1,118 @@
-<h1>Agregar promoción a {{ negocio.nombre_negocio }}</h1>
-<form method="POST" enctype="multipart/form-data">
-    <div class="form-group">
-        <label for="nombre_promocion">Nombre de la promoción</label><br>
-        <input type="text" id="nombre_promocion" name="nombre_promocion" required>
-    </div>
-    <div class="form-group">
-        <label for="precio">Precio / condición</label><br>
-        <input type="text" id="precio" name="precio" placeholder="$6.990 o '10% de descuento'">
-    </div>
-    <div class="form-group">
-        <label for="descripcion">Descripción</label><br>
-        <textarea id="descripcion" name="descripcion" rows="3"></textarea>
-    </div>
-    <div class="form-group">
-        <label for="fecha_inicio">Fecha de inicio</label><br>
-        <input type="date" id="fecha_inicio" name="fecha_inicio">
-    </div>
-    <div class="form-group">
-        <label for="fecha_fin">Fecha de término</label><br>
-        <input type="date" id="fecha_fin" name="fecha_fin">
-    </div>
-    <div class="form-group">
-        <label for="imagen">Imagen de la promoción</label><br>
-        <input type="file" id="imagen" name="imagen" accept="image/png, image/jpeg, image/webp">
-    </div>
-    <button type="submit" class="green-btn">Agregar promoción</button>
-</form>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='imgs/favicon.ico') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <title>{{ 'Editar promoción' if editando else 'Nueva promoción' }} | Almaceb RED</title>
+</head>
+<body class="content-editor-body bgGrey">
+    <nav class="nav-container content-editor-nav">
+        <a href="{{ url_for('index') }}">
+            <img src="{{ url_for('static', filename='imgs/logo/Almaceb-Logo-inicio.png') }}" alt="Almaceb RED" class="nav-logo">
+        </a>
+        <div class="nav-back-container">
+            <a class="white-btn content-back-button" href="{{ url_for('negocio', negocio_id=negocio.id) }}">
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i> Volver
+            </a>
+        </div>
+        <img src="{{ url_for('static', filename=profile_image) }}" alt="Foto de perfil" class="nav-profile">
+    </nav>
+
+    <main class="content-editor-page">
+        <header class="content-editor-heading">
+            <p class="content-editor-eyebrow">{{ negocio.nombre_negocio }}</p>
+            <h1>{{ 'Editar promoción' if editando else 'Crear contenido del negocio' }}</h1>
+            <p>{{ 'Actualiza los datos y la vigencia de esta promoción.' if editando else 'Publica una promoción para tus clientes.' }}</p>
+        </header>
+
+        <nav class="content-type-tabs" aria-label="Tipo de contenido">
+            <a class="is-active" href="{{ url_for('agregar_promocion', negocio_id=negocio.id) }}" aria-current="page">
+                <i class="bi bi-tag-fill" aria-hidden="true"></i> {{ 'Editar promoción' if editando else 'Nueva promoción' }}
+            </a>
+            <a href="{{ url_for('agregar_producto', negocio_id=negocio.id) }}">
+                <i class="bi bi-bag-fill" aria-hidden="true"></i> Agregar producto
+            </a>
+        </nav>
+
+        <div class="content-editor-layout">
+            <section class="content-editor-card border-card" aria-labelledby="promotion-form-title">
+                <form method="POST" enctype="multipart/form-data" class="content-editor-form">
+                    <div class="content-form-title">
+                        <i class="bi bi-megaphone" aria-hidden="true"></i>
+                        <h2 id="promotion-form-title">Información de la promoción</h2>
+                    </div>
+
+                    {% if form_error %}
+                    <p class="content-form-error" role="alert"><i class="bi bi-exclamation-circle" aria-hidden="true"></i> {{ form_error }}</p>
+                    {% endif %}
+
+                    <div class="content-form-grid">
+                        <div class="content-form-fields">
+                            <div class="form-group content-field-full">
+                                <label for="nombre_promocion">Título de la promoción</label>
+                                <input type="text" id="nombre_promocion" name="nombre_promocion" maxlength="150" placeholder="Ej. 2x1 en hamburguesas" value="{{ request.form.get('nombre_promocion', promocion.nombre_promocion if editando else '') }}" required>
+                            </div>
+
+                            <div class="form-group content-field-full">
+                                <label for="descripcion">Descripción</label>
+                                <textarea id="descripcion" name="descripcion" maxlength="1000" rows="5" placeholder="Describe la promoción y sus beneficios.">{{ request.form.get('descripcion', promocion.descripcion if editando and promocion.descripcion else '') }}</textarea>
+                            </div>
+
+                            <div class="content-date-row">
+                                <div class="form-group">
+                                    <label for="precio">Precio o condición</label>
+                                    <input type="text" id="precio" name="precio" maxlength="50" placeholder="$5.000 o 20% de descuento" value="{{ request.form.get('precio', promocion.precio if editando and promocion.precio else '') }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fecha_inicio">Fecha de inicio</label>
+                                    <input type="date" id="fecha_inicio" name="fecha_inicio" value="{{ request.form.get('fecha_inicio', promocion.fecha_inicio if editando and promocion.fecha_inicio else '') }}">
+                                </div>
+                                <div class="form-group">
+                                    <label for="fecha_fin">Fecha de término</label>
+                                    <input type="date" id="fecha_fin" name="fecha_fin" value="{{ request.form.get('fecha_fin', promocion.fecha_fin if editando and promocion.fecha_fin else '') }}">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group content-image-field">
+                            <label>Imagen de la promoción</label>
+                            <label class="content-image-upload" for="imagen">
+                                <img class="content-image-preview" src="{{ url_for('static', filename=promocion.imagen) if editando and promocion.imagen else '' }}" alt="Vista previa de la imagen" {% if not (editando and promocion.imagen) %}hidden{% endif %}>
+                                <span class="content-upload-placeholder" {% if editando and promocion.imagen %}hidden{% endif %}>
+                                    <i class="bi bi-image" aria-hidden="true"></i>
+                                    <strong>Sube una imagen atractiva</strong>
+                                    <small>de tu promoción</small>
+                                </span>
+                                <span class="white-btn content-file-button">Seleccionar imagen</span>
+                                <small>JPG, PNG o WEBP. Máx. 5 MB</small>
+                            </label>
+                            <input class="content-file-input" type="file" id="imagen" name="imagen" accept="image/png,image/jpeg,image/webp">
+                            {% if editando and promocion.imagen %}<small class="content-keep-image">Si no eliges otra imagen, se conservará la actual.</small>{% endif %}
+                        </div>
+                    </div>
+
+                    <div class="content-form-actions">
+                        <a class="white-btn" href="{{ url_for('negocio', negocio_id=negocio.id) }}">Cancelar</a>
+                        <button type="submit" class="green-btn">
+                            {{ 'Guardar cambios' if editando else 'Publicar promoción' }} <i class="bi bi-send" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <aside class="content-editor-tips border-card" aria-labelledby="promotion-tips-title">
+                <div class="content-form-title"><i class="bi bi-lightbulb" aria-hidden="true"></i><h2 id="promotion-tips-title">Consejos</h2></div>
+                <div class="content-tip"><i class="bi bi-type" aria-hidden="true"></i><div><strong>Usa un título claro</strong><p>Un nombre corto y directo llama más la atención.</p></div></div>
+                <div class="content-tip"><i class="bi bi-calendar3" aria-hidden="true"></i><div><strong>Agrega fechas visibles</strong><p>Indica cuándo inicia y termina tu promoción.</p></div></div>
+                <div class="content-tip"><i class="bi bi-image" aria-hidden="true"></i><div><strong>Incluye una imagen atractiva</strong><p>Una buena foto ayuda a destacar tu oferta.</p></div></div>
+            </aside>
+        </div>
+    </main>
+
+    <script src="{{ url_for('static', filename='js/content-editor.js') }}"></script>
+</body>
+</html>

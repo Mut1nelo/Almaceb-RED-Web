@@ -1,5 +1,5 @@
 from mysqlconnection import connectToMySQL
-from datetime import datetime, time as time_type, timedelta
+from datetime import datetime, time as time_type
 
 DB_NAME = 'almaceb_red'
 MAX_BUSINESSES_PER_USER = 4
@@ -16,57 +16,6 @@ BUSINESS_TYPES = [
 ]
 
 DIAS_SEMANA = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
-
-
-def format_time_input(value):
-    """Normaliza valores TIME de MySQL al formato HH:MM de un input HTML."""
-    if value is None:
-        return ''
-
-    if isinstance(value, timedelta):
-        total_minutes = int(value.total_seconds() // 60)
-        hours, minutes = divmod(total_minutes, 60)
-        return f"{hours % 24:02d}:{minutes:02d}"
-
-    if isinstance(value, time_type):
-        return value.strftime('%H:%M')
-
-    text_value = str(value).strip()
-    if not text_value:
-        return ''
-
-    parts = text_value.split(':')
-    if len(parts) >= 2:
-        try:
-            return f"{int(parts[0]):02d}:{int(parts[1]):02d}"
-        except ValueError:
-            return text_value
-
-    return text_value
-
-
-def normalize_weekday(value):
-    """Corrige nombres de días antiguos guardados con codificación dañada."""
-    if not value:
-        return value
-
-    normalized = str(value).strip()
-    known_variants = {
-        'MiÃ©rcoles': 'Miércoles',
-        'Mi�rcoles': 'Miércoles',
-        'SÃ¡bado': 'Sábado',
-        'S�bado': 'Sábado'
-    }
-    if normalized in known_variants:
-        return known_variants[normalized]
-
-    lowered = normalized.casefold()
-    if lowered.startswith('mi') and lowered.endswith('rcoles'):
-        return 'Miércoles'
-    if lowered.startswith('s') and lowered.endswith('bado'):
-        return 'Sábado'
-
-    return normalized
 
 def esta_abierto(business):
     """Devuelve True si el negocio está abierto en este momento, False si no,
@@ -122,12 +71,10 @@ class Business:
         self.telefono = data.get('telefono')
         self.correo = data.get('correo')
         self.descripcion = data.get('descripcion')
-        self.horario_dia_inicio = normalize_weekday(data.get('horario_dia_inicio'))
-        self.horario_dia_fin = normalize_weekday(data.get('horario_dia_fin'))
+        self.horario_dia_inicio = data.get('horario_dia_inicio')
+        self.horario_dia_fin = data.get('horario_dia_fin')
         self.horario_hora_inicio = data.get('horario_hora_inicio')
         self.horario_hora_fin = data.get('horario_hora_fin')
-        self.horario_hora_inicio_input = format_time_input(self.horario_hora_inicio)
-        self.horario_hora_fin_input = format_time_input(self.horario_hora_fin)
         self.imagen_banner = data.get('imagen_banner')
         self.imagen_perfil = data.get('imagen_perfil')
         self.valoracion = float(data.get('valoracion') or 0)
@@ -280,23 +227,6 @@ class Business:
             return None
 
         return cls(results[0])
-
-    @classmethod
-    def delete_for_user(cls, negocio_id, usuario_id):
-        """Elimina un negocio únicamente cuando pertenece al usuario indicado."""
-        query = """
-            DELETE FROM negocios
-            WHERE id = %(id)s AND usuario_id = %(usuario_id)s;
-        """
-        result = connectToMySQL(DB_NAME).query_db(query, {
-            "id": negocio_id,
-            "usuario_id": usuario_id
-        })
-
-        if result is False:
-            raise RuntimeError("Failed to delete business")
-
-        return result
 
     @classmethod
     def update(cls, negocio_id, usuario_id, nombre_negocio, business_type, lat, lon,

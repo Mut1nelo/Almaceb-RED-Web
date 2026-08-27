@@ -121,6 +121,22 @@ document.addEventListener('DOMContentLoaded', () => {
         '.featured-card'
     );
 
+    // Menú de acciones secundarias en las tarjetas de "Mis negocios".
+    const businessMenus = document.querySelectorAll('.ab-more-menu');
+    businessMenus.forEach(menu => {
+        menu.querySelector('summary')?.addEventListener('click', () => {
+            businessMenus.forEach(otherMenu => {
+                if (otherMenu !== menu) otherMenu.removeAttribute('open');
+            });
+        });
+    });
+
+    document.addEventListener('click', event => {
+        businessMenus.forEach(menu => {
+            if (!menu.contains(event.target)) menu.removeAttribute('open');
+        });
+    });
+
     // Abre y cierra la galería completa de productos.
     const galleryOpen = document.querySelector('.gallery-open');
     const galleryModal = document.querySelector('.gallery-modal');
@@ -149,8 +165,67 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && !galleryModal.hidden) {
+            const productDetailIsOpen = document.querySelector('.product-detail-modal')?.hidden === false;
+            if (event.key === 'Escape' && !galleryModal.hidden && !productDetailIsOpen) {
                 closeGallery();
+            }
+        });
+    }
+
+    // Muestra la ficha del producto sin abandonar la página del negocio.
+    const productTriggers = document.querySelectorAll('.product-card-trigger');
+    const productDetailModal = document.querySelector('.product-detail-modal');
+    const productDetailClose = document.querySelector('.product-detail-close');
+
+    if (productTriggers.length && productDetailModal && productDetailClose) {
+        const detailImage = productDetailModal.querySelector('.product-detail-image');
+        const detailTitle = productDetailModal.querySelector('#product-detail-title');
+        const detailPrice = productDetailModal.querySelector('.product-detail-price');
+        const detailDescription = productDetailModal.querySelector('.product-detail-description');
+        const detailEdit = productDetailModal.querySelector('.product-detail-edit');
+        let lastProductTrigger = null;
+
+        const openProductDetail = (trigger) => {
+            lastProductTrigger = trigger;
+            detailImage.src = trigger.dataset.productImage || '';
+            detailImage.alt = trigger.dataset.productName || 'Producto';
+            detailTitle.textContent = trigger.dataset.productName || 'Producto';
+            detailPrice.textContent = trigger.dataset.productPrice || 'Precio no informado';
+            detailDescription.textContent = trigger.dataset.productDescription || 'Sin descripción disponible.';
+
+            if (trigger.dataset.productEditUrl) {
+                detailEdit.href = trigger.dataset.productEditUrl;
+                detailEdit.hidden = false;
+            } else {
+                detailEdit.hidden = true;
+                detailEdit.removeAttribute('href');
+            }
+
+            productDetailModal.hidden = false;
+            document.body.classList.add('gallery-modal-open');
+            productDetailClose.focus();
+        };
+
+        const closeProductDetail = () => {
+            productDetailModal.hidden = true;
+            if (!galleryModal || galleryModal.hidden) {
+                document.body.classList.remove('gallery-modal-open');
+            }
+            lastProductTrigger?.focus();
+        };
+
+        productTriggers.forEach(trigger => {
+            trigger.addEventListener('click', () => openProductDetail(trigger));
+        });
+
+        productDetailClose.addEventListener('click', closeProductDetail);
+        productDetailModal.addEventListener('click', (event) => {
+            if (event.target === productDetailModal) closeProductDetail();
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && !productDetailModal.hidden) {
+                closeProductDetail();
             }
         });
     }
