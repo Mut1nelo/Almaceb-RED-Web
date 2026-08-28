@@ -287,33 +287,54 @@ def register():
 
 @app.route("/Registro", methods=["POST"])
 def registrar_usuario():
+    username = request.form.get("username", "").strip()
+    email = request.form.get("email", "").strip().lower()
+    password = request.form.get("password", "")
+    confirm_password = request.form.get("confirm_password", "")
+    account_type = request.form.get("account_type", "client")
 
-    password_hash = generate_password_hash(request.form['password'])
+    if password != confirm_password:
+        flash("Las contraseñas no coinciden.", "error")
+        return redirect(url_for("register"))
 
-    data_usuario = {
-        "username": request.form['username'],
-        "email": request.form['email'],
-        "password": password_hash,
-        "account_type": request.form['account_type'],
-        "telefono": request.form['telefono'],
-        "bio": request.form['bio'],
-        "foto_perfil": guardar_imagen(
+    if account_type not in ("client", "business"):
+        flash("Tipo de cuenta no válido.", "error")
+        return redirect(url_for("register"))
+
+    if Usuario.check_users({"email": email}):
+        flash("Ya existe una cuenta con ese correo.", "error")
+        return redirect(url_for("register"))
+
+    try:
+        foto_perfil = guardar_imagen(
             request.files.get("foto_perfil"),
             tipo="usuario",
             subfolder="imgs/usuarios"
         )
-    }
 
-    user_id = Usuario.save(data_usuario)
+        user_id = Usuario.save({
+            "username": username,
+            "email": email,
+            "password": generate_password_hash(password),
+            "account_type": account_type,
+            "telefono": request.form.get("telefono", "").strip() or None,
+            "bio": request.form.get("bio", "").strip() or None,
+            "foto_perfil": foto_perfil
+        })
 
-    session['user_id'] = user_id
-    session['username'] = request.form['username']
-    session['account_type'] = request.form['account_type']
-    session['telefono'] = request.form['telefono']
-    session['bio'] = request.form['bio']
-    session['foto_perfil'] = data_usuario['foto_perfil']   # ← usa el valor ya procesado
+        if not user_id:
+            flash("No se pudo crear la cuenta.", "error")
+            return redirect(url_for("register"))
 
-    return redirect('/Mapa')
+    except ValueError as error:
+        flash(str(error), "error")
+        return redirect(url_for("register"))
+
+    session["user_id"] = user_id
+    session["username"] = username
+    session["account_type"] = account_type
+
+    return redirect(url_for("map"))
 
 @app.route("/Login")
 def login_page():
@@ -1061,10 +1082,6 @@ def actualizar_perfil():
     return redirect(url_for("config", seccion="perfil"))
     # Muy bien javier
 
-@app.route("/Ranking")
-def ranking():
-    return render_template("ranking.html")
-
 @app.route('/Eliminar-cuenta', methods=['POST'])
 def eliminar_cuenta():
     if 'user_id' not in session:
@@ -1079,11 +1096,6 @@ def eliminar_cuenta():
 @app.route("/Funciones-futuras")
 def future_function():
     return render_template("future-function.html")
-
-# Para desarrolladores
-@app.route("/Dev-page")
-def dev_page():
-    return render_template("dev-pages.html")
 
 # Manejadores de error
 
@@ -1100,5 +1112,5 @@ if __name__ == "__main__":
     ),
     host="0.0.0.0",
     port=5000,
-    debug=False)
+    debug=True)
     #Cambiar debug a false en la feria

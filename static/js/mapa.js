@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!userMarker) {
                     userMarker = L.marker([lat, lng], {
                         icon: L.icon({
-                            iconUrl: 'https://cdn-icons-png.flaticon.com/512/64/64113.png',
+                            iconUrl: '/static/imgs/user-icon.png',
                             iconSize: [50, 50],
                             iconAnchor: [16, 32],
                             popupAnchor: [0, -32]

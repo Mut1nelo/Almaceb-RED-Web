@@ -48,7 +48,7 @@
     <main class="featured-business-page">
         <header id="featured-header" class="border-card">
             <h1><i class="bi bi-star-fill featured-heading-icon" aria-hidden="true"></i> Negocios destacados</h1>
-            <p>Descubre los negocios mejor valorados y más populares de la comunidad.</p>
+            <p>Descubre los negocios mejor valorados de la comunidad.</p>
             <div id="featured-filters" role="group" aria-label="Filtros de categoría">
                 <a class="nav-btn featured-filter{% if selected_category == 'Todos' %} is-active{% endif %}" href="{{ url_for('featured_business', categoria='Todos', orden=selected_order) }}"{% if selected_category == 'Todos' %} aria-current="page"{% endif %}>
                     <i class="bi bi-list-ul"></i>

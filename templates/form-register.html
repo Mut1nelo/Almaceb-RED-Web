@@ -88,16 +88,14 @@
             <h2>Completa tus datos necesarios para comenzar</h2>
             <form action="/Registro" method="POST" enctype="multipart/form-data">
             <div class="profile-photo-upload">
-                <img
-                    id="foto-perfil-preview"
-                    class="profile-photo-preview"
-                    src="{{ url_for('static', filename='imgs/usuarios/default-avatar.png') }}"
-                    alt="Vista previa de foto de perfil"
-                >
-
                 <div class="file-input-wrapper file-business-form">
                     <label class="file-btn green-label" for="foto_perfil">
-                        <i class="bi bi-camera"></i>
+                        <img
+                            id="foto-perfil-preview"
+                            class="profile-photo-preview"
+                            src="{{ url_for('static', filename='imgs/default.jpg') }}"
+                            alt="Vista previa de foto de perfil"
+                        >
                         <span class="btn-text">Foto de perfil</span>
                         <span
                             id="foto-perfil-name"
